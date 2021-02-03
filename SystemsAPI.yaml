@@ -522,6 +522,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/isEnabled':
+    get:
+      tags:
+        - Systems
+      summary: Check if system is currently enabled
+      description: Check if a system is currently enabled, i.e. available for use.
+      operationId: isEnabled
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: Pretty print the response. For example pretty=true. Default is false.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Check successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBoolean'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
   '/v3/systems/{systemId}/changeOwner/{userName}':
     post:
       tags:
@@ -1030,8 +1073,10 @@ components:
             $ref: '#/components/schemas/KeyValuePair'
         jobMaxJobs:
           type: integer
+          default: 2147483647
         jobMaxJobsPerUser:
           type: integer
+          default: 2147483647
         jobIsBatch:
           type: boolean
           default: false
@@ -1077,8 +1122,10 @@ components:
           type: string
         maxJobs:
           type: integer
+          default: 2147483647
         maxJobsPerUser:
           type: integer
+          default: 2147483647
         maxNodeCount:
           type: integer
         maxCoresPerNode:
@@ -1279,6 +1326,17 @@ components:
           type: string
         result:
           type: object
+    RespBoolean:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          type: boolean
     RespNameArray:
       type: object
       properties:
@@ -1330,7 +1388,6 @@ components:
       properties:
         url:
           type: string
-
     RespSystem:
       type: object
       properties:
