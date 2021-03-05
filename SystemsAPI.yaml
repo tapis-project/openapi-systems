@@ -132,7 +132,6 @@ paths:
       summary: Create a system
       description: Create a system using a request body. System name must be unique within a tenant and can be composed of alphanumeric characters and the following special characters [-._~]. Name must begin with an alphabetic character and can be no more than 80 characters in length. Description is optional with a maximum length of 2048 characters.'
       operationId: createSystem
-      parameters:
       requestBody:
         required: true
         description: A JSON object specifying information for the system to be created.
@@ -300,7 +299,6 @@ paths:
       summary: Retrieve systems satisfying specified constraint conditions
       description: Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
       operationId: matchConstraints
-      parameters:
       requestBody:
         required: true
         description: A JSON object specifying SQL-like constraint conditions as an array of strings. Strings are concatenated to form full query.
