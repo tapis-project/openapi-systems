@@ -71,11 +71,6 @@ paths:
       description: Retrieve details for systems. Use search and select query parameters to limit results.
       operationId: getSystems
       parameters:
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
         - name: search
           in: query
           description: Search conditions as a single query paramter. For example search=(name.like.MySys*)~(enabled.eq.true)
@@ -138,11 +133,6 @@ paths:
       description: Create a system using a request body. System name must be unique within a tenant and can be composed of alphanumeric characters and the following special characters [-._~]. Name must begin with an alphabetic character and can be no more than 80 characters in length. Description is optional with a maximum length of 2048 characters.'
       operationId: createSystem
       parameters:
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       requestBody:
         required: true
         description: A JSON object specifying information for the system to be created.
@@ -189,11 +179,6 @@ paths:
       description: Retrieve details for systems. Use query parameters to specify search conditions. For example owner.eq=jdoe&port.gt=1024
       operationId: searchSystemsQueryParameters
       parameters:
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
         - name: limit
           in: query
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is unlimited.
@@ -251,11 +236,6 @@ paths:
       description: Retrieve details for systems. Use request body to specify SQL-like search conditions.
       operationId: searchSystemsRequestBody
       parameters:
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
         - name: limit
           in: query
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is unlimited.
@@ -321,11 +301,6 @@ paths:
       description: Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
       operationId: matchConstraints
       parameters:
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       requestBody:
         required: true
         description: A JSON object specifying SQL-like constraint conditions as an array of strings. Strings are concatenated to form full query.
@@ -371,11 +346,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
         - name: returnCredentials
           in: query
           description: Highly restricted. Only certain Tapis services are authorized to get credentials.
@@ -437,11 +407,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
         - name: confirm
           in: query
           description: Must be specified to complete the action. For example confirm=true. Default is false.
@@ -484,11 +449,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       requestBody:
         required: true
         description: A JSON object specifying changes to be applied.
@@ -540,11 +500,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       responses:
         '200':
           description: Check successful.
@@ -588,11 +543,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       responses:
         '200':
           description: System owner updated.
@@ -638,11 +588,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
         - name: authnMethod
           in: query
           description: Desired authn method to use when fetching credentials, default authn method used if not provided.
@@ -697,11 +642,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       requestBody:
         required: true
         description: A JSON object specifying a credential.
@@ -751,11 +691,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       responses:
         '200':
           description: Credential removed.
@@ -801,11 +736,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       responses:
         '200':
           description: Success.
@@ -854,11 +784,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       requestBody:
         required: true
         description: A JSON object specifying a list of permissions.
@@ -910,11 +835,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       requestBody:
         required: true
         description: A JSON object specifying a list of permissions.
@@ -965,11 +885,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: Pretty print the response. For example pretty=true. Default is false.
-          schema:
-            type: boolean
       responses:
         '200':
           description: Permission revoked.
