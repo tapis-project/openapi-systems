@@ -170,7 +170,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-  '/v3/systems/search/systems':
+  '/v3/systems/search':
     get:
       tags:
         - Systems
