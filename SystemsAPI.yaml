@@ -439,7 +439,7 @@ paths:
       tags:
         - Systems
       summary: Update a system
-      description: Update attributes for a system. Attributes that may be updated are description, host, enabled, effectiveUserId, defaultAuthnMethod, transferMethods, port, useProxy, proxyHost, proxyPort, jobCapabilities, tags, notes.
+      description: Update attributes for a system. Attributes that may be updated are description, host, effectiveUserId, defaultAuthnMethod, transferMethods, port, useProxy, proxyHost, proxyPort, jobCapabilities, tags, notes.
       operationId: updateSystem
       parameters:
         - name: systemId
@@ -505,6 +505,82 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBoolean'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/enable':
+    post:
+      tags:
+        - Systems
+      summary: Mark a system availabe for use.
+      description: Mark a system available for use.
+      operationId: enableSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: System enabled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespChangeCount'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/disable':
+    post:
+      tags:
+        - Systems
+      summary: Mark a system unavailabe for use.
+      description: Mark a system unavailable for use.
+      operationId: disableSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: System disabled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespChangeCount'
         '401':
           description: Not authorized.
           content:
