@@ -1253,8 +1253,6 @@ components:
           type: string
         host:
           type: string
-        enabled:
-          type: boolean
         effectiveUserId:
           type: string
         defaultAuthnMethod:
