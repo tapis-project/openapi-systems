@@ -995,7 +995,10 @@ components:
       name: X-Tapis-Token
       in: header
   schemas:
+    # ------------------------------------------------------------------------------
     # --- Model objects ------------------------------------------------------------
+    # ------------------------------------------------------------------------------
+    # --- TSystem ------------------------------------------------------------------
     TSystem:
       type: object
       properties:
@@ -1095,6 +1098,7 @@ components:
           type: string
         updated:
           type: string
+    # --- JobRuntime ------------------------------------------------------------------
     JobRuntime:
       type: object
       properties:
@@ -1102,6 +1106,7 @@ components:
           $ref: '#/components/schemas/RuntimeTypeEnum'
         version:
           type: string
+    # --- LogicalQueue ------------------------------------------------------------------
     LogicalQueue:
       type: object
       properties:
@@ -1123,6 +1128,7 @@ components:
           type: integer
         maxMinutes:
           type: integer
+    # --- Capability ------------------------------------------------------------------
     Capability:
       type: object
       properties:
@@ -1136,6 +1142,7 @@ components:
           type: integer
         value:
           type: string
+    # --- Credential ------------------------------------------------------------------
     Credential:
       type: object
       properties:
@@ -1159,8 +1166,9 @@ components:
           type: string
         value:
           type: string
-
+    # -------------------------------------------------------------------------
     # --- Request objects -----------------------------------------------------
+    # -------------------------------------------------------------------------
     ReqCreateSystem:
       type: object
       properties:
@@ -1269,6 +1277,36 @@ components:
         proxyPort:
           type: integer
           format: int32
+        dtnSystemId:
+          type: string
+        dtnMountPoint:
+          type: string
+        dtnMountSourcePath:
+          type: string
+        jobRuntimes:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobRuntime'
+        jobWorkingDir:
+          type: string
+        jobEnvVariables:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+        jobMaxJobs:
+          type: integer
+        jobMaxJobsPerUser:
+          type: integer
+        jobIsBatch:
+          type: boolean
+        batchScheduler:
+          type: string
+        batchLogicalQueues:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogicalQueue'
+        batchDefaultLogicalQueue:
+          type: string
         jobCapabilities:
           type: array
           items:
@@ -1300,8 +1338,9 @@ components:
           type: array
           items:
             type: string
-
+    # -------------------------------------------------------------------------
     # --- Response objects ----------------------------------------------------
+    # -------------------------------------------------------------------------
     RespBasic:
       type: object
       properties:
@@ -1441,7 +1480,9 @@ components:
           type: string
         result:
           $ref: '#/components/schemas/Credential'
-    # --- Enums ----------------------------------------------------
+    # -------------------------------------------------------------------------
+    # --- Enums ---------------------------------------------------------------
+    # -------------------------------------------------------------------------
     SystemTypeEnum:
       type: string
       enum:
