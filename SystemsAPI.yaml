@@ -844,7 +844,7 @@ paths:
     post:
       tags:
         - Permissions
-      summary: Create system user permissions
+      summary: Grant system user permissions
       description: Create permissions in the Security Kernel for a user. Requester must be owner of the system. Permissions are READ, MODIFY, EXECUTE.
       operationId: grantUserPerms
       parameters:
@@ -896,7 +896,7 @@ paths:
       tags:
         - Permissions
       summary: Revoke system user permissions
-      description: Revoke permissions in the Security Kernel for a user. Requester must be owner of the system. Permissions are READ, MODIFY, EXECUTE.
+      description: Remove permissions from the Security Kernel for a user. Requester must be owner of the system. Permissions are READ, MODIFY, EXECUTE.
       operationId: revokeUserPerms
       parameters:
         - name: systemId
@@ -941,7 +941,7 @@ paths:
       tags:
         - Permissions
       summary: Revoke system user permission
-      description: Revoke system user permission in the Security Kernel. Requester must be owner of the system. Permissions are READ, MODIFY, EXECUTE.
+      description: Remove system user permission from the Security Kernel. Requester must be owner of the system. Permissions are READ, MODIFY, EXECUTE.
       operationId: revokeUserPerm
       parameters:
         - name: systemId
@@ -1075,7 +1075,7 @@ components:
           type: boolean
           default: false
         batchScheduler:
-          type: string
+          $ref: '#/components/schemas/SchedulerTypeEnum'
         batchLogicalQueues:
           type: array
           items:
@@ -1235,7 +1235,7 @@ components:
         jobIsBatch:
           type: boolean
         batchScheduler:
-          type: string
+          $ref: '#/components/schemas/SchedulerTypeEnum'
         batchLogicalQueues:
           type: array
           items:
@@ -1300,7 +1300,7 @@ components:
         jobIsBatch:
           type: boolean
         batchScheduler:
-          type: string
+          $ref: '#/components/schemas/SchedulerTypeEnum'
         batchLogicalQueues:
           type: array
           items:
@@ -1524,3 +1524,12 @@ components:
       enum:
         - DOCKER
         - SINGULARITY
+    SchedulerTypeEnum:
+      type: string
+      enum:
+        - SLURM
+        - CONDOR
+        - PBS
+        - SGE
+        - UGE
+        - TORQUE
