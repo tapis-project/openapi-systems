@@ -114,7 +114,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RespSystemsBasic'
+                 $ref: '#/components/schemas/RespSystems'
+#                $ref: '#/components/schemas/RespSystemsBasic'
 #                $ref: '#/components/schemas/RespSystemsBasicOrFull'
 #                oneOf:
 #                  - $ref: '#/components/schemas/RespSystems'
@@ -227,7 +228,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RespSystemsBasic'
+                $ref: '#/components/schemas/RespSystems'
+#                $ref: '#/components/schemas/RespSystemsBasic'
 #                $ref: '#/components/schemas/RespSystemsBasicOrFull'
 #                oneOf:
 #                  - $ref: '#/components/schemas/RespSystems'
@@ -302,7 +304,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RespSystemsBasic'
+                $ref: '#/components/schemas/RespSystems'
+#                $ref: '#/components/schemas/RespSystemsBasic'
 #                $ref: '#/components/schemas/RespSystemsBasicOrFull'
 #                oneOf:
 #                  - $ref: '#/components/schemas/RespSystems'
@@ -325,45 +328,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-#  '/v3/systems/match/constraints':
-#    post:
-#      tags:
-#        - Systems
-#      summary: Retrieve systems satisfying specified constraint conditions
-#      description: Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
-#      operationId: matchConstraints
-#      requestBody:
-#        required: true
-#        description: A JSON object specifying SQL-like constraint conditions as an array of strings. Strings are concatenated to form full query.
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/ReqMatchConstraints'
-#      responses:
-#        '200':
-#          description: Success.
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/RespSystems'
-#        '400':
-#          description: Input error.
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/RespBasic'
-#        '401':
-#          description: Not authorized.
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/RespBasic'
-#        '500':
-#          description: Server error.
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/match/constraints':
+    post:
+      tags:
+        - Systems
+      summary: Retrieve systems satisfying specified constraint conditions
+      description: Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
+      operationId: matchConstraints
+      requestBody:
+        required: true
+        description: A JSON object specifying SQL-like constraint conditions as an array of strings. Strings are concatenated to form full query.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReqMatchConstraints'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespSystems'
+        '400':
+          description: Input error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
   '/v3/systems/{systemId}':
     get:
       tags:
@@ -1029,31 +1032,31 @@ components:
       name: X-Tapis-Token
       in: header
   schemas:
-    RespSystemsBasicOrFull:
-      oneOf:
-      - $ref: '#/components/schemas/RespSystems'
-      - $ref: '#/components/schemas/RespSystemsBasic'
-      discriminator:
-        propertyName: realType
+#    RespSystemsBasicOrFull:
+#      oneOf:
+#      - $ref: '#/components/schemas/RespSystems'
+#      - $ref: '#/components/schemas/RespSystemsBasic'
+#      discriminator:
+#        propertyName: realType
     # ------------------------------------------------------------------------------
     # --- Model objects ------------------------------------------------------------
     # ------------------------------------------------------------------------------
-    # --- ResultSystemBasic ------------------------------------------------------------------
-    ResultSystemBasic:
-      type: object
-      properties:
-        id:
-          type: string
-        systemType:
-          $ref: '#/components/schemas/SystemTypeEnum'
-        host:
-          type: string
-        defaultAuthnMethod:
-          $ref: '#/components/schemas/AuthnEnum'
-        canExec:
-          type: boolean
-    # --- ResultSystem ------------------------------------------------------------------
-    ResultSystem:
+    # --- TapisSystemBasic ------------------------------------------------------------------
+#    TapisSystemBasic:
+#      type: object
+#      properties:
+#        id:
+#          type: string
+#        systemType:
+#          $ref: '#/components/schemas/SystemTypeEnum'
+#        host:
+#          type: string
+#        defaultAuthnMethod:
+#          $ref: '#/components/schemas/AuthnEnum'
+#        canExec:
+#          type: boolean
+    # --- TapisSystem ------------------------------------------------------------------
+    TapisSystem:
       type: object
       properties:
         tenant:
@@ -1392,13 +1395,13 @@ components:
           type: array
           items:
             type: string
-#    ReqMatchConstraints:
-#      type: object
-#      properties:
-#        match:
-#          type: array
-#          items:
-#            type: string
+    ReqMatchConstraints:
+      type: object
+      properties:
+        match:
+          type: array
+          items:
+            type: string
     # -------------------------------------------------------------------------
     # --- Response objects ----------------------------------------------------
     # -------------------------------------------------------------------------
@@ -1485,7 +1488,22 @@ components:
         version:
           type: string
         result:
-          $ref: '#/components/schemas/ResultSystem'
+          $ref: '#/components/schemas/TapisSystem'
+#    RespSystemsBasic:
+#      type: object
+#      properties:
+#        status:
+#          type: string
+#        message:
+#          type: string
+#        version:
+#          type: string
+#        realType:
+#          type: string
+#        result:
+#          type: array
+#          items:
+#            $ref: '#/components/schemas/TapisSystem'
     RespSystems:
       type: object
       properties:
@@ -1495,23 +1513,6 @@ components:
           type: string
         version:
           type: string
-        realType:
-          type: string
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResultSystem'
-    RespSystemsBasic:
-      type: object
-      properties:
-        status:
-          type: string
-        message:
-          type: string
-        version:
-          type: string
-        realType:
-          type: string
         result:
           type: object
           properties:
@@ -1533,38 +1534,7 @@ components:
             search:
               type: array
               items:
-                $ref: '#/components/schemas/ResultSystemBasic'
-    RespSystemsSearch:
-      type: object
-      properties:
-        status:
-          type: string
-        message:
-          type: string
-        version:
-          type: string
-        result:
-          type: object
-          properties:
-            metadata:
-              type: object
-              properties:
-                recordCount:
-                  type: integer
-                recordLimit:
-                  type: integer
-                recordsSkipped:
-                  type: integer
-                sortBy:
-                  type: string
-                startAfter:
-                  type: string
-                totalCount:
-                  type: integer
-            search:
-              type: array
-              items:
-                $ref: '#/components/schemas/ResultSystem'
+                $ref: '#/components/schemas/TapisSystem'
     RespCredential:
       type: object
       properties:
