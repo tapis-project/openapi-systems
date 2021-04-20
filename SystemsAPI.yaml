@@ -81,9 +81,9 @@ paths:
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is unlimited.
           schema:
             type: integer
-        - name: sortBy
+        - name: orderBy
           in: query
-          description: Attribute for sorting. Direction may be included. For example sortBy=id(desc). Default direction is (asc).
+          description: Attribute for sorting. Direction may be included. For example orderBy=id(desc). Default direction is (asc).
           schema:
             type: string
         - name: skip
@@ -93,7 +93,7 @@ paths:
             type: integer
         - name: startAfter
           in: query
-          description: Where to start when sorting. Use one of skip or startAfter. Must also specify sortBy. For example, limit=10&sortBy=id(asc)&startAfter=my.sys1
+          description: Where to start when sorting. Use one of skip or startAfter. Must also specify orderBy. For example, limit=10&orderBy=id(asc)&startAfter=my.sys1
           schema:
             type: string
         - name: computeTotal
@@ -190,9 +190,9 @@ paths:
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is unlimited.
           schema:
             type: integer
-        - name: sortBy
+        - name: orderBy
           in: query
-          description: Attribute for sorting. Direction may be included. For example sortBy=id(desc). Default direction is (asc).
+          description: Attribute for sorting. Direction may be included. For example orderBy=id(desc). Default direction is (asc).
           schema:
             type: string
         - name: skip
@@ -202,7 +202,7 @@ paths:
             type: integer
         - name: startAfter
           in: query
-          description: Where to start when sorting. Use one of skip or startAfter. Must also specify sortBy. For example, limit=10&sortBy=id(asc)&startAfter=my.sys2
+          description: Where to start when sorting. Use one of skip or startAfter. Must also specify orderBy. For example, limit=10&orderBy=id(asc)&startAfter=my.sys2
           schema:
             type: string
         - name: computeTotal
@@ -254,9 +254,9 @@ paths:
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is unlimited.
           schema:
             type: integer
-        - name: sortBy
+        - name: orderBy
           in: query
-          description: Attribute for sorting. Direction may be included. For example sortBy=id(desc). Default direction is (asc).
+          description: Attribute for sorting. Direction may be included. For example orderBy=id(desc). Default direction is (asc).
           schema:
             type: string
         - name: skip
@@ -266,7 +266,7 @@ paths:
             type: integer
         - name: startAfter
           in: query
-          description: Where to start when sorting. Use one of skip or startAfter. Must also specify sortBy. For example, limit=10&sortBy=id(asc)&startAfter=my.sys1
+          description: Where to start when sorting. Use one of skip or startAfter. Must also specify orderBy. For example, limit=10&orderBy=id(asc)&startAfter=my.sys1
           schema:
             type: string
         - name: computeTotal
@@ -1494,7 +1494,7 @@ components:
               type: integer
             recordsSkipped:
               type: integer
-            sortBy:
+            orderBy:
               type: string
             startAfter:
               type: string
