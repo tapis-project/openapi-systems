@@ -1147,11 +1147,19 @@ components:
         maxJobsPerUser:
           type: integer
           default: 2147483647
+        minNodeCount:
+          type: integer
         maxNodeCount:
+          type: integer
+        minCoresPerNode:
           type: integer
         maxCoresPerNode:
           type: integer
+        minMemoryMB:
+          type: integer
         maxMemoryMB:
+          type: integer
+        minMinutes:
           type: integer
         maxMinutes:
           type: integer
