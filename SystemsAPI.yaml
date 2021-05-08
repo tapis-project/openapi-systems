@@ -420,49 +420,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-    delete:
-      tags:
-        - Systems
-      summary: Soft delete a system
-      description: Soft delete a system given the system name. Must specify confirm=true to complete the action.
-      operationId: deleteSystem
-      parameters:
-        - name: systemId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: confirm
-          in: query
-          description: Must be specified to complete the action. For example confirm=true. Default is false.
-          schema:
-            type: boolean
-            default: false
-      responses:
-        '200':
-          description: System deleted.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespChangeCount'
-        '400':
-          description: Input error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-        '500':
-          description: Server error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
     patch:
       tags:
         - Systems
@@ -605,6 +562,82 @@ paths:
       responses:
         '200':
           description: System disabled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespChangeCount'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/delete':
+    post:
+      tags:
+        - Systems
+      summary: Mark a system as deleted.
+      description: Mark a system as deleted. System will not appear in queries unless explicitly requested.
+      operationId: deleteSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: System deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespChangeCount'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/undelete':
+    post:
+      tags:
+        - Systems
+      summary: Mark a system as not deleted.
+      description: Mark a system as not deleted. System will appear in queries.
+      operationId: undeleteSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: System undeleted.
           content:
             application/json:
               schema:
