@@ -108,6 +108,12 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
+        - name: showDeleted
+          in: query
+          description: Indicates if Systems marked as deleted should be shown in the results. Default is false.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Success.
