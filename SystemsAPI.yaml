@@ -1434,9 +1434,14 @@ components:
         version:
           type: string
         result:
-          type: boolean
+          $ref: '#/components/schemas/ResultBoolean'
         metadata:
           type: object
+    ResultBoolean:
+      type: object
+      properties:
+        aBool:
+          type: boolean
     RespNameArray:
       type: object
       properties:
