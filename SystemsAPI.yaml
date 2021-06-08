@@ -150,14 +150,25 @@ paths:
         Description is optional with a maximum length of 2048 characters.
 
         Note that certain attributes (such as tenant) are allowed but ignored so that the JSON returned by a GET may be
-        modified and used in a POST or PUT to create or update a system. The attributes that are allowed but ignored
-        are:
+        modified and used in a POST or PUT to create or update a system.
+        The attributes that are allowed but ignored are
 
           - tenant
           - uuid
           - deleted
           - created
           - updated
+
+        In addition for a PUT operation the following non-updatable attributes are allowed but ignored
+
+          - id
+          - systemType
+          - owner
+          - enabled
+          - bucketName
+          - rootDir
+          - isDtn
+          - canExec
       operationId: createSystem
       requestBody:
         required: true
@@ -443,11 +454,11 @@ paths:
     patch:
       tags:
         - Systems
-      summary: Update attributes for a system.
+      summary: Update attributes for a system
       description: |
         Update attributes for a system. Request body may only contain updatable attributes.
 
-        Attributes that may not be updated via PATCH are:
+        Attributes that may not be updated via PATCH are
 
           - id
           - systemType
@@ -544,7 +555,7 @@ paths:
     post:
       tags:
         - Systems
-      summary: Mark a system availabe for use.
+      summary: Mark a system availabe for use
       description: Mark a system available for use.
       operationId: enableSystem
       parameters:
@@ -582,7 +593,7 @@ paths:
     post:
       tags:
         - Systems
-      summary: Mark a system unavailabe for use.
+      summary: Mark a system unavailabe for use
       description: Mark a system unavailable for use.
       operationId: disableSystem
       parameters:
@@ -620,7 +631,7 @@ paths:
     post:
       tags:
         - Systems
-      summary: Mark a system as deleted.
+      summary: Mark a system as deleted
       description: Mark a system as deleted. System will not appear in queries unless explicitly requested.
       operationId: deleteSystem
       parameters:
@@ -658,7 +669,7 @@ paths:
     post:
       tags:
         - Systems
-      summary: Mark a system as not deleted.
+      summary: Mark a system as not deleted
       description: Mark a system as not deleted. System will appear in queries.
       operationId: undeleteSystem
       parameters:
