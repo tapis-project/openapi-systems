@@ -143,7 +143,21 @@ paths:
       tags:
         - Systems
       summary: Create a system
-      description: Create a system using a request body. System name must be unique within a tenant and can be composed of alphanumeric characters and the following special characters [-._~]. Name must begin with an alphabetic character and can be no more than 80 characters in length. Description is optional with a maximum length of 2048 characters.'
+      description: |
+        Create a system using a request body. System name must be unique within a tenant and can be composed of
+        alphanumeric characters and the following special characters [-._~].
+        Name must begin with an alphabetic character and can be no more than 80 characters in length.
+        Description is optional with a maximum length of 2048 characters.
+
+        Note that certain attributes (such as tenant) are allowed but ignored so that the JSON returned by a GET may be
+        modified and used in a POST or PUT to create or update a system. The attributes that are allowed but ignored
+        are:
+
+          - tenant
+          - uuid
+          - deleted
+          - created
+          - updated
       operationId: createSystem
       requestBody:
         required: true
@@ -429,7 +443,7 @@ paths:
     patch:
       tags:
         - Systems
-      summary: Update attributes for a system. Request body may only contain updatable attributes.
+      summary: Update attributes for a system.
       description: |
         Update attributes for a system. Request body may only contain updatable attributes.
 
