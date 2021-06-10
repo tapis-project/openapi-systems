@@ -457,6 +457,7 @@ paths:
           - rootDir
           - isDtn
           - canExec
+
         Note that the attributes owner and enabled may be modified using other endpoints.
       operationId: updateSystem
       parameters:
@@ -534,9 +535,15 @@ paths:
 
         Note that the attributes owner and enabled may be modified using other endpoints.
       operationId: putSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
-        description: A JSON object specifying information for the system to be created.
+        description: A JSON object specifying changes to be applied.
         content:
           application/json:
             schema:
