@@ -547,7 +547,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReqCreateSystem'
+              $ref: '#/components/schemas/ReqPutSystem'
       responses:
         '200':
           description: System updated.
@@ -1395,6 +1395,72 @@ components:
           default: false
         canExec:
           type: boolean
+        jobRuntimes:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/JobRuntime'
+        jobWorkingDir:
+          type: string
+        jobEnvVariables:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+        jobMaxJobs:
+          type: integer
+        jobMaxJobsPerUser:
+          type: integer
+        jobIsBatch:
+          type: boolean
+          default: false
+        batchScheduler:
+          $ref: '#/components/schemas/SchedulerTypeEnum'
+        batchLogicalQueues:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogicalQueue'
+        batchDefaultLogicalQueue:
+          type: string
+        jobCapabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Capability'
+        tags:
+          type: array
+          items:
+            type: string
+        notes:
+          type: object
+    ReqPutSystem:
+      type: object
+      properties:
+        description:
+          type: string
+        host:
+          type: string
+        effectiveUserId:
+          type: string
+        defaultAuthnMethod:
+          $ref: '#/components/schemas/AuthnEnum'
+        authnCredential:
+          $ref: '#/components/schemas/Credential'
+        port:
+          type: integer
+          format: int32
+        useProxy:
+          type: boolean
+          default: false
+        proxyHost:
+          type: string
+        proxyPort:
+          type: integer
+          format: int32
+        dtnSystemId:
+          type: string
+        dtnMountPoint:
+          type: string
+        dtnMountSourcePath:
+          type: string
         jobRuntimes:
           type: array
           minItems: 1
