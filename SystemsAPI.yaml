@@ -78,9 +78,10 @@ paths:
             type: string
         - name: limit
           in: query
-          description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is unlimited.
+          description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is 100.
           schema:
             type: integer
+            default: 100
         - name: orderBy
           in: query
           description: Attribute for sorting. Direction may be included. For example orderBy=id(desc). Default direction is (asc).
@@ -150,7 +151,7 @@ paths:
         Description is optional with a maximum length of 2048 characters.
 
         Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
-        may be modified and used in when making a POST request to create a system.
+        may be modified and used when making a POST request to create a system.
         The attributes that are allowed but ignored are
 
           - tenant
@@ -207,9 +208,10 @@ paths:
       parameters:
         - name: limit
           in: query
-          description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is unlimited.
+          description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is 100.
           schema:
             type: integer
+            default: 100
         - name: orderBy
           in: query
           description: Attribute for sorting. Direction may be included. For example orderBy=id(desc). Default direction is (asc).
@@ -271,9 +273,10 @@ paths:
       parameters:
         - name: limit
           in: query
-          description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is unlimited.
+          description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is 100.
           schema:
             type: integer
+            default: 100
         - name: orderBy
           in: query
           description: Attribute for sorting. Direction may be included. For example orderBy=id(desc). Default direction is (asc).
@@ -507,9 +510,9 @@ paths:
     put:
       tags:
         - Systems
-      summary: Update all attributes of a system
+      summary: Update all updatable attributes of a system
       description: |
-        Update all attributes of a system using a request body identical to POST. System must exist.
+        Update all updatable attributes of a system using a request body identical to POST. System must exist.
 
         Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
         may be modified and used when making a PUT request to update a system.
