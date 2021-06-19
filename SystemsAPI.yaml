@@ -462,7 +462,7 @@ paths:
           - canExec
 
         Note that the attributes owner and enabled may be modified using other endpoints.
-      operationId: updateSystem
+      operationId: patchSystem
       parameters:
         - name: systemId
           in: path
@@ -475,7 +475,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReqUpdateSystem'
+              $ref: '#/components/schemas/ReqPatchSystem'
       responses:
         '200':
           description: System updated.
@@ -1500,7 +1500,7 @@ components:
             type: string
         notes:
           type: object
-    ReqUpdateSystem:
+    ReqPatchSystem:
       type: object
       properties:
         description:
