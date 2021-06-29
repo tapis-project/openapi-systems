@@ -1327,6 +1327,8 @@ components:
     Credential:
       type: object
       properties:
+        authnMethod:
+          $ref: '#/components/schemas/AuthnEnum'
         password:
           type: string
         privateKey:
