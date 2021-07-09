@@ -396,7 +396,7 @@ paths:
             default: false
         - name: authnMethod
           in: query
-          description: Desired authn method to use when fetching credentials, default authn method used if this is null.
+          description: Desired authentication method to use when fetching credentials, default method used if this is null.
           schema:
             type: string
             default: ''
@@ -821,8 +821,13 @@ paths:
     get:
       tags:
         - Credentials
-      summary: Retrieve system user credentials
-      description: Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system and user. Use query parameter authnMethod=<method> to override default authn method.
+      summary: Retrieve user credentials for a system
+      description: |
+        Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, user and authentication method.
+        Desired authentication method may be specified using query parameter authnMethod=<method>. If desired authentication method
+        not specified then credentials for the system's default authentication method are returned.
+
+        The result includes the field authnMethod indicating the authentication method associated with the returned credentials.
       operationId: getUserCredential
       parameters:
         - name: systemId
@@ -837,7 +842,7 @@ paths:
             type: string
         - name: authnMethod
           in: query
-          description: Desired authn method to use when fetching credentials, default authn method used if not provided.
+          description: Desired authentication method to use when fetching credentials, default method used if not provided.
           schema:
             type: string
             default: ''
@@ -876,7 +881,12 @@ paths:
       tags:
         - Credentials
       summary: Create or update system user credentials
-      description: Create or update credentials in the Security Kernel for given system and user using a request body. Requester must be owner of the system.
+      description: |
+        Create or update credentials in the Security Kernel for given system and user using a request body.
+        Requester must be owner of the system. Credentials for multiple authentication methods may be provided.
+
+        Note that the attribute authnMethod is allowed but ignored so that the JSON result returned by a GET
+        may be modified and used when making a POST to update credentials.
       operationId: createUserCredential
       parameters:
         - name: systemId
@@ -891,14 +901,14 @@ paths:
             type: string
       requestBody:
         required: true
-        description: A JSON object specifying a credential.
+        description: A JSON object specifying credentials.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Credential'
+              $ref: '#/components/schemas/ReqCreateCredential'
       responses:
         '200':
-          description: Credential updated.
+          description: Credentials updated.
           content:
             application/json:
               schema:
@@ -925,7 +935,7 @@ paths:
       tags:
         - Credentials
       summary: Remove system user credentials
-      description: Remove credential from the Security Kernel for given system and user. Requester must be owner of the system.
+      description: Remove credentials from the Security Kernel for given system and user. Requester must be owner of the system.
       operationId: removeUserCredential
       parameters:
         - name: systemId
@@ -940,7 +950,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Credential removed.
+          description: Credentials removed.
           content:
             application/json:
               schema:
@@ -1373,7 +1383,7 @@ components:
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
-          $ref: '#/components/schemas/Credential'
+          $ref: '#/components/schemas/ReqCreateCredential'
         bucketName:
           type: string
         rootDir:
@@ -1448,7 +1458,7 @@ components:
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
-          $ref: '#/components/schemas/Credential'
+          $ref: '#/components/schemas/ReqCreateCredential'
         port:
           type: integer
           format: int32
@@ -1564,6 +1574,21 @@ components:
             type: string
         notes:
           type: object
+    ReqCreateCredential:
+      type: object
+      properties:
+        password:
+          type: string
+        privateKey:
+          type: string
+        publicKey:
+          type: string
+        accessKey:
+          type: string
+        accessSecret:
+          type: string
+        certificate:
+          type: string
     ReqPerms:
       type: object
       properties:
