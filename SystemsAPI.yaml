@@ -821,9 +821,12 @@ paths:
     get:
       tags:
         - Credentials
-      summary: Retrieve user credentials for a system
+      summary: Retrieve user credentials for a system and *target user*
       description: |
-        Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, user and authentication method.
+        Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, *target user* and authentication method.
+
+        Note that user making the request and *target user* may be different and frequently are different.
+
         Desired authentication method may be specified using query parameter authnMethod=<method>. If desired authentication method
         not specified then credentials for the system's default authentication method are returned.
 
@@ -880,10 +883,12 @@ paths:
     post:
       tags:
         - Credentials
-      summary: Create or update system user credentials
+      summary: Create or update user credentials for a system and *target user*
       description: |
-        Create or update credentials in the Security Kernel for given system and user using a request body.
+        Create or update credentials in the Security Kernel for given system and *target user* using a request body.
         Requester must be owner of the system. Credentials for multiple authentication methods may be provided.
+
+        Note that user making the request and *target user* may be different and frequently are different.
 
         Note that the attribute authnMethod is allowed but ignored so that the JSON result returned by a GET
         may be modified and used when making a POST to update credentials.
@@ -934,8 +939,11 @@ paths:
     delete:
       tags:
         - Credentials
-      summary: Remove system user credentials
-      description: Remove credentials from the Security Kernel for given system and user. Requester must be owner of the system.
+      summary: Remove user credentials for a system and *target user*
+      description: |
+        Remove credentials from the Security Kernel for given system and *target user*. Requester must be owner of the system.
+
+        Note that user making the request and *target user* may be different and frequently are different.
       operationId: removeUserCredential
       parameters:
         - name: systemId
