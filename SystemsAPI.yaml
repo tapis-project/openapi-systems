@@ -268,7 +268,8 @@ paths:
       tags:
         - Systems
       summary: Retrieve list of systems matching search conditions
-      description: Retrieve details for systems. Use request body to specify SQL-like search conditions.
+      description: |
+        Retrieve details for systems. Use request body to specify SQL-like search conditions.
       operationId: searchSystemsRequestBody
       parameters:
         - name: limit
@@ -340,8 +341,10 @@ paths:
     post:
       tags:
         - Systems
-      summary: Retrieve systems satisfying specified constraint conditions
-      description: Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
+      summary: Retrieve systems satisfying specified constraint conditions (WARNING - not yet supported)
+      description: |
+        *WARNING Capability constraint matching is not yet supported.*
+        Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
       operationId: matchConstraints
       requestBody:
         required: true
@@ -380,7 +383,10 @@ paths:
       tags:
         - Systems
       summary: Retrieve system details
-      description: Retrieve information for a system given the system name. Use query parameter returnCredentials=true to have effectiveUserId credentials included in the response. Use query parameter authnMethod=<method> to override default authn method.
+      description: |
+        Retrieve information for a system given the system name. Use query parameter returnCredentials=true to have
+        effectiveUserId credentials included in the response. Use query parameter authnMethod=<method> to override
+        default authn method.
       operationId: getSystem
       parameters:
         - name: systemId
@@ -587,7 +593,8 @@ paths:
       tags:
         - Systems
       summary: Check if system is currently enabled
-      description: Check if a system is currently enabled, i.e. available for use.
+      description: |
+        Check if a system is currently enabled, i.e. available for use.
       operationId: isEnabled
       parameters:
         - name: systemId
@@ -625,7 +632,8 @@ paths:
       tags:
         - Systems
       summary: Mark a system availabe for use
-      description: Mark a system available for use.
+      description: |
+        Mark a system available for use.
       operationId: enableSystem
       parameters:
         - name: systemId
@@ -663,7 +671,8 @@ paths:
       tags:
         - Systems
       summary: Mark a system unavailabe for use
-      description: Mark a system unavailable for use.
+      description: |
+        Mark a system unavailable for use.
       operationId: disableSystem
       parameters:
         - name: systemId
@@ -701,7 +710,8 @@ paths:
       tags:
         - Systems
       summary: Mark a system as deleted
-      description: Mark a system as deleted. System will not appear in queries unless explicitly requested.
+      description: |
+        Mark a system as deleted. System will not appear in queries unless explicitly requested.
       operationId: deleteSystem
       parameters:
         - name: systemId
@@ -739,7 +749,8 @@ paths:
       tags:
         - Systems
       summary: Mark a system as not deleted
-      description: Mark a system as not deleted. System will appear in queries.
+      description: |
+        Mark a system as not deleted. System will appear in queries.
       operationId: undeleteSystem
       parameters:
         - name: systemId
@@ -777,7 +788,8 @@ paths:
       tags:
         - Systems
       summary: Change system owner
-      description: Change owner of a system.
+      description: |
+        Change owner of a system.
       operationId: changeSystemOwner
       parameters:
         - name: systemId
@@ -988,7 +1000,8 @@ paths:
       tags:
         - Permissions
       summary: Retrieve system user permissions
-      description: Retrieve all system related permissions for a given system and user.
+      description: |
+        Retrieve all system related permissions for a given system and user.
       operationId: getUserPerms
       parameters:
         - name: systemId
@@ -1036,7 +1049,9 @@ paths:
       tags:
         - Permissions
       summary: Grant system user permissions
-      description: Create permissions in the Security Kernel for a user. Requester must be owner of the system. Permissions are READ, MODIFY, EXECUTE.
+      description: |
+        Create permissions in the Security Kernel for a user. Requester must be owner of the system.
+        Permissions are READ, MODIFY, EXECUTE.
       operationId: grantUserPerms
       parameters:
         - name: systemId
@@ -1087,7 +1102,9 @@ paths:
       tags:
         - Permissions
       summary: Revoke system user permissions
-      description: Remove permissions from the Security Kernel for a user. Requester must be owner of the system. Permissions are READ, MODIFY, EXECUTE.
+      description: |
+        Remove permissions from the Security Kernel for a user. Requester must be owner of the system.
+        Permissions are READ, MODIFY, EXECUTE.
       operationId: revokeUserPerms
       parameters:
         - name: systemId
@@ -1132,7 +1149,9 @@ paths:
       tags:
         - Permissions
       summary: Revoke system user permission
-      description: Remove system user permission from the Security Kernel. Requester must be owner of the system. Permissions are READ, MODIFY, EXECUTE.
+      description: |
+        Remove system user permission from the Security Kernel. Requester must be owner of the system.
+        Permissions are READ, MODIFY, EXECUTE.
       operationId: revokeUserPerm
       parameters:
         - name: systemId
