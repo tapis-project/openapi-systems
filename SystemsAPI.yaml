@@ -1217,7 +1217,7 @@ components:
         id:
           $ref: '#/components/schemas/IdString'
         description:
-          type: string
+          $ref: '#/components/schemas/DescriptionString'
         systemType:
           $ref: '#/components/schemas/SystemTypeEnum'
         owner:
@@ -1416,6 +1416,9 @@ components:
       minLength: 1
       maxLength: 60
       default: "${apiUserId}"
+    DescriptionString:
+      type: string
+      maxLength: 2048
     DirString:
       type: string
       minLength: 1
@@ -1444,7 +1447,7 @@ components:
         id:
           $ref: '#/components/schemas/IdString'
         description:
-          type: string
+          $ref: '#/components/schemas/DescriptionString'
         systemType:
           $ref: '#/components/schemas/SystemTypeEnum'
         owner:
@@ -1526,7 +1529,7 @@ components:
       type: object
       properties:
         description:
-          type: string
+          $ref: '#/components/schemas/DescriptionString'
         host:
           $ref: '#/components/schemas/HostString'
         effectiveUserId:
@@ -1592,7 +1595,7 @@ components:
       type: object
       properties:
         description:
-          type: string
+          $ref: '#/components/schemas/DescriptionString'
         host:
           $ref: '#/components/schemas/HostString'
         effectiveUserId:
