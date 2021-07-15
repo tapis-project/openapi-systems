@@ -393,7 +393,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: returnCredentials
           in: query
           description: Highly restricted. Only certain Tapis services are authorized to get credentials.
@@ -474,7 +474,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
       requestBody:
         required: true
         description: A JSON object specifying changes to be applied.
@@ -549,7 +549,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
       requestBody:
         required: true
         description: A JSON object specifying changes to be applied.
@@ -601,7 +601,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
       responses:
         '200':
           description: Check successful.
@@ -640,7 +640,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
       responses:
         '200':
           description: System enabled.
@@ -679,7 +679,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
       responses:
         '200':
           description: System disabled.
@@ -718,7 +718,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
       responses:
         '200':
           description: System deleted.
@@ -757,7 +757,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
       responses:
         '200':
           description: System undeleted.
@@ -796,12 +796,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: userName
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/UserNameString'
       responses:
         '200':
           description: System owner updated.
@@ -849,12 +849,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: userName
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/UserNameString'
         - name: authnMethod
           in: query
           description: Desired authentication method to use when fetching credentials, default method used if not provided.
@@ -910,12 +910,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: userName
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/UserNameString'
       requestBody:
         required: true
         description: A JSON object specifying credentials.
@@ -962,12 +962,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: userName
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/UserNameString'
       responses:
         '200':
           description: Credentials removed.
@@ -1008,12 +1008,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: userName
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/UserNameString'
       responses:
         '200':
           description: Success.
@@ -1058,12 +1058,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: userName
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/UserNameString'
       requestBody:
         required: true
         description: A JSON object specifying a list of permissions.
@@ -1111,12 +1111,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: userName
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/UserNameString'
       requestBody:
         required: true
         description: A JSON object specifying a list of permissions.
@@ -1158,12 +1158,12 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/IdString'
         - name: userName
           in: path
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/UserNameString'
         - name: permission
           in: path
           required: true
@@ -1215,22 +1215,20 @@ components:
         tenant:
           type: string
         id:
-          type: string
+          $ref: '#/components/schemas/IdString'
         description:
           type: string
         systemType:
           $ref: '#/components/schemas/SystemTypeEnum'
         owner:
-          type: string
-          default: "${apiUserId}"
+          $ref: '#/components/schemas/UserNameApiDefaultString'
         host:
-          type: string
+          $ref: '#/components/schemas/HostString'
         enabled:
           type: boolean
           default: true
         effectiveUserId:
-          type: string
-          default: "${apiUserId}"
+          $ref: '#/components/schemas/UserNameApiDefaultString'
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
@@ -1238,7 +1236,7 @@ components:
         bucketName:
           type: string
         rootDir:
-          type: string
+          $ref: '#/components/schemas/DirString'
         port:
           type: integer
           format: int32
@@ -1246,12 +1244,12 @@ components:
           type: boolean
           default: false
         proxyHost:
-          type: string
+          $ref: '#/components/schemas/HostString'
         proxyPort:
           type: integer
           format: int32
         dtnSystemId:
-          type: string
+          $ref: '#/components/schemas/IdString'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
@@ -1264,10 +1262,11 @@ components:
         jobRuntimes:
           type: array
           minItems: 1
+          uniqueItems: true
           items:
             $ref: '#/components/schemas/JobRuntime'
         jobWorkingDir:
-          type: string
+          $ref: '#/components/schemas/DirString'
         jobEnvVariables:
           type: array
           items:
@@ -1288,7 +1287,7 @@ components:
           items:
             $ref: '#/components/schemas/LogicalQueue'
         batchDefaultLogicalQueue:
-          type: string
+          $ref: '#/components/schemas/QueueNameString'
         jobCapabilities:
           type: array
           items:
@@ -1296,7 +1295,7 @@ components:
         tags:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TagString'
         notes:
           type: object
         uuid:
@@ -1311,6 +1310,8 @@ components:
     # --- JobRuntime ------------------------------------------------------------------
     JobRuntime:
       type: object
+      required:
+        - runtimeType
       properties:
         runtimeType:
           $ref: '#/components/schemas/RuntimeTypeEnum'
@@ -1319,11 +1320,14 @@ components:
     # --- LogicalQueue ------------------------------------------------------------------
     LogicalQueue:
       type: object
+      required:
+        - name
+        - hpcQueueName
       properties:
         name:
-          type: string
+          $ref: '#/components/schemas/QueueNameString'
         hpcQueueName:
-          type: string
+          $ref: '#/components/schemas/QueueNameString'
         maxJobs:
           type: integer
           default: 2147483647
@@ -1349,6 +1353,10 @@ components:
     # --- Capability ------------------------------------------------------------------
     Capability:
       type: object
+      required:
+        - category
+        - name
+        - datatype
       properties:
         category:
           $ref: '#/components/schemas/CategoryEnum'
@@ -1381,19 +1389,60 @@ components:
     # --- KeyValuePair -------------------------------------------------------
     KeyValuePair:
       type: object
+      required:
+        - key
       properties:
         key:
           type: string
+          minLength: 1
         value:
           type: string
+
+    # --- String types with constraints ------------------------------------
+    HostString:
+      type: string
+      minLength: 1
+      maxLength: 256
+    IdString:
+      type: string
+      minLength: 1
+      maxLength: 80
+    UserNameString:
+      type: string
+      minLength: 1
+      maxLength: 60
+    UserNameApiDefaultString:
+      type: string
+      minLength: 1
+      maxLength: 60
+      default: "${apiUserId}"
+    DirString:
+      type: string
+      minLength: 1
+      maxLength: 4096
+    TagString:
+      type: string
+      minLength: 1
+      maxLength: 128
+    QueueNameString:
+      type: string
+      minLength: 1
+      maxLength: 128
+
     # -------------------------------------------------------------------------
     # --- Request objects -----------------------------------------------------
     # -------------------------------------------------------------------------
     ReqCreateSystem:
       type: object
+      required:
+        - id
+        - systemType
+        - host
+        - defaultAuthnMethod
+        - canExec
       properties:
         id:
-          type: string
+          $ref: '#/components/schemas/IdString'
         description:
           type: string
         systemType:
@@ -1401,12 +1450,12 @@ components:
         owner:
           type: string
         host:
-          type: string
+          $ref: '#/components/schemas/HostString'
         enabled:
           type: boolean
           default: true
         effectiveUserId:
-          type: string
+          $ref: '#/components/schemas/UserNameString'
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
@@ -1414,7 +1463,7 @@ components:
         bucketName:
           type: string
         rootDir:
-          type: string
+          $ref: '#/components/schemas/DirString'
         port:
           type: integer
           format: int32
@@ -1422,12 +1471,12 @@ components:
           type: boolean
           default: false
         proxyHost:
-          type: string
+          $ref: '#/components/schemas/HostString'
         proxyPort:
           type: integer
           format: int32
         dtnSystemId:
-          type: string
+          $ref: '#/components/schemas/IdString'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
@@ -1443,7 +1492,7 @@ components:
           items:
             $ref: '#/components/schemas/JobRuntime'
         jobWorkingDir:
-          type: string
+          $ref: '#/components/schemas/DirString'
         jobEnvVariables:
           type: array
           items:
@@ -1462,7 +1511,7 @@ components:
           items:
             $ref: '#/components/schemas/LogicalQueue'
         batchDefaultLogicalQueue:
-          type: string
+          $ref: '#/components/schemas/QueueNameString'
         jobCapabilities:
           type: array
           items:
@@ -1470,7 +1519,7 @@ components:
         tags:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TagString'
         notes:
           type: object
     ReqPutSystem:
@@ -1479,9 +1528,9 @@ components:
         description:
           type: string
         host:
-          type: string
+          $ref: '#/components/schemas/HostString'
         effectiveUserId:
-          type: string
+          $ref: '#/components/schemas/UserNameString'
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
@@ -1493,12 +1542,12 @@ components:
           type: boolean
           default: false
         proxyHost:
-          type: string
+          $ref: '#/components/schemas/HostString'
         proxyPort:
           type: integer
           format: int32
         dtnSystemId:
-          type: string
+          $ref: '#/components/schemas/IdString'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
@@ -1509,7 +1558,7 @@ components:
           items:
             $ref: '#/components/schemas/JobRuntime'
         jobWorkingDir:
-          type: string
+          $ref: '#/components/schemas/DirString'
         jobEnvVariables:
           type: array
           items:
@@ -1528,7 +1577,7 @@ components:
           items:
             $ref: '#/components/schemas/LogicalQueue'
         batchDefaultLogicalQueue:
-          type: string
+          $ref: '#/components/schemas/QueueNameString'
         jobCapabilities:
           type: array
           items:
@@ -1536,7 +1585,7 @@ components:
         tags:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TagString'
         notes:
           type: object
     ReqPatchSystem:
@@ -1545,9 +1594,9 @@ components:
         description:
           type: string
         host:
-          type: string
+          $ref: '#/components/schemas/HostString'
         effectiveUserId:
-          type: string
+          $ref: '#/components/schemas/UserNameString'
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         port:
@@ -1556,12 +1605,12 @@ components:
         useProxy:
           type: boolean
         proxyHost:
-          type: string
+          $ref: '#/components/schemas/HostString'
         proxyPort:
           type: integer
           format: int32
         dtnSystemId:
-          type: string
+          $ref: '#/components/schemas/IdString'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
@@ -1572,7 +1621,7 @@ components:
           items:
             $ref: '#/components/schemas/JobRuntime'
         jobWorkingDir:
-          type: string
+          $ref: '#/components/schemas/DirString'
         jobEnvVariables:
           type: array
           items:
@@ -1590,7 +1639,7 @@ components:
           items:
             $ref: '#/components/schemas/LogicalQueue'
         batchDefaultLogicalQueue:
-          type: string
+          $ref: '#/components/schemas/QueueNameString'
         jobCapabilities:
           type: array
           items:
@@ -1598,7 +1647,7 @@ components:
         tags:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TagString'
         notes:
           type: object
     ReqCreateCredential:
@@ -1618,23 +1667,32 @@ components:
           type: string
     ReqPerms:
       type: object
+      required:
+        - permissions
       properties:
         permissions:
           type: array
+          minItems: 1
           items:
             type: string
     ReqSearchSystems:
       type: object
+      required:
+        - search
       properties:
         search:
           type: array
+          minItems: 1
           items:
             type: string
     ReqMatchConstraints:
       type: object
+      required:
+        - match
       properties:
         match:
           type: array
+          minItems: 1
           items:
             type: string
     # -------------------------------------------------------------------------
