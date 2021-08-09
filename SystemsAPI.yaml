@@ -998,7 +998,7 @@ paths:
   '/v3/systems/schedulerProfile':
     get:
       tags:
-        - SchedulerProfiles
+        - Scheduler Profiles
       summary: Retrieve scheduler profiles
       description: Retrieve list of scheduler profiles.
       operationId: getSchedulerProfiles
@@ -1029,7 +1029,7 @@ paths:
                 $ref: '#/components/schemas/RespBasic'
     post:
       tags:
-        - SchedulerProfiles
+        - Scheduler Profiles
       summary: Create a scheduler profile
       description: |
         Create a scheduler profile using a request body. Name must be unique within a tenant and can be composed of
@@ -1087,7 +1087,7 @@ paths:
   '/v3/systems/schedulerProfile/{profileId}':
     get:
       tags:
-        - SchedulerProfiles
+        - Scheduler Profiles
       summary: Retrieve a scheduler profile
       description: |
         Retrieve information for a scheduler profile given the profile name.
