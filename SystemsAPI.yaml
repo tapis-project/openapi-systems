@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions and credentials.
-  version: '1.0.0-rc1'
+  version: '1.0.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -994,6 +994,180 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
 
+  # --- Paths for /schedulerProfile ------------------------------------------------
+  '/v3/systems/schedulerProfile':
+    get:
+      tags:
+        - SchedulerProfiles
+      summary: Retrieve scheduler profiles
+      description: Retrieve list of scheduler profiles.
+      operationId: getSchedulerProfiles
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespSchedulerProfiles'
+        '400':
+          description: Input error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+    post:
+      tags:
+        - SchedulerProfiles
+      summary: Create a scheduler profile
+      description: |
+        Create a scheduler profile using a request body. Name must be unique within a tenant and can be composed of
+        alphanumeric characters and the following special characters [-._~].
+        Name must begin with an alphabetic character and can be no more than 80 characters in length.
+        Description is optional with a maximum length of 2048 characters.
+
+        Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
+        may be modified and used when making a POST request to create a system.
+        The attributes that are allowed but ignored are
+
+          - tenant
+          - uuid
+          - created
+          - updated
+      operationId: createSchedulerProfile
+      requestBody:
+        required: true
+        description: A JSON object specifying information for the profile to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReqCreateSchedulerProfile'
+      responses:
+        '201':
+          description: System created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespResourceUrl'
+        '400':
+          description: Input error. Invalid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '409':
+          description: System already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespResourceUrl'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/schedulerProfile/{profileId}':
+    get:
+      tags:
+        - SchedulerProfiles
+      summary: Retrieve a scheduler profile
+      description: |
+        Retrieve information for a scheduler profile given the profile name.
+      operationId: getSchedulerProfile
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespSchedulerProfile'
+        '400':
+          description: Input error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: Scheduler profile not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+    delete:
+      tags:
+        - Scheduler Profiles
+      summary: Delete a scheduler profile
+      description: |
+        Remove a scheduler profile given the profile name. Requester must be owner of the profile.
+      operationId: deleteSchedulerProfile
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Scheduler profile deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Input error. Invalid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
   # --- Paths for /perms -------------------------------------------------------
   '/v3/systems/perms/{systemId}/user/{userName}':
     get:
@@ -1317,6 +1491,31 @@ components:
           $ref: '#/components/schemas/RuntimeTypeEnum'
         version:
           type: string
+    # --- SchedulerProfile ------------------------------------------------------------------
+    SchedulerProfile:
+      type: object
+      required:
+        - name
+        - moduleLoadCommand
+      properties:
+        name:
+          $ref: '#/components/schemas/IdString'
+        description:
+          $ref: '#/components/schemas/DescriptionString'
+        owner:
+          $ref: '#/components/schemas/UserNameApiDefaultString'
+        moduleLoadCommand:
+          type: string
+          minLength: 1
+        modulesToLoad:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        hiddenOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchedulerHiddenOptionEnum'
     # --- LogicalQueue ------------------------------------------------------------------
     LogicalQueue:
       type: object
@@ -1698,6 +1897,31 @@ components:
           minItems: 1
           items:
             type: string
+    ReqCreateSchedulerProfile:
+      type: object
+      required:
+        - name
+        - moduleLoadCommand
+      properties:
+        name:
+          $ref: '#/components/schemas/IdString'
+        description:
+          $ref: '#/components/schemas/DescriptionString'
+        owner:
+          type: string
+        moduleLoadCommand:
+          type: string
+          minLength: 1
+        modulesToLoad:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        hiddenOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchedulerHiddenOptionEnum'
+
     # -------------------------------------------------------------------------
     # --- Response objects ----------------------------------------------------
     # -------------------------------------------------------------------------
@@ -1843,6 +2067,34 @@ components:
           $ref: '#/components/schemas/Credential'
         metadata:
           type: object
+    RespSchedulerProfile:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          $ref: '#/components/schemas/SchedulerProfile'
+        metadata:
+          type: object
+    RespSchedulerProfiles:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchedulerProfile'
+        metadata:
+          type: object
     # -------------------------------------------------------------------------
     # --- Enums ---------------------------------------------------------------
     # -------------------------------------------------------------------------
@@ -1891,3 +2143,7 @@ components:
         - SGE
         - UGE
         - TORQUE
+    SchedulerHiddenOptionEnum:
+      type: string
+      enum:
+        - --mem
