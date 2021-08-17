@@ -1038,7 +1038,7 @@ paths:
         Description is optional with a maximum length of 2048 characters.
 
         Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
-        may be modified and used when making a POST request to create a system.
+        may be modified and used when making a POST request to create a profile.
         The attributes that are allowed but ignored are
 
           - tenant
@@ -1055,7 +1055,7 @@ paths:
               $ref: '#/components/schemas/ReqCreateSchedulerProfile'
       responses:
         '201':
-          description: System created.
+          description: Scheduler profile created.
           content:
             application/json:
               schema:
@@ -1073,7 +1073,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '409':
-          description: System already exists.
+          description: Scheduler profile already exists.
           content:
             application/json:
               schema:
@@ -1084,7 +1084,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-  '/v3/systems/schedulerProfile/{profileId}':
+  '/v3/systems/schedulerProfile/{name}':
     get:
       tags:
         - Scheduler Profiles
@@ -1093,7 +1093,7 @@ paths:
         Retrieve information for a scheduler profile given the profile name.
       operationId: getSchedulerProfile
       parameters:
-        - name: profileId
+        - name: name
           in: path
           required: true
           schema:
@@ -1137,7 +1137,7 @@ paths:
         Remove a scheduler profile given the profile name. Requester must be owner of the profile.
       operationId: deleteSchedulerProfile
       parameters:
-        - name: profileId
+        - name: name
           in: path
           required: true
           schema:
@@ -2146,4 +2146,4 @@ components:
     SchedulerHiddenOptionEnum:
       type: string
       enum:
-        - --mem
+        - MEM
