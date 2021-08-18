@@ -1149,14 +1149,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '400':
+          description: Input error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '404':
-          description: Scheduler profile not found.
+        '401':
+          description: Not authorized.
           content:
             application/json:
               schema:
