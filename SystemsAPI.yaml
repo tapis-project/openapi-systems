@@ -1462,6 +1462,8 @@ components:
             $ref: '#/components/schemas/LogicalQueue'
         batchDefaultLogicalQueue:
           $ref: '#/components/schemas/QueueNameString'
+        batchSchedulerProfile:
+          $ref: '#/components/schemas/IdString'
         jobCapabilities:
           type: array
           items:
@@ -1714,6 +1716,8 @@ components:
             $ref: '#/components/schemas/LogicalQueue'
         batchDefaultLogicalQueue:
           $ref: '#/components/schemas/QueueNameString'
+        batchSchedulerProfile:
+          $ref: '#/components/schemas/IdString'
         jobCapabilities:
           type: array
           items:
@@ -1780,6 +1784,8 @@ components:
             $ref: '#/components/schemas/LogicalQueue'
         batchDefaultLogicalQueue:
           $ref: '#/components/schemas/QueueNameString'
+        batchSchedulerProfile:
+          $ref: '#/components/schemas/IdString'
         jobCapabilities:
           type: array
           items:
@@ -1842,6 +1848,8 @@ components:
             $ref: '#/components/schemas/LogicalQueue'
         batchDefaultLogicalQueue:
           $ref: '#/components/schemas/QueueNameString'
+        batchSchedulerProfile:
+          $ref: '#/components/schemas/IdString'
         jobCapabilities:
           type: array
           items:
@@ -2103,6 +2111,8 @@ components:
       enum:
         - LINUX
         - S3
+        - IRODS
+        - GLOBUS
     AuthnEnum:
       type: string
       enum:
