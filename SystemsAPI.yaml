@@ -2156,4 +2156,4 @@ components:
     SchedulerHiddenOptionEnum:
       type: string
       enum:
-        - MEM
+        - mem
