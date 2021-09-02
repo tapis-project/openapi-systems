@@ -1500,6 +1500,8 @@ components:
         - name
         - moduleLoadCommand
       properties:
+        tenant:
+          type: string
         name:
           $ref: '#/components/schemas/IdString'
         description:
