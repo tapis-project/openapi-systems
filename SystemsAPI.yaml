@@ -150,6 +150,9 @@ paths:
         Name must begin with an alphabetic character and can be no more than 80 characters in length.
         Description is optional with a maximum length of 2048 characters.
 
+        By default any credentials provided for LINUX type systems are verified. Use query parameter
+        skipCredentialCheck=true to bypass initial verification of credentials.
+
         Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
         may be modified and used when making a POST request to create a system.
         The attributes that are allowed but ignored are
@@ -160,6 +163,13 @@ paths:
           - created
           - updated
       operationId: createSystem
+      parameters:
+        - name: skipCredentialCheck
+          in: query
+          description: Bypass initial check for valid credentials. Default is false.
+          schema:
+            type: boolean
+            default: true
       requestBody:
         required: true
         description: A JSON object specifying information for the system to be created.
@@ -520,6 +530,9 @@ paths:
       description: |
         Update all updatable attributes of a system using a request body identical to POST. System must exist.
 
+        By default any credentials provided for LINUX type systems are verified. Use query parameter
+        skipCredentialCheck=true to bypass initial verification of credentials.
+
         Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
         may be modified and used when making a PUT request to update a system.
 
@@ -550,6 +563,12 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/IdString'
+        - name: skipCredentialCheck
+          in: query
+          description: Bypass initial check for valid credentials. Default is false.
+          schema:
+            type: boolean
+            default: true
       requestBody:
         required: true
         description: A JSON object specifying changes to be applied.
@@ -902,6 +921,9 @@ paths:
 
         Note that user making the request and *target user* may be different and frequently are different.
 
+        By default any credentials provided for LINUX type systems are verified. Use query parameter
+        skipCredentialCheck=true to bypass initial verification of credentials.
+
         Note that the attribute authnMethod is allowed but ignored so that the JSON result returned by a GET
         may be modified and used when making a POST to update credentials.
       operationId: createUserCredential
@@ -916,6 +938,12 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/UserNameString'
+        - name: skipCredentialCheck
+          in: query
+          description: Bypass initial check for valid credentials. Default is false.
+          schema:
+            type: boolean
+            default: true
       requestBody:
         required: true
         description: A JSON object specifying credentials.
@@ -1600,6 +1628,7 @@ components:
           minLength: 1
         value:
           type: string
+          default: ""
 
     # --- String types with constraints ------------------------------------
     HostString:
