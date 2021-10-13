@@ -216,6 +216,16 @@ paths:
       description: Retrieve details for systems. Use query parameters to specify search conditions. For example owner.eq=jdoe&port.gt=1024
       operationId: searchSystemsQueryParameters
       parameters:
+        - name: freeFormParameterName
+          in: query
+          description: Free form query parameters.
+          explode: true
+          allowEmptyValue: true
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+          style: form
         - name: limit
           in: query
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is 100.
