@@ -169,7 +169,7 @@ paths:
           description: Bypass initial check for valid credentials. Default is false.
           schema:
             type: boolean
-            default: true
+            default: false
       requestBody:
         required: true
         description: A JSON object specifying information for the system to be created.
@@ -578,7 +578,7 @@ paths:
           description: Bypass initial check for valid credentials. Default is false.
           schema:
             type: boolean
-            default: true
+            default: false
       requestBody:
         required: true
         description: A JSON object specifying changes to be applied.
@@ -953,7 +953,7 @@ paths:
           description: Bypass initial check for valid credentials. Default is false.
           schema:
             type: boolean
-            default: true
+            default: false
       requestBody:
         required: true
         description: A JSON object specifying credentials.
