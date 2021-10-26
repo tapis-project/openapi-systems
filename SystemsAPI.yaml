@@ -1512,6 +1512,8 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
+        importRefId:
+          type: string
         uuid:
           type: string
           format: uuid
@@ -1769,6 +1771,8 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
+        importRefId:
+          type: string
     ReqPutSystem:
       type: object
       properties:
@@ -1837,6 +1841,8 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
+        importRefId:
+          type: string
     ReqPatchSystem:
       type: object
       properties:
@@ -1901,6 +1907,8 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
+        importRefId:
+          type: string
     ReqCreateCredential:
       type: object
       properties:
