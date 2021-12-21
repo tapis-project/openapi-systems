@@ -162,8 +162,8 @@ paths:
         By default any credentials provided for LINUX type systems are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
-        Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
-        may be modified and used when making a POST request to create a system.
+        Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
+        result returned by a GET may be modified and used when making a POST request to create a system.
         The attributes that are allowed but ignored are
 
           - tenant
@@ -552,8 +552,8 @@ paths:
         By default any credentials provided for LINUX type systems are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
-        Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
-        may be modified and used when making a PUT request to update a system.
+        Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
+        result returned by a GET may be modified and used when making a PUT request to update a system.
 
         The attributes that are allowed but ignored for both PUT and POST are
 
