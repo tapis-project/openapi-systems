@@ -865,6 +865,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/history':
+    get:
+      tags:
+        - Systems
+      summary: Retrieve history of changes
+      description: |
+        Retrieve history og changes for a given systemId.
+      operationId: getHistory
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: History successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespSystemHistory'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
 
   # --- Paths for /credentials ------------------------------------------------
   '/v3/systems/credential/{systemId}/user/{userName}':
@@ -1536,6 +1575,16 @@ components:
           type: string
         updated:
           type: string
+    # --- SystemHistory ------------------------------------------------------------------
+    SystemHistory:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionString'
+        userId:
+          $ref: '#/components/schemas/UserNameString '
+        date:
+          type: string
     # --- JobRuntime ------------------------------------------------------------------
     JobRuntime:
       type: object
@@ -1685,6 +1734,10 @@ components:
       minLength: 1
       maxLength: 128
     QueueNameString:
+      type: string
+      minLength: 1
+      maxLength: 128
+    ActionString:
       type: string
       minLength: 1
       maxLength: 128
@@ -2136,6 +2189,19 @@ components:
               type: string
             totalCount:
               type: integer
+    RespSystemHistory:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          $ref: '#/components/schemas/SystemHistory'
+        metadata:
+          type: object
     RespCredential:
       type: object
       properties:
