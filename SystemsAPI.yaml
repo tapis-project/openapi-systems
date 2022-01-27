@@ -2199,7 +2199,10 @@ components:
         version:
           type: string
         result:
-          $ref: '#/components/schemas/SystemHistory'
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/SystemHistory'
         metadata:
           type: object
     RespCredential:
