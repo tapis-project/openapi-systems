@@ -1582,7 +1582,7 @@ components:
         action:
           $ref: '#/components/schemas/ActionString'
         userId:
-          $ref: '#/components/schemas/UserNameString '
+          $ref: '#/components/schemas/UserNameString'
         date:
           type: string
     # --- JobRuntime ------------------------------------------------------------------
