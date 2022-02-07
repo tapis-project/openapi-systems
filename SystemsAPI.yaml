@@ -1040,6 +1040,105 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/credential/{systemId}/globus/authUrl':
+    get:
+      tags:
+        - Credentials
+      summary: Retrieve a Globus URL that can be used to generate an authorization code
+      description: |
+        Retrieve a Globus URL that can be used to generate an oauth2 authorization code.
+        In Globus this is referred to as a *Native App Authorization Code*.
+        The host property of the system is used as the Endpoint Id.
+        Accepts an optional *clientId*. By default a pre-configured *clientId* is used.
+        Once a user has obtained an authorization code the corresponding Systems endpoint for generating Globus
+        tokens should be called to exchange the code for a pair of access and refresh tokens.
+      operationId: getGlobusAuthUrl
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+        - name: clientId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespResourceUrl'
+        '400':
+          description: Input error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/credential/{systemId}/globus/{authCode}/tokens/{userName}':
+    post:
+      tags:
+        - Credentials
+      summary: Use a Globus authorization code to generate tokens
+      description: |
+        Use a Globus *Native App Authorization Code* to generate a pair of access and refresh tokens.
+        The Systems service will use the Tapis Security Kernel to store the tokens for the given system and user.
+      operationId: generateGlobusTokens
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+        - name: authCode
+          in: path
+          required: true
+          description: Authorization code to be exchanged for tokens.
+          schema:
+            type: string
+        - name: userName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserNameString'
+      responses:
+        '200':
+          description: Tokens generated and credentials updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
 
   # --- Paths for /perms -------------------------------------------------------
   '/v3/systems/perms/{systemId}/user/{userName}':
@@ -1490,7 +1589,6 @@ components:
         jobRuntimes:
           type: array
           minItems: 1
-          uniqueItems: true
           items:
             $ref: '#/components/schemas/JobRuntime'
         jobWorkingDir:
