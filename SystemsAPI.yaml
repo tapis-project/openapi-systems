@@ -1040,7 +1040,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-  '/v3/systems/credential/{systemId}/globus/authUrl':
+  '/v3/systems/credential/globus/authUrl':
     get:
       tags:
         - Credentials
@@ -1054,11 +1054,6 @@ paths:
         tokens should be called to exchange the code for a pair of access and refresh tokens.
       operationId: getGlobusAuthUrl
       parameters:
-        - name: systemId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/IdString'
         - name: clientId
           in: query
           schema:
@@ -1094,7 +1089,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-  '/v3/systems/credential/{systemId}/globus/{authCode}/tokens/{userName}':
+  '/v3/systems/credential/{systemId}/user/{userName}/globus/tokens/{authCode}':
     post:
       tags:
         - Credentials
@@ -1109,17 +1104,17 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/IdString'
+        - name: userName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserNameString'
         - name: authCode
           in: path
           required: true
           description: Authorization code to be exchanged for tokens.
           schema:
             type: string
-        - name: userName
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserNameString'
       responses:
         '200':
           description: Tokens generated and credentials updated.
