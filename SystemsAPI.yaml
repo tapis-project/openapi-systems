@@ -1044,14 +1044,16 @@ paths:
     get:
       tags:
         - Credentials
-      summary: Retrieve a Globus URL that can be used to generate an authorization code
+      summary: Retrieve a Globus URL that can be used to generate an authorization code for an OAuth2 flow.
       description: |
-        Retrieve a Globus URL that can be used to generate an oauth2 authorization code.
-        In Globus this is referred to as a *Native App Authorization Code*.
+        Retrieve a Globus URL + Session Id that can be used to generate an oauth2 authorization code.
+        In Globus the code is referred to as a *Native App Authorization Code*.
         The host property of the system is used as the Endpoint Id.
         Accepts an optional *clientId*. By default a pre-configured *clientId* is used.
-        Once a user has obtained an authorization code the corresponding Systems endpoint for generating Globus
-        tokens should be called to exchange the code for a pair of access and refresh tokens.
+        Once a user has obtained an authorization code the corresponding Systems endpoint for generating
+        Globus tokens should be called to exchange the code + sessionId for a pair of access and refresh tokens.
+        The session Id is a Tapis Id that is used to track the oauth2 flow that is started when this call is made.
+        Note that the authorization code as per Globus documentation is valid for 10 minutes.
       operationId: getGlobusAuthUrl
       parameters:
         - name: clientId
@@ -1064,7 +1066,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RespResourceUrl'
+                $ref: '#/components/schemas/RespGlobusAuthUrl'
         '400':
           description: Input error.
           content:
@@ -1089,14 +1091,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-  '/v3/systems/credential/{systemId}/user/{userName}/globus/tokens/{authCode}':
+  '/v3/systems/credential/{systemId}/user/{userName}/globus/tokens/{authCode}/{sessionId}':
     post:
       tags:
         - Credentials
-      summary: Use a Globus authorization code to generate tokens
+      summary: Use a Globus authorization code + Tapis session Id to generate tokens
       description: |
-        Use a Globus *Native App Authorization Code* to generate a pair of access and refresh tokens.
+        Use a Globus *Native App Authorization Code* and a Tapis session Id to generate a pair of access and refresh tokens.
         The Systems service will use the Tapis Security Kernel to store the tokens for the given system and user.
+        The session Id is a Tapis Id that is used to track the oauth2 flow that is started when a call to the
+        getGlobusAuthUrl endpoint is made.
+        Note that the authorization code as per Globus documentation is valid for 10 minutes.
       operationId: generateGlobusTokens
       parameters:
         - name: systemId
@@ -1113,6 +1118,12 @@ paths:
           in: path
           required: true
           description: Authorization code to be exchanged for tokens.
+          schema:
+            type: string
+        - name: sessionId
+          in: path
+          required: true
+          description: Tapis session Id tracking the OAuth2 flow.
           schema:
             type: string
       responses:
@@ -2270,6 +2281,26 @@ components:
             $ref: '#/components/schemas/SchedulerProfile'
         metadata:
           type: object
+    RespGlobusAuthUrl:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          $ref: '#/components/schemas/ResultGlobusAuthUrl'
+        metadata:
+          type: object
+    ResultGlobusUrl:
+      type: object
+      properties:
+        url:
+          type: string
+        sesssionId:
+          type: string
     # -------------------------------------------------------------------------
     # --- Enums ---------------------------------------------------------------
     # -------------------------------------------------------------------------
