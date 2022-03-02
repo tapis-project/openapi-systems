@@ -886,12 +886,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespSystemHistory'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
         '404':
           description: System not found.
           content:
@@ -1580,7 +1574,7 @@ components:
       type: object
       properties:
         action:
-          $ref: '#/components/schemas/ActionString'
+          $ref: '#/components/schemas/ActionTypeEnum'
         userId:
           $ref: '#/components/schemas/UserNameString'
         date:
@@ -1734,10 +1728,6 @@ components:
       minLength: 1
       maxLength: 128
     QueueNameString:
-      type: string
-      minLength: 1
-      maxLength: 128
-    ActionString:
       type: string
       minLength: 1
       maxLength: 128
@@ -2300,3 +2290,21 @@ components:
       type: string
       enum:
         - MEM
+    ActionTypeEnum:
+      type: string
+      enum:
+        - CREATE
+        - READ
+        - MODIFY
+        - EXECUTE
+        - DELETE
+        - UNDELETE
+        - HARD_DELETE
+        - CHANGE_OWNER
+        - ENABLE
+        - DISABLE
+        - GET_PERMS
+        - REVOKE_PERMS
+        - SET_CRED
+        - REMOVE_CRED
+        - GET_CRED
