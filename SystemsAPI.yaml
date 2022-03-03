@@ -1058,6 +1058,7 @@ paths:
       parameters:
         - name: clientId
           in: query
+          description: Globus client associated with the request.
           schema:
             type: string
       responses:
@@ -1744,6 +1745,10 @@ components:
           type: string
         accessSecret:
           type: string
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
         certificate:
           type: string
     # --- KeyValuePair -------------------------------------------------------
@@ -2050,6 +2055,10 @@ components:
         accessKey:
           type: string
         accessSecret:
+          type: string
+        accessToken:
+          type: string
+        refreshToken:
           type: string
         certificate:
           type: string
