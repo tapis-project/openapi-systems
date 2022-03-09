@@ -886,6 +886,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespSystemHistory'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
         '404':
           description: System not found.
           content:
@@ -1573,11 +1579,15 @@ components:
     SystemHistory:
       type: object
       properties:
-        action:
-          $ref: '#/components/schemas/ActionTypeEnum'
-        userId:
+        userTenant:
+          type: string
+        userName:
           $ref: '#/components/schemas/UserNameString'
-        date:
+        operation:
+          $ref: '#/components/schemas/OperationTypeEnum'
+        updJson:
+          type: string
+        created:
           type: string
     # --- JobRuntime ------------------------------------------------------------------
     JobRuntime:
@@ -2290,7 +2300,7 @@ components:
       type: string
       enum:
         - MEM
-    ActionTypeEnum:
+    OperationTypeEnum:
       type: string
       enum:
         - CREATE
