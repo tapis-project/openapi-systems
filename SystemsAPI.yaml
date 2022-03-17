@@ -871,7 +871,7 @@ paths:
         - Systems
       summary: Retrieve history of changes
       description: |
-        Retrieve history og changes for a given systemId.
+        Retrieve history of changes for a given systemId.
       operationId: getHistory
       parameters:
         - name: systemId
@@ -2308,7 +2308,6 @@ components:
         - EXECUTE
         - DELETE
         - UNDELETE
-        - HARD_DELETE
         - CHANGE_OWNER
         - ENABLE
         - DISABLE
