@@ -865,6 +865,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/history':
+    get:
+      tags:
+        - Systems
+      summary: Retrieve history of changes
+      description: |
+        Retrieve history of changes for a given systemId.
+      operationId: getHistory
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: History successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespSystemHistory'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
 
   # --- Paths for /credentials ------------------------------------------------
   '/v3/systems/credential/{systemId}/user/{userName}':
@@ -1641,6 +1680,20 @@ components:
           type: string
         updated:
           type: string
+    # --- SystemHistory ------------------------------------------------------------------
+    SystemHistory:
+      type: object
+      properties:
+        userTenant:
+          type: string
+        userName:
+          $ref: '#/components/schemas/UserNameString'
+        operation:
+          $ref: '#/components/schemas/OperationTypeEnum'
+        updJson:
+          type: string
+        created:
+          type: string
     # --- JobRuntime ------------------------------------------------------------------
     JobRuntime:
       type: object
@@ -2249,6 +2302,22 @@ components:
               type: string
             totalCount:
               type: integer
+    RespSystemHistory:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/SystemHistory'
+        metadata:
+          type: object
     RespCredential:
       type: object
       properties:
@@ -2364,3 +2433,20 @@ components:
       type: string
       enum:
         - MEM
+    OperationTypeEnum:
+      type: string
+      enum:
+        - CREATE
+        - READ
+        - MODIFY
+        - EXECUTE
+        - DELETE
+        - UNDELETE
+        - CHANGE_OWNER
+        - ENABLE
+        - DISABLE
+        - GET_PERMS
+        - REVOKE_PERMS
+        - SET_CRED
+        - REMOVE_CRED
+        - GET_CRED
