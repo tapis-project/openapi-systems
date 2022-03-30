@@ -1088,18 +1088,11 @@ paths:
         Retrieve a Globus URL + Session Id that can be used to generate an oauth2 authorization code.
         In Globus the code is referred to as a *Native App Authorization Code*.
         The host property of the system is used as the Endpoint Id.
-        Accepts an optional *clientId*. By default a pre-configured *clientId* is used.
         Once a user has obtained an authorization code the corresponding Systems endpoint for generating
         Globus tokens should be called to exchange the code + sessionId for a pair of access and refresh tokens.
         The session Id is a Tapis Id that is used to track the oauth2 flow that is started when this call is made.
         Note that the authorization code as per Globus documentation is valid for 10 minutes.
       operationId: getGlobusAuthUrl
-      parameters:
-        - name: clientId
-          in: query
-          description: Globus client associated with the request.
-          schema:
-            type: string
       responses:
         '200':
           description: Success.
