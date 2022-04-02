@@ -1588,7 +1588,7 @@ components:
           $ref: '#/components/schemas/UserNameString'
         operation:
           $ref: '#/components/schemas/OperationTypeEnum'
-        updJson:
+        description:
           type: string
         created:
           type: string
