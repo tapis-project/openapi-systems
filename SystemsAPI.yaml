@@ -413,9 +413,9 @@ paths:
         - Systems
       summary: Retrieve system details
       description: |
-        Retrieve information for a system given the system name. Use query parameter returnCredentials=true to have
-        effectiveUserId credentials included in the response. Use query parameter authnMethod=<method> to override
+        Retrieve information for a system given the system name. Use query parameter authnMethod=<method> to override
         default authn method.
+        the response.
       operationId: getSystem
       parameters:
         - name: systemId
@@ -423,12 +423,6 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/IdString'
-        - name: returnCredentials
-          in: query
-          description: Highly restricted. Only certain Tapis services are authorized to get credentials.
-          schema:
-            type: boolean
-            default: false
         - name: authnMethod
           in: query
           description: Desired authentication method to use when fetching credentials, default method used if this is null.
@@ -447,6 +441,18 @@ paths:
           schema:
             type: string
             default: 'allAttributes'
+        - name: returnCredentials
+          in: query
+          description: Highly restricted. Only certain Tapis services are authorized to get credentials.
+          schema:
+            type: boolean
+            default: false
+        - name: skipTapisAuthorization
+          in: query
+          description: Highly restricted. Only certain services may use sharing in place of Tapis authorization.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: System found.
