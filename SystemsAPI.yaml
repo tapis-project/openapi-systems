@@ -449,7 +449,7 @@ paths:
             default: false
         - name: skipTapisAuthorization
           in: query
-          description: Highly restricted. Only certain services may use sharing in place of Tapis authorization.
+          description: Highly restricted. Only certain services may use Tapis sharing in place of permissions.
           schema:
             type: boolean
             default: false
