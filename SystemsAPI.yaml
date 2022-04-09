@@ -1584,9 +1584,9 @@ components:
     SystemHistory:
       type: object
       properties:
-        apiTenant:
+        jwtTenant:
           type: string
-        apiUser:
+        jwtUser:
           $ref: '#/components/schemas/UserNameString'
         oboTenant:
           type: string
