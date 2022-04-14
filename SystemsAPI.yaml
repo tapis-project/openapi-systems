@@ -32,6 +32,8 @@ tags:
     description: Manage Tapis system user access credentials. Create, update, remove, etc.
   - name: Permissions
     description: Manage Tapis permissions for system resources. Grant, revoke and retrieve.
+  - name: Sharing
+    description: Manage Tapis sharing for system resources. Share, unshare and retrieve.
   - name: Scheduler Profiles
     description: Manage Tapis scheduler profile resources. Create, retrieve and delete.
 
@@ -1270,6 +1272,134 @@ paths:
                 $ref: '#/components/schemas/RespBasic'
         '400':
           description: Input error. Invalid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
+  # --- Paths for /share -------------------------------------------------------
+  '/v3/systems/share/{systemId}':
+    get:
+      tags:
+        - Sharing
+      summary: Retrieve all sharing information for a system
+      description: |
+        Retrieve all sharing information for a system. This includes all users with whom the system
+        has been shared and whether or not the system has been made publicly available.
+      operationId: getShares
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespShareDetails'
+        '400':
+          description: Input error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+    post:
+      tags:
+        - Sharing
+      summary: Share a system with one or more users.
+      description: |
+        Create or update sharing information for a system. The system will be shared with the list of users
+        provided in the request body. Requester must be owner of the system.
+      operationId: shareSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        description: A JSON object specifying updated sharing information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReqShareUpdate'
+      responses:
+        '200':
+          description: Sharing information updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Input error. Invalid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
+  '/v3/systems/share/{systemId}/public':
+    post:
+      tags:
+        - Sharing
+      summary: Share a system publicly with all users in the tenant.
+      description: |
+        Share a system with all users in the tenant. Requester must be owner of the system.
+      operationId: shareSystemPublic
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: System shared publicly.
           content:
             application/json:
               schema:
