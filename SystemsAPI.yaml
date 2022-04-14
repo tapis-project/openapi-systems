@@ -2171,6 +2171,16 @@ components:
           minItems: 1
           items:
             type: string
+    ReqShareUpdate:
+      type: object
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          minItems: 1
+          items:
+            type: string
     ReqPostSchedulerProfile:
       type: object
       required:
