@@ -33,7 +33,7 @@ tags:
   - name: Permissions
     description: Manage Tapis permissions for system resources. Grant, revoke and retrieve.
   - name: Sharing
-    description: Manage Tapis sharing for system resources. Share, unshare and retrieve.
+    description: Manage Tapis sharing for system resources. Share, unshare, make public and get details.
   - name: Scheduler Profiles
     description: Manage Tapis scheduler profile resources. Create, retrieve and delete.
 
@@ -1070,7 +1070,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error.
           content:
             application/json:
               schema:
@@ -1271,7 +1271,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error.
           content:
             application/json:
               schema:
@@ -1289,7 +1289,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
 
-  # --- Paths for /share -------------------------------------------------------
+  # --- Paths for /share and /unshare -------------------------------------------------------
   '/v3/systems/share/{systemId}':
     get:
       tags:
@@ -1298,7 +1298,7 @@ paths:
       description: |
         Retrieve all sharing information for a system. This includes all users with whom the system
         has been shared and whether or not the system has been made publicly available.
-      operationId: getShares
+      operationId: getShareInfo
       parameters:
         - name: systemId
           in: path
@@ -1311,7 +1311,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RespShareDetails'
+                $ref: '#/components/schemas/RespShareInfo'
         '400':
           description: Input error.
           content:
@@ -1400,6 +1400,86 @@ paths:
       responses:
         '200':
           description: System shared publicly.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+    delete:
+      tags:
+        - Sharing
+      summary: Remove public sharing for a system.
+      description: |
+        Remove public sharing for a system. Requester must be owner of the system.
+      operationId: unshareSystemPublic
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: System public access removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
+  '/v3/systems/unshare/{systemId}':
+    post:
+      tags:
+        - Sharing
+      summary: Unshare a system with one or more users.
+      description: |
+        Create or update sharing information for a system. The system will be unshared with the list of users
+        provided in the request body. Requester must be owner of the system.
+      operationId: unshareSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        description: A JSON object specifying updated sharing information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReqShareUpdate'
+      responses:
+        '200':
+          description: Sharing information updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Input error. Invalid JSON.
           content:
             application/json:
               schema:
@@ -1834,6 +1914,19 @@ components:
           type: string
         certificate:
           type: string
+    # --- ShareInfo ------------------------------------------------------------------
+    ShareInfo:
+      type: object
+      required:
+        - public
+        - userList
+      properties:
+        public:
+          type: boolean
+        userList:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserNameString'
     # --- KeyValuePair -------------------------------------------------------
     KeyValuePair:
       type: object
@@ -2365,6 +2458,19 @@ components:
           type: string
         result:
           $ref: '#/components/schemas/Credential'
+        metadata:
+          type: object
+    RespShareInfo:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          $ref: '#/components/schemas/ShareInfo'
         metadata:
           type: object
     RespSchedulerProfile:
