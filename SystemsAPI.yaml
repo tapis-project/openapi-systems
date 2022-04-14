@@ -1422,7 +1422,7 @@ paths:
       summary: Remove public sharing for a system.
       description: |
         Remove public sharing for a system. Requester must be owner of the system.
-      operationId: unshareSystemPublic
+      operationId: unShareSystemPublic
       parameters:
         - name: systemId
           in: path
@@ -1457,7 +1457,7 @@ paths:
       description: |
         Create or update sharing information for a system. The system will be unshared with the list of users
         provided in the request body. Requester must be owner of the system.
-      operationId: unshareSystem
+      operationId: unShareSystem
       parameters:
         - name: systemId
           in: path
