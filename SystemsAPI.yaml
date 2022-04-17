@@ -159,18 +159,9 @@ paths:
         Name must begin with an alphabetic character and can be no more than 80 characters in length.
         Description is optional with a maximum length of 2048 characters.
 
-        Credentials may be optionally provided in the authnCredential attribute of the request body.
-        The Systems service does not store the secrets, they are persisted in the Security Kernel.
-        The secrets are stored in the Security Kernel under a Tapis user name.
-
-        TODO/TBD
-        Note that in addition to secrets the authnCredential attribute may contain a Tapis user and a login user.
-        The Tapis user is used to associate the credentials with a login user.
-        If the System has a static effectiveUserId then the System owner will always be the Tapis user
-          and the login user must be null or the static effectiveUserId.
-        If the Tapis user is not provided then it defaults to the System owner.
-        If the login user is not provided then it defaults to the Tapis user.
-        A mapping between the Tapis user and the login user is recorded.
+        If the effectiveUserId is static (i.e. not ${apiUserId}) then credentials may optionally be provided in the
+        authnCredential attribute of the request body. The Systems service does not store the secrets in its
+        database, they are persisted in the Security Kernel.
 
         By default any credentials provided for LINUX type systems are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
@@ -568,6 +559,10 @@ paths:
       description: |
         Update all updatable attributes of a system using a request body identical to POST. System must exist.
 
+        If the effectiveUserId is static (i.e. not ${apiUserId}) then credentials may optionally be provided in the
+        authnCredential attribute of the request body. The Systems service does not store the secrets in its
+        database, they are persisted in the Security Kernel.
+
         By default any credentials provided for LINUX type systems are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
@@ -929,16 +924,17 @@ paths:
     get:
       tags:
         - Credentials
-      summary: Retrieve user credentials for given system and Tapis user
+      summary: Retrieve user credentials for given system and user
       description: |
-        Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, Tapis user and authentication method.
+        Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, user
+        and authentication method.
 
-        Note that user making the request and Tapis user may be different and frequently are different.
+        Desired authentication method may be specified using query parameter authnMethod=<method>. If desired
+        authentication method not specified then credentials for the system's default authentication method
+        are returned.
 
-        Desired authentication method may be specified using query parameter authnMethod=<method>. If desired authentication method
-        not specified then credentials for the system's default authentication method are returned.
-
-        The result includes the field authnMethod indicating the authentication method associated with the returned credentials.
+        The result includes the field authnMethod indicating the authentication method associated with
+        the returned credentials.
       operationId: getUserCredential
       parameters:
         - name: systemId
@@ -991,30 +987,27 @@ paths:
     post:
       tags:
         - Credentials
-      summary: Create or update credentials for a given system and Tapis user
+      summary: Create or update credentials for a given system and user
       description: |
-        Create or update credentials in the Security Kernel for given system and Tapis userName using a request body.
-        The Systems service does not store the secrets, they are persisted in the Security Kernel.
-        The secrets are stored in the Security Kernel under the Tapis userName.
+        Create or update credentials for the given system and user using a request body.
+        The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
-        TODO/TBD
-          Note that in addition to secrets the request body may contain a Tapis user and a login user.
-          The Tapis user in the request body is ignored. The userName in the path parameter is always used as the Tapis user.
-          If the login user is not provided then it defaults to Tapis userName.
-          If the System has a static effectiveUserId then the Tapis userName provided must be the owner of the System.
-          For the given System a mapping between the Tapis userName and the login user is recorded.
+        If the effectiveUserId for the system is dynamic (i.e. equal to ${apiUserId}) then the userName is interpreted
+        as a Tapis user and the request body may contain the optional attribute loginUser which will be used to map the
+        Tapis user to a username to be used when accessing the system. If the login user is not provided then there is
+        no mapping and the Tapis user is always used when accessing the system.
 
-        Requester must be owner of the system, a tenant administrator or the specified Tapis userName.
+        If the effectiveUserId for the system is static (i.e. not ${apiUserId}) then the userName must match the
+        effectiveUserId defined for the system. The attribute loginUser must not be present in the request body.
+
+        Requester must be owner of the system or a tenant administrator.
+        If the effectiveUserId for the system is dynamic (i.e. equal to ${apiUserId}) then the operation is allowed
+        if the userName is a Tapis user and the user has READ access to the system.
 
         Secrets for multiple authentication methods may be provided.
 
-        Note that user making the request and Tapis user may be different and frequently are different.
-
         By default any credentials provided for LINUX type systems are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
-
-        Note that the attribute authnMethod is allowed but ignored so that the JSON result returned by a GET
-        may be modified and used when making a POST to update credentials.
       operationId: createUserCredential
       parameters:
         - name: systemId
@@ -1039,7 +1032,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReqPostCredential'
+              $ref: '#/components/schemas/Credential'
       responses:
         '200':
           description: Credentials updated.
@@ -1068,13 +1061,13 @@ paths:
     delete:
       tags:
         - Credentials
-      summary: Remove user credentials for a given system and Tapis user
+      summary: Remove user credentials for a given system and user
       description: |
-        Remove credentials from the Security Kernel for given system and Tapis user.
-        Requester must be owner of the system, a tenant administrator or the specified Tapis user who must also
-        have READ access for the system.
+        Remove credentials from the Security Kernel for given system and user.
 
-        Note that user making the request and Tapis user may be different and frequently are different.
+        Requester must be owner of the system or a tenant administrator.
+        If the effectiveUserId for the system is dynamic (i.e. equal to ${apiUserId}) then the operation is allowed
+        if the userName is a Tapis user and the user has READ access to the system.
       operationId: removeUserCredential
       parameters:
         - name: systemId
@@ -1810,7 +1803,7 @@ components:
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
-          $ref: '#/components/schemas/ReqPostCredential'
+          $ref: '#/components/schemas/ReqPostPutCredential'
         bucketName:
           type: string
         rootDir:
@@ -1893,7 +1886,7 @@ components:
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
-          $ref: '#/components/schemas/ReqPostCredential'
+          $ref: '#/components/schemas/ReqPostPutCredential'
         port:
           type: integer
           format: int32
@@ -2025,13 +2018,9 @@ components:
           type: object
         importRefId:
           type: string
-    ReqPostCredential:
+    ReqPostPutCredential:
       type: object
       properties:
-        tapisUser:
-          $ref: '#/components/schemas/UserNameString'
-        loginUser:
-          $ref: '#/components/schemas/UserNameString'
         password:
           type: string
         privateKey:
