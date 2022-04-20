@@ -29,7 +29,7 @@ tags:
   - name: Systems
     description: Manage Tapis system resources. Create, retrieve, update, etc.
   - name: Credentials
-    description: Manage Tapis system user access credentials. Create, update, remove, etc.
+    description: Manage Tapis system user access credentials.
   - name: Permissions
     description: Manage Tapis permissions for system resources. Grant, revoke and retrieve.
   - name: Scheduler Profiles
@@ -159,8 +159,8 @@ paths:
         Name must begin with an alphabetic character and can be no more than 80 characters in length.
         Description is optional with a maximum length of 2048 characters.
 
-        If the effectiveUserId is static (i.e. not ${apiUserId}) then credentials may optionally be provided in the
-        authnCredential attribute of the request body. The Systems service does not store the secrets in its
+        If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
+        *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
         By default any credentials provided for LINUX type systems are verified. Use query parameter
@@ -559,12 +559,12 @@ paths:
       description: |
         Update all updatable attributes of a system using a request body identical to POST. System must exist.
 
-        If the effectiveUserId is static (i.e. not ${apiUserId}) then credentials may optionally be provided in the
-        authnCredential attribute of the request body. The Systems service does not store the secrets in its
+        If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
+        *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
         By default any credentials provided for LINUX type systems are verified. Use query parameter
-        skipCredentialCheck=true to bypass initial verification of credentials.
+        *skipCredentialCheck=true* to bypass initial verification of credentials.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a PUT request to update a system.
@@ -933,7 +933,7 @@ paths:
         authentication method not specified then credentials for the system's default authentication method
         are returned.
 
-        The result includes the field authnMethod indicating the authentication method associated with
+        The result includes the attribute *authnMethod* indicating the authentication method associated with
         the returned credentials.
       operationId: getUserCredential
       parameters:
@@ -992,22 +992,22 @@ paths:
         Create or update credentials for the given system and user using a request body.
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
-        If the effectiveUserId for the system is dynamic (i.e. equal to ${apiUserId}) then the userName is interpreted
-        as a Tapis user and the request body may contain the optional attribute loginUser which will be used to map the
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
+        as a Tapis user and the request body may contain the optional attribute *loginUser* which will be used to map the
         Tapis user to a username to be used when accessing the system. If the login user is not provided then there is
         no mapping and the Tapis user is always used when accessing the system.
 
-        If the effectiveUserId for the system is static (i.e. not ${apiUserId}) then the userName must match the
-        effectiveUserId defined for the system. The attribute loginUser must not be present in the request body.
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
+        as the login user to be used when accessing the host.
 
-        Requester must be owner of the system or a tenant administrator.
-        If the effectiveUserId for the system is dynamic (i.e. equal to ${apiUserId}) then the operation is allowed
-        if the userName is a Tapis user and the user has READ access to the system.
+        Operation is allowed if requester is the system owner or a tenant administrator.
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
+        if *{userName}* is the Tapis user making the request.
 
         Secrets for multiple authentication methods may be provided.
 
         By default any credentials provided for LINUX type systems are verified. Use query parameter
-        skipCredentialCheck=true to bypass initial verification of credentials.
+        *skipCredentialCheck=true* to bypass initial verification of credentials.
       operationId: createUserCredential
       parameters:
         - name: systemId
@@ -1065,9 +1065,9 @@ paths:
       description: |
         Remove credentials from the Security Kernel for given system and user.
 
-        Requester must be owner of the system or a tenant administrator.
-        If the effectiveUserId for the system is dynamic (i.e. equal to ${apiUserId}) then the operation is allowed
-        if the userName is a Tapis user and the user has READ access to the system.
+        Operation is allowed if requester the system owner or a tenant administrator.
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
+        if *{userName}* is the Tapis user making the request.
       operationId: removeUserCredential
       parameters:
         - name: systemId
@@ -1350,7 +1350,7 @@ paths:
         Name must begin with an alphabetic character and can be no more than 80 characters in length.
         Description is optional with a maximum length of 2048 characters.
 
-        Note that certain attributes (such as tenant) are allowed but ignored so that the JSON result returned by a GET
+        Note that certain attributes (such as *tenant*) are allowed but ignored so that the JSON result returned by a GET
         may be modified and used when making a POST request to create a profile.
         The attributes that are allowed but ignored are
 
