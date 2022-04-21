@@ -451,12 +451,12 @@ paths:
           schema:
             type: boolean
             default: false
-        - name: skipTapisAuthorization
+        - name: impersonateUserId
           in: query
-          description: Highly restricted. Only certain services may use Tapis sharing in place of permissions.
+          description: Highly restricted. Only certain services may impersonate another user for the purposes of
+                       authorization and effectiveUserId resolution.
           schema:
-            type: boolean
-            default: false
+            type: string
       responses:
         '200':
           description: System found.
@@ -559,15 +559,11 @@ paths:
       description: |
         Update all updatable attributes of a system using a request body identical to POST. System must exist.
 
-        If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
-        *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
-        database, they are persisted in the Security Kernel.
+        Note that although the attribute *authnCredential* is allowed, it is ignored as discussed in the next
+        paragraph.
 
-        By default any credentials provided for LINUX type systems are verified. Use query parameter
-        *skipCredentialCheck=true* to bypass initial verification of credentials.
-
-        Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
-        result returned by a GET may be modified and used when making a PUT request to update a system.
+        Certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON result
+        returned by a GET may be modified and used when making a PUT request to update a system.
 
         The attributes that are allowed but ignored for both PUT and POST are
 
@@ -577,18 +573,19 @@ paths:
           - created
           - updated
 
-        In addition for a PUT operation the following non-updatable attributes are allowed but ignored
+        In addition for a PUT operation the following attributes are allowed but ignored
 
           - id
           - systemType
           - owner
           - enabled
+          - authnCredential
           - bucketName
           - rootDir
           - isDtn
           - canExec
 
-        Note that the attributes owner and enabled may be modified using other endpoints.
+        Note that the attributes owner, enabled and authnCredential may be modified using other endpoints.
       operationId: putSystem
       parameters:
         - name: systemId
