@@ -1397,6 +1397,12 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/IdString'
+        - name: readOnly
+          in: query
+          description: By default sharing includes READ+EXECUTE
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: System shared publicly.
@@ -1416,39 +1422,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-    delete:
-      tags:
-        - Sharing
-      summary: Remove public sharing for a system.
-      description: |
-        Remove public sharing for a system. Requester must be owner of the system.
-      operationId: unShareSystemPublic
-      parameters:
-        - name: systemId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/IdString'
-      responses:
-        '200':
-          description: System public access removed.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-        '500':
-          description: Server error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-
   '/v3/systems/unshare/{systemId}':
     post:
       tags:
@@ -1496,8 +1469,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-
-  # --- Paths for /schedulerProfile ------------------------------------------------
+  
+  '/v3/systems/unshare/{systemId}/public':
+    post:
+      tags:
+        - Sharing
+      summary: Remove public sharing for a system.
+      description: |
+        Remove public sharing for a system. Requester must be owner of the system.
+      operationId: unShareSystemPublic
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: System public access removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+    
+    # --- Paths for /schedulerProfile ------------------------------------------------
   '/v3/systems/schedulerProfile':
     get:
       tags:
@@ -2274,6 +2281,10 @@ components:
           minItems: 1
           items:
             type: string
+        readOnly:
+          type: boolean
+          description: By default sharing includes READ+EXECUTE
+          default: false
     ReqPostSchedulerProfile:
       type: object
       required:
