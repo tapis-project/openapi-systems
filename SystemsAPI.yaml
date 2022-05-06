@@ -447,12 +447,11 @@ paths:
           schema:
             type: boolean
             default: false
-        - name: skipTapisAuthorization
+        - name: impersonationId
           in: query
-          description: Highly restricted. Only certain services may use Tapis sharing in place of permissions.
+          description: Highly restricted. Only certain services may impersonate a Tapis user.
           schema:
-            type: boolean
-            default: false
+            type: string
       responses:
         '200':
           description: System found.
