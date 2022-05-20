@@ -1397,12 +1397,6 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/IdString'
-        - name: readOnly
-          in: query
-          description: By default sharing includes READ+EXECUTE
-          schema:
-            type: boolean
-            default: false
       responses:
         '200':
           description: System shared publicly.
@@ -2281,10 +2275,6 @@ components:
           minItems: 1
           items:
             type: string
-        readOnly:
-          type: boolean
-          description: By default sharing includes READ+EXECUTE
-          default: false
     ReqPostSchedulerProfile:
       type: object
       required:
