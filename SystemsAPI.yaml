@@ -76,7 +76,6 @@ paths:
     get:
       tags:
         - Systems
-      summary: Retrieve systems
       description: Retrieve list of systems. Use search and select query parameters to limit results.
       operationId: getSystems
       parameters:
@@ -152,7 +151,6 @@ paths:
     post:
       tags:
         - Systems
-      summary: Create a system
       description: |
         Create a system using a request body. System name must be unique within a tenant and can be composed of
         alphanumeric characters and the following special characters [-._~].
@@ -225,7 +223,6 @@ paths:
     get:
       tags:
         - Systems
-      summary: Retrieve list of systems matching search conditions specified as query parameters
       description: Retrieve details for systems. Use query parameters to specify search conditions. For example owner.eq=jdoe&port.gt=1024
       operationId: searchSystemsQueryParameters
       parameters:
@@ -300,7 +297,6 @@ paths:
     post:
       tags:
         - Systems
-      summary: Retrieve list of systems matching search conditions
       description: |
         Retrieve details for systems. Use request body to specify SQL-like search conditions.
       operationId: searchSystemsRequestBody
@@ -374,7 +370,6 @@ paths:
     post:
       tags:
         - Systems
-      summary: Retrieve systems satisfying specified constraint conditions (WARNING - not yet supported)
       description: |
         *WARNING Capability constraint matching is not yet supported.*
         Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
@@ -415,7 +410,6 @@ paths:
     get:
       tags:
         - Systems
-      summary: Retrieve system details
       description: |
         Retrieve information for a system given the system name. Use query parameter authnMethod=<method> to override
         default authn method.
@@ -490,7 +484,6 @@ paths:
     patch:
       tags:
         - Systems
-      summary: Update selected attributes of a system
       description: |
         Update selected attributes of a system. Request body may only contain updatable attributes. System must exist.
 
@@ -554,7 +547,6 @@ paths:
     put:
       tags:
         - Systems
-      summary: Update all updatable attributes of a system
       description: |
         Update all updatable attributes of a system using a request body identical to POST. System must exist.
 
@@ -644,7 +636,6 @@ paths:
     get:
       tags:
         - Systems
-      summary: Check if system is currently enabled
       description: |
         Check if a system is currently enabled, i.e. available for use.
       operationId: isEnabled
@@ -683,7 +674,6 @@ paths:
     post:
       tags:
         - Systems
-      summary: Mark a system availabe for use
       description: |
         Mark a system available for use.
       operationId: enableSystem
@@ -722,7 +712,6 @@ paths:
     post:
       tags:
         - Systems
-      summary: Mark a system unavailabe for use
       description: |
         Mark a system unavailable for use.
       operationId: disableSystem
@@ -761,7 +750,6 @@ paths:
     post:
       tags:
         - Systems
-      summary: Mark a system as deleted
       description: |
         Mark a system as deleted. System will not appear in queries unless explicitly requested.
       operationId: deleteSystem
@@ -800,7 +788,6 @@ paths:
     post:
       tags:
         - Systems
-      summary: Mark a system as not deleted
       description: |
         Mark a system as not deleted. System will appear in queries.
       operationId: undeleteSystem
@@ -839,7 +826,6 @@ paths:
     post:
       tags:
         - Systems
-      summary: Change system owner
       description: |
         Change owner of a system.
       operationId: changeSystemOwner
@@ -883,7 +869,6 @@ paths:
     get:
       tags:
         - Systems
-      summary: Retrieve history of changes
       description: |
         Retrieve history of changes for a given systemId.
       operationId: getHistory
@@ -924,7 +909,6 @@ paths:
     get:
       tags:
         - Credentials
-      summary: Retrieve user credentials for a system and target user
       description: |
         Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, *target user* and authentication method.
 
@@ -985,7 +969,6 @@ paths:
     post:
       tags:
         - Credentials
-      summary: Create or update user credentials for a system and target user
       description: |
         Create or update credentials in the Security Kernel for given system and *target user* using a request body.
         Requester must be owner of the system. Credentials for multiple authentication methods may be provided.
@@ -1061,7 +1044,6 @@ paths:
     delete:
       tags:
         - Credentials
-      summary: Remove user credentials for a system and target user
       description: |
         Remove credentials from the Security Kernel for given system and *target user*. Requester must be owner of the system.
 
@@ -1111,7 +1093,6 @@ paths:
     get:
       tags:
         - Permissions
-      summary: Retrieve system user permissions
       description: |
         Retrieve all system related permissions for a given system and user.
       operationId: getUserPerms
@@ -1160,7 +1141,6 @@ paths:
     post:
       tags:
         - Permissions
-      summary: Grant system user permissions
       description: |
         Create permissions in the Security Kernel for a user. Requester must be owner of the system.
         Permissions are READ, MODIFY, EXECUTE.
@@ -1213,7 +1193,6 @@ paths:
     post:
       tags:
         - Permissions
-      summary: Revoke system user permissions
       description: |
         Remove permissions from the Security Kernel for a user. Requester must be owner of the system.
         Permissions are READ, MODIFY, EXECUTE.
@@ -1260,7 +1239,6 @@ paths:
     delete:
       tags:
         - Permissions
-      summary: Revoke system user permission
       description: |
         Remove system user permission from the Security Kernel. Requester must be owner of the system.
         Permissions are READ, MODIFY, EXECUTE.
@@ -1312,7 +1290,6 @@ paths:
     get:
       tags:
         - Scheduler Profiles
-      summary: Retrieve scheduler profiles
       description: Retrieve list of scheduler profiles.
       operationId: getSchedulerProfiles
       responses:
@@ -1343,7 +1320,6 @@ paths:
     post:
       tags:
         - Scheduler Profiles
-      summary: Create a scheduler profile
       description: |
         Create a scheduler profile using a request body. Name must be unique within a tenant and can be composed of
         alphanumeric characters and the following special characters [-._~].
@@ -1401,7 +1377,6 @@ paths:
     get:
       tags:
         - Scheduler Profiles
-      summary: Retrieve a scheduler profile
       description: |
         Retrieve information for a scheduler profile given the profile name.
       operationId: getSchedulerProfile
@@ -1445,7 +1420,6 @@ paths:
     delete:
       tags:
         - Scheduler Profiles
-      summary: Delete a scheduler profile
       description: |
         Remove a scheduler profile given the profile name. Requester must be owner of the profile.
       operationId: deleteSchedulerProfile
