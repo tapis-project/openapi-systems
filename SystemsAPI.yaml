@@ -45,7 +45,7 @@ paths:
     get:
       tags:
         - General
-      description: Health check.
+      description: Health check. Lightweight non-authenticated check that service is alive.
       operationId: healthCheck
       responses:
         '200':
@@ -60,7 +60,7 @@ paths:
     get:
       tags:
         - General
-      description: Ready check.
+      description: Ready check. Non-authenticated check that service is ready to do work.
       operationId: readyCheck
       responses:
         '200':
@@ -70,7 +70,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '503':
-          description: Service unavailable.
+          description: Service not ready.
 
   '/v3/systems':
     get:
