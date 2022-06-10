@@ -115,7 +115,7 @@ paths:
             default: false
         - name: select
           in: query
-          description: List of attributes to be included as part of each result item. For example select=id,owner,host
+          description: List of attributes to be included as part of each result item. Keywords *allAttributes* and *summaryAttributes* are supported. For example select=id,owner,host
           schema:
             type: string
             default: 'summaryAttributes'
@@ -267,7 +267,7 @@ paths:
             default: false
         - name: select
           in: query
-          description: List of attributes to be included as part of each result item. For example select=id,owner,host
+          description: List of attributes to be included as part of each result item. Keywords *allAttributes* and *summaryAttributes* are supported. For example select=id,owner,host
           schema:
             type: string
             default: 'summaryAttributes'
@@ -332,7 +332,7 @@ paths:
             default: false
         - name: select
           in: query
-          description: List of attributes to be included as part of each result item. For example select=id,owner,host
+          description: List of attributes to be included as part of each result item. Keywords *allAttributes* and *summaryAttributes* are supported. For example select=id,owner,host
           schema:
             type: string
             default: 'summaryAttributes'
@@ -437,7 +437,7 @@ paths:
             default: false
         - name: select
           in: query
-          description: List of attributes to be included as part of the result item. For example select=id,owner,host
+          description: List of attributes to be included as part of the result item. Keywords *allAttributes* and *summaryAttributes* are supported. For example select=id,owner,host
           schema:
             type: string
             default: 'allAttributes'
@@ -1461,7 +1461,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-  
+
   '/v3/systems/unshare/{systemId}/public':
     post:
       tags:
@@ -1668,6 +1668,7 @@ paths:
 
 # ------------------------------------------------------------------------------
 # --- Components ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 components:
   securitySchemes:
     TapisJWT:
@@ -2261,16 +2262,6 @@ components:
           minItems: 1
           items:
             type: string
-    ReqShareUpdate:
-      type: object
-      required:
-        - users
-      properties:
-        users:
-          type: array
-          minItems: 1
-          items:
-            type: string
     ReqPostSchedulerProfile:
       type: object
       required:
@@ -2295,7 +2286,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SchedulerHiddenOptionEnum'
-
+    ReqShareUpdate:
+      type: object
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          minItems: 1
+          items:
+            type: string
     # -------------------------------------------------------------------------
     # --- Response objects ----------------------------------------------------
     # -------------------------------------------------------------------------
@@ -2457,19 +2457,6 @@ components:
           $ref: '#/components/schemas/Credential'
         metadata:
           type: object
-    RespShareInfo:
-      type: object
-      properties:
-        status:
-          type: string
-        message:
-          type: string
-        version:
-          type: string
-        result:
-          $ref: '#/components/schemas/ShareInfo'
-        metadata:
-          type: object
     RespSchedulerProfile:
       type: object
       properties:
@@ -2496,6 +2483,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SchedulerProfile'
+        metadata:
+          type: object
+    RespShareInfo:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          $ref: '#/components/schemas/ShareInfo'
         metadata:
           type: object
     # -------------------------------------------------------------------------
