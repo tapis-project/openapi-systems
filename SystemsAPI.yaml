@@ -33,7 +33,7 @@ tags:
   - name: Permissions
     description: Manage Tapis permissions for system resources. Grant, revoke and retrieve.
   - name: Sharing
-    description: Manage Tapis sharing for system resources. Share, unshare, make public and get details.
+    description: Manage Tapis sharing for system resources. Share, unshare, make public.
   - name: Scheduler Profiles
     description: Manage Tapis scheduler profile resources. Create, retrieve and delete.
 
@@ -1466,7 +1466,7 @@ paths:
     post:
       tags:
         - Sharing
-      summary: Unshare a public system with all users in the tenant.
+      summary: Remove public access for a system.
       description: |
         Remove public sharing for a system. Requester must be owner of the system.
       operationId: unShareSystemPublic
