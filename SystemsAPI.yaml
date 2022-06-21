@@ -446,18 +446,18 @@ paths:
             default: 'allAttributes'
         - name: returnCredentials
           in: query
-          description: Highly restricted. Only certain Tapis services are authorized to get credentials.
+          description: Restricted. Only certain Tapis services are authorized to get credentials.
           schema:
             type: boolean
             default: false
         - name: impersonationId
           in: query
-          description: Highly restricted. Only certain services may impersonate a Tapis user.
+          description: Restricted. Only certain services may impersonate a Tapis user.
           schema:
             type: string
         - name: sharedAppCtx
           in: query
-          description: Highly restricted. Only certain services may indicate that the request is in a shared context.
+          description: Restricted. Only certain services may indicate that the request is in a shared context.
           schema:
             type: boolean
             default: false
@@ -921,7 +921,7 @@ paths:
       tags:
         - Credentials
       description: |
-        Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, *target user* and authentication method.
+        Restricted. Only certain Tapis services authorized. Retrieve credentials for given system, *target user* and authentication method.
 
         Desired authentication method may be specified using query parameter authnMethod=<method>. If desired authentication method
         not specified then credentials for the system's default authentication method are returned.
