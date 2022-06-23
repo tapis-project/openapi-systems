@@ -1390,7 +1390,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
 
-  '/v3/systems/share/{systemId}/public':
+  '/v3/systems/share_public/{systemId}':
     post:
       tags:
         - Sharing
@@ -1471,7 +1471,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
 
-  '/v3/systems/unshare/{systemId}/public':
+  '/v3/systems/unshare_public/{systemId}':
     post:
       tags:
         - Sharing
