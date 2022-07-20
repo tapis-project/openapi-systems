@@ -473,6 +473,9 @@ paths:
         - name: sharedAppCtx
           in: query
           description: Restricted. Only certain services may indicate that the request is in a shared context.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: System found.
