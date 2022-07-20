@@ -117,6 +117,12 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
+        - name: resolveEffectiveUser
+          in: query
+          description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
+          schema:
+            type: boolean
+            default: false
         - name: showDeleted
           in: query
           description: Indicates if Systems marked as deleted should be shown in the results. Default is false.
@@ -411,9 +417,7 @@ paths:
       tags:
         - Systems
       description: |
-        Retrieve information for a system given the system name. Use query parameter authnMethod=<method> to override
-        default authn method.
-        the response.
+        Retrieve information for a system given the system name.
       operationId: getSystem
       parameters:
         - name: systemId
@@ -429,7 +433,7 @@ paths:
             default: ''
         - name: requireExecPerm
           in: query
-          description: check for EXECUTE permission as well as READ permission.
+          description: Check for EXECUTE permission as well as READ permission.
           schema:
             type: boolean
             default: false
@@ -450,6 +454,12 @@ paths:
           description: Highly restricted. Only certain services may impersonate a Tapis user.
           schema:
             type: string
+        - name: resolveEffectiveUser
+          in: query
+          description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: System found.
@@ -1773,7 +1783,7 @@ components:
           type: boolean
           default: true
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameString'
+          $ref: '#/components/schemas/UserNameApiDefaultString'
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
@@ -1856,7 +1866,7 @@ components:
         host:
           $ref: '#/components/schemas/HostString'
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameString'
+          $ref: '#/components/schemas/UserNameApiDefaultString'
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
