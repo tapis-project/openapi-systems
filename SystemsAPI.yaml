@@ -122,7 +122,7 @@ paths:
           description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
           schema:
             type: boolean
-            default: false
+            default: true
         - name: showDeleted
           in: query
           description: Indicates if Systems marked as deleted should be shown in the results. Default is false.
@@ -459,7 +459,7 @@ paths:
           description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
           schema:
             type: boolean
-            default: false
+            default: true
       responses:
         '200':
           description: System found.
