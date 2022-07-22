@@ -920,10 +920,18 @@ paths:
       tags:
         - Credentials
       description: |
-        Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, *target user* and authentication method.
+        Highly restricted. Only certain Tapis services authorized.
 
-        Desired authentication method may be specified using query parameter authnMethod=<method>. If desired authentication method
-        not specified then credentials for the system's default authentication method are returned.
+        Retrieve credentials for given system, target *userName* and authentication method.
+
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is
+        interpreted as a Tapis user. Note that their may me a mapping of the Tapis user to a host *loginUser*.
+
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
+        as the host *loginUser* that is used when accessing the host.
+
+        Desired authentication method may be specified using query parameter authnMethod=<method>. If desired
+        authentication method not specified then credentials for the system's default authentication method are returned.
 
         The result includes the attribute *authnMethod* indicating the authentication method associated with
         the returned credentials.
@@ -980,7 +988,7 @@ paths:
       tags:
         - Credentials
       description: |
-        Create or update credentials in the Security Kernel for given system and *target user* using a request body.
+        Create or update credentials in the Security Kernel for given system and target *userName* using a request body.
         Requester must be owner of the system. Credentials for multiple authentication methods may be provided.
 
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
