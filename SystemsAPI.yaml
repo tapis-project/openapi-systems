@@ -1177,7 +1177,7 @@ paths:
         - Permissions
       description: |
         Create permissions in the Security Kernel for a user. Requester must be owner of the system.
-        Permissions are READ, MODIFY, EXECUTE.
+        Permissions are READ, MODIFY, EXECUTE. MODIFY implies READ.
       operationId: grantUserPerms
       parameters:
         - name: systemId
