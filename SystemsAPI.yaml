@@ -119,9 +119,9 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
-        - name: resolveEffectiveUser
+        - name: resolveEffective
           in: query
-          description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
+          description: If *effectiveUserId* or *rootDir* are dynamic then resolve them, else return values in system definition.
           schema:
             type: boolean
             default: true
@@ -165,12 +165,37 @@ paths:
         Name must begin with an alphabetic character and can be no more than 80 characters in length.
         Description is optional with a maximum length of 2048 characters.
 
+        The attribute *effectiveUserId* determines the user that is used to access the underlying host.
+        The attribute can be set to a static string indicating a specific user (such as a service account) or
+        dynamically specified as *${apiUserId}*. For the case of *${apiUserId}*, the service resolves the variable by
+        extracting the identity from the request to the service.
+        When retrieving a system you may set the query parameter *resolveEffective* to false in order to see the
+        unresolved value of *effectiveUserId*.
+
         If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
-        By default any credentials provided for LINUX type systems are verified. Use query parameter
-        skipCredentialCheck=true to bypass initial verification of credentials.
+        By default any credentials provided for LINUX type systems are verified. When creating a system you may set the
+        query parameter *skipCredentialCheck* to true in order to bypass initial verification of credentials.
+
+        The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
+        Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory. This
+        attribute may be a static string or may contain variables or the macro function *HOST_EVAL()*.
+        Some variables are resolved at create time and some are not. These variables are resolved at create time:
+        *${apiUserId}*, *${owner}* and *${tenant}*. If *rootDir* contains *${effectiveUserId}* or *HOST_EVAL()* then it
+        is considered a dynamic *rootDir* since the path is not resolved until the System is retrieved.
+        The full list of macros and variables supported for *rootDir* are:
+          - HOST_EVAL()
+          - ${effectiveUserId}
+          - ${apiUserId}
+          - ${owner}
+          - ${tenant}
+        
+        Note that *rootDir* must always be specified as an absolute path starting with /. If *HOST_EVAL()* is used
+        then it must be the first element of the path, e.g. *HOST_EVAL($WORK)/project_root*.
+        When retrieving a system you may set the query parameter *resolveEffective* to false in order to see the
+        unresolved value of *rootDir*.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
@@ -464,9 +489,9 @@ paths:
           description: Restricted. Only certain services may impersonate a Tapis user.
           schema:
             type: string
-        - name: resolveEffectiveUser
+        - name: resolveEffective
           in: query
-          description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
+          description: If *effectiveUserId* or *rootDir* are dynamic then resolve them, else return values in system definition.
           schema:
             type: boolean
             default: true
