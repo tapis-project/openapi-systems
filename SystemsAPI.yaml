@@ -31,11 +31,16 @@ tags:
   - name: Credentials
     description: Manage Tapis system user access credentials.
   - name: Permissions
-    description: Manage Tapis permissions for system resources. Grant, revoke and retrieve.
+    description: |
+      The permissions model allows for fine grained access control of resources. The system owner
+      may grant READ and MODIFY permission to specific users. MODIFY implies READ.
+  
+      Please note that Tapis also supports a higher level approach to granting access known as *Sharing*.
   - name: Sharing
-    description: Manage Tapis sharing for system resources. Share, unshare, make public.
-  - name: Scheduler Profiles
-    description: Manage Tapis scheduler profile resources. Create, retrieve and delete.
+    description: |
+      In addition to fine grained permissions support, Tapis also supports a higher level approach to granting access.
+      This approach is known simply as *sharing*. The sharing API allows you to share a system with a set of users
+      as well as share publicly with all users in a tenant. Sharing grants users READ access to the system.
 
 # ------------------------------------------------------------------------------
 # --- Paths -------------------------------------------------------------------
