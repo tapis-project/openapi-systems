@@ -181,13 +181,12 @@ paths:
 
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
         Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory. This
-        attribute may be a static string or may contain the macro function *HOST_EVAL()*.
-        Some variables are resolved at create time and are allowed in the definition. These variables are:
-        *${apiUserId}*, *${owner}* and *${tenant}*. If *rootDir* begins with *HOST_EVAL($env_variable)* then it is
-        considered a dynamic *rootDir* since the path is not resolved until the System is retrieved.
+        attribute may be a static string or may begin with the macro function *HOST_EVAL()*.
+        If *rootDir* begins with *HOST_EVAL($env_variable)* then it is considered a dynamic *rootDir* since the path is
+        not resolved until the System is retrieved.
         
         Note that *rootDir* will always be an absolute path starting with /. If it is static then the provided value
-        must begin with /. If it is dynamic (i.e. contains $HOST_EVAL($env_variable)) then a / will be prepended if
+        must begin with /. If it is dynamic (i.e. begins with $HOST_EVAL($env_variable)) then a / will be prepended if
         the resolved environment variable does not begin with a /. If *HOST_EVAL* is present then it must be the first
         element of the path and there must be only one occurrence, e.g. *HOST_EVAL($WORK)/project_root*.
 
