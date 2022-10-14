@@ -1974,6 +1974,8 @@ components:
         value:
           type: string
           default: ""
+        description:
+          $ref: '#/components/schemas/ArgDescriptionString'
 
     # --- String types with constraints ------------------------------------
     HostString:
@@ -1996,6 +1998,9 @@ components:
     DescriptionString:
       type: string
       maxLength: 2048
+    ArgDescriptionString:
+      type: string
+      maxLength: 8096
     DirString:
       type: string
       minLength: 1
