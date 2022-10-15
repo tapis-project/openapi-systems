@@ -1975,7 +1975,7 @@ components:
           type: string
           default: ""
         description:
-          $ref: '#/components/schemas/ArgDescriptionString'
+          $ref: '#/components/schemas/DescriptionString'
 
     # --- String types with constraints ------------------------------------
     HostString:
