@@ -2584,6 +2584,7 @@ components:
         - S3
         - IRODS
         - GLOBUS
+        - HTTP
     ListTypeEnum:
       type: string
       default: OWNED
