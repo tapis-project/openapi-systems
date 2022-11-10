@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.2.7'
+  version: '1.2.8'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -192,19 +192,19 @@ paths:
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
-        By default any credentials provided for LINUX type systems are verified. When creating a system you may set the
-        query parameter *skipCredentialCheck* to true in order to bypass initial verification of credentials.
+        By default any credentials provided are verified. Use query parameter
+        skipCredentialCheck=true to bypass initial verification of credentials.
 
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
         Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory. This
-        attribute may be a static string or may begin with the macro function *HOST_EVAL()*.
-        If *rootDir* begins with *HOST_EVAL($env_variable)* then it is considered a dynamic *rootDir* since the path is
-        not resolved until the System is retrieved.
+        attribute may be a static string or may be dynamic. The *rootDir* is considered dynamic if it begins with the
+        macro function *HOST_EVAL()*, contains *${effectiveUserId}* or contains *${apiUserId}. It is considered a
+        dynamic *rootDir* because the path is not resolved until the System is retrieved.
         
         Note that *rootDir* will always be an absolute path starting with /. If it is static then the provided value
-        must begin with /. If it is dynamic (i.e. begins with $HOST_EVAL($env_variable)) then a / will be prepended if
-        the resolved environment variable does not begin with a /. If *HOST_EVAL* is present then it must be the first
-        element of the path and there must be only one occurrence, e.g. *HOST_EVAL($WORK)/project_root*.
+        must begin with /. If it is dynamic then a / will be prepended if the resolved environment variable does not
+        begin with a /. If *HOST_EVAL* is present then it must be the first element of the path and there must be only
+        one occurrence, e.g. *HOST_EVAL($WORK)/project_root*.
 
         When retrieving a system you may set the query parameter *resolveEffective* to false in order to see the
         unresolved value of *rootDir*.
@@ -241,7 +241,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespResourceUrl'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error. Invalid JSON or invalid credentials.
           content:
             application/json:
               schema:
@@ -641,7 +641,7 @@ paths:
         database, they are persisted in the Security Kernel.
 
 
-        By default any credentials provided for LINUX type systems are verified. Use query parameter
+        By default any credentials provided are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
@@ -695,7 +695,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespResourceUrl'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error. Invalid JSON or invalid credentials.
           content:
             application/json:
               schema:
@@ -1065,7 +1065,7 @@ paths:
         - Credentials
       description: |
         Create or update credentials in the Security Kernel for given system and target *userName* using a request body.
-        Requester must be owner of the system. Credentials for multiple authentication methods may be provided.
+        Credentials for multiple authentication methods may be provided.
 
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
@@ -1083,8 +1083,8 @@ paths:
 
         Secrets for multiple authentication methods may be provided.
 
-        By default any credentials provided for LINUX type systems are verified. Use query parameter
-        *skipCredentialCheck=true* to bypass initial verification of credentials.
+        By default credentials associated with the system's default authentication method are verified.
+        Use query parameter *skipCredentialCheck=true* to bypass initial verification of credentials.
       operationId: createUserCredential
       parameters:
         - name: systemId
@@ -1118,7 +1118,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error. Invalid JSON or invalid credentials.
           content:
             application/json:
               schema:
@@ -1171,6 +1171,74 @@ paths:
                 $ref: '#/components/schemas/RespBasic'
         '401':
           description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/credential/{systemId}/user/{userName}/check':
+    post:
+      tags:
+        - Credentials
+      description: |
+        Check user credentials by connecting to the system host.
+
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
+        as a Tapis user.
+
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
+        as the login user to be used when accessing the host.
+
+        Operation is allowed if requester is the system owner or a tenant administrator.
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
+        if *{userName}* is the Tapis user making the request.
+
+        Desired authentication method may be specified using query parameter authnMethod=<method>. If not specified
+        then credentials for the system's default authentication method are verified.
+      operationId: checkUserCredential
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+        - name: userName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserNameString'
+        - name: authnMethod
+          in: query
+          description: Desired authentication method to use when verifying, system default method used if not provided.
+          schema:
+            type: string
+            default: ''
+      responses:
+        '200':
+          description: Check successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
           content:
             application/json:
               schema:
