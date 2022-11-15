@@ -192,7 +192,7 @@ paths:
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
-        By default any credentials provided are verified. Use query parameter
+        By default credentials provided are verified for the default authentication method. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
@@ -222,7 +222,7 @@ paths:
       parameters:
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial check for valid credentials. Default is false.
+          description: Bypass initial credential validation check. Default is false.
           schema:
             type: boolean
             default: false
@@ -241,7 +241,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespResourceUrl'
         '400':
-          description: Input error. Invalid JSON or invalid credentials.
+          description: Input error. Invalid JSON or credential validation failed.
           content:
             application/json:
               schema:
@@ -641,7 +641,7 @@ paths:
         database, they are persisted in the Security Kernel.
 
 
-        By default any credentials provided are verified. Use query parameter
+        By default credentials provided are verified for the default authentication method. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
@@ -676,7 +676,7 @@ paths:
             $ref: '#/components/schemas/IdString'
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial check for valid credentials. Default is false.
+          description: Bypass initial credential validation check. Default is false.
           schema:
             type: boolean
             default: false
@@ -695,7 +695,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespResourceUrl'
         '400':
-          description: Input error. Invalid JSON or invalid credentials.
+          description: Input error. Invalid JSON or credential validation failed.
           content:
             application/json:
               schema:
@@ -1084,7 +1084,7 @@ paths:
         Secrets for multiple authentication methods may be provided.
 
         By default credentials associated with the system's default authentication method are verified.
-        Use query parameter *skipCredentialCheck=true* to bypass initial verification of credentials.
+        Use query parameter *skipCredentialCheck=true* to bypass initial credential validation.
       operationId: createUserCredential
       parameters:
         - name: systemId
@@ -1099,7 +1099,7 @@ paths:
             $ref: '#/components/schemas/UserNameString'
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial check for valid credentials. Default is false.
+          description: Bypass initial credential validation. Default is false.
           schema:
             type: boolean
             default: false
@@ -1118,7 +1118,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '400':
-          description: Input error. Invalid JSON or invalid credentials.
+          description: Input error. Invalid JSON or credential validation failed.
           content:
             application/json:
               schema:
@@ -1226,7 +1226,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '400':
-          description: Invalid credentials.
+          description: Credential validation failed.
           content:
             application/json:
               schema:
