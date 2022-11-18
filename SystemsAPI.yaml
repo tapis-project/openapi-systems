@@ -135,9 +135,9 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
-        - name: resolveEffective
+        - name: resolveEffectiveUser
           in: query
-          description: If *effectiveUserId* or *rootDir* are dynamic then resolve them, else return values in system definition.
+          description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
           schema:
             type: boolean
             default: true
@@ -156,12 +156,6 @@ paths:
                  $ref: '#/components/schemas/RespSystems'
         '400':
           description: Input error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
           content:
             application/json:
               schema:
@@ -185,14 +179,16 @@ paths:
         The attribute can be set to a static string indicating a specific user (such as a service account) or
         dynamically specified as *${apiUserId}*. For the case of *${apiUserId}*, the service resolves the variable by
         extracting the identity from the request to the service (i.e. the JWT).
-        When retrieving a system you may set the query parameter *resolveEffective* to false in order to see the
-        unresolved value of *effectiveUserId*.
+        
+        When retrieving a single system you may use query parameter *resolve* to see the unresolved value
+        of *effectiveUserId*. When retrieving a list of systems you may set the query parameter *resolveEffectiveUser*
+        to false to see the unresolved value of *effectiveUserId*. 
 
         If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
-        By default credentials provided are verified for the default authentication method. Use query parameter
+        By default for LINUX and S3 type systems credentials provided are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
@@ -206,8 +202,8 @@ paths:
         begin with a /. If *HOST_EVAL* is present then it must be the first element of the path and there must be only
         one occurrence, e.g. *HOST_EVAL($WORK)/project_root*.
 
-        When retrieving a system you may set the query parameter *resolveEffective* to false in order to see the
-        unresolved value of *rootDir*.
+        When retrieving a single system you may use query parameter *resolve* to see the unresolved value of *rootDir*.
+        When retrieving a list of systems the attribute *rootDir* is never resolved.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
@@ -222,7 +218,7 @@ paths:
       parameters:
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial credential validation check. Default is false.
+          description: Bypass initial credential validation (for LINUX and S3). Default is false.
           schema:
             type: boolean
             default: false
@@ -246,8 +242,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -339,12 +335,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
         '500':
           description: Server error.
           content:
@@ -422,12 +412,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
         '500':
           description: Server error.
           content:
@@ -462,12 +446,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
         '500':
           description: Server error.
           content:
@@ -485,6 +463,13 @@ paths:
 
         Certain services may use the query parameter *impersonationId* to be used in place of the requesting
         Tapis user. Tapis will use this user Id when performing authorization and resolving the *effectiveUserId*.
+        
+        Query parameter *resolve* controls which dynamic attributes are resolved. Options are:
+
+          - *ALL* Resolve all dynamic attributes. (Default)
+          - *NONE* No resolution. Return values in the system definition.
+          - *ROOT_DIR* Only resolve attribute *rootDir*.
+          - *EFFECTIVE_USER* Only resolve attribute *effectiveUserId*.
 
         Certain services may use the query parameter *sharedAppCtx* to indicate that the request is in a shared
         application context. Tapis authorization will be bypassed.
@@ -524,12 +509,11 @@ paths:
           description: Restricted. Only certain services may impersonate a Tapis user.
           schema:
             type: string
-        - name: resolveEffective
+        - name: resolve
           in: query
-          description: If *effectiveUserId* or *rootDir* are dynamic then resolve them, else return values in system definition.
+          description: Controls which dynamic attributes are resolved.
           schema:
-            type: boolean
-            default: true
+            $ref: '#/components/schemas/ResolveEnum'
         - name: sharedAppCtx
           in: query
           description: Restricted. Only certain services may indicate that the request is in a shared context.
@@ -549,8 +533,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -612,8 +596,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -641,7 +625,7 @@ paths:
         database, they are persisted in the Security Kernel.
 
 
-        By default credentials provided are verified for the default authentication method. Use query parameter
+        By default for LINUX and S3 type systems credentials provided are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
@@ -676,7 +660,7 @@ paths:
             $ref: '#/components/schemas/IdString'
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial credential validation check. Default is false.
+          description: Bypass initial credential validation (for LINUX and S3). Default is false.
           schema:
             type: boolean
             default: false
@@ -700,8 +684,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -738,8 +722,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBoolean'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -776,8 +760,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -814,8 +798,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -852,8 +836,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -890,8 +874,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -933,8 +917,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -971,8 +955,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespSystemHistory'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1042,8 +1026,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1083,8 +1067,8 @@ paths:
 
         Secrets for multiple authentication methods may be provided.
 
-        By default credentials associated with the system's default authentication method are verified.
-        Use query parameter *skipCredentialCheck=true* to bypass initial credential validation.
+        By default credentials for LINUX and S3 type systems are verified. Use query parameter
+        *skipCredentialCheck=true* to bypass initial credential validation.
       operationId: createUserCredential
       parameters:
         - name: systemId
@@ -1099,7 +1083,7 @@ paths:
             $ref: '#/components/schemas/UserNameString'
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial credential validation. Default is false.
+          description: Bypass initial credential validation (for LINUX and S3). Default is false.
           schema:
             type: boolean
             default: false
@@ -1123,8 +1107,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1169,8 +1153,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1186,13 +1170,14 @@ paths:
       tags:
         - Credentials
       description: |
-        Check user credentials by connecting to the system host.
+        Check user credentials by connecting to the system host. Not supported for all system types. Currently supported
+        for LINUX and S3 type systems.
 
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
-        as a Tapis user.
+        as a Tapis user and a search is made for credentials associated with *{userName}*.
 
-        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
-        as the login user to be used when accessing the host.
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is ignored and
+        a search is made for credentials associated with *effectiveUserId*.
 
         Operation is allowed if requester is the system owner or a tenant administrator.
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
@@ -1231,8 +1216,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1282,8 +1267,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1338,8 +1323,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1384,8 +1369,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1434,8 +1419,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1476,8 +1461,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1528,8 +1513,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1562,8 +1547,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1609,8 +1594,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1643,8 +1628,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1676,8 +1661,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1726,8 +1711,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1770,8 +1755,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1813,8 +1798,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1886,6 +1871,12 @@ components:
           type: string
         dtnMountSourcePath:
           type: string
+        isPublic:
+          type: boolean
+        isDynamicRootDir:
+          type: boolean
+        isDynamicEffectiveUser:
+          type: boolean
         isDtn:
           type: boolean
           default: false
@@ -2680,6 +2671,14 @@ components:
         - OWNED
         - SHARED_PUBLIC
         - ALL
+    ResolveEnum:
+      type: string
+      default: ALL
+      enum:
+        - ALL
+        - NONE
+        - ROOT_DIR
+        - EFFECTIVE_USER
     AuthnEnum:
       type: string
       enum:
