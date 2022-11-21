@@ -1049,7 +1049,8 @@ paths:
         - Credentials
       description: |
         Create or update credentials in the Security Kernel for given system and target *userName* using a request body.
-        Credentials for multiple authentication methods may be provided.
+        If the system *rootDir* is dynamic and credentials are being validated, the resolved *rootDir* will be created
+        on system host if it does not already exist.
 
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
@@ -1064,8 +1065,6 @@ paths:
         Operation is allowed if requester is the system owner or a tenant administrator.
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
         if *{userName}* is the Tapis user making the request.
-
-        Secrets for multiple authentication methods may be provided.
 
         By default credentials for LINUX and S3 type systems are verified. Use query parameter
         *skipCredentialCheck=true* to bypass initial credential validation.
