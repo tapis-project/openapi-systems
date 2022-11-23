@@ -194,8 +194,8 @@ paths:
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
         Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory. This
         attribute may be a static string or may be dynamic. The *rootDir* is considered dynamic if it begins with the
-        macro function *HOST_EVAL()*, contains *${effectiveUserId}* or contains *${apiUserId}. It is considered a
-        dynamic *rootDir* because the path is not resolved until the System is retrieved.
+        macro function *HOST_EVAL()* or contains *${effectiveUserId}*. It is considered a dynamic *rootDir* because the
+        path is not resolved until the System is retrieved.
         
         Note that *rootDir* will always be an absolute path starting with /. If it is static then the provided value
         must begin with /. If it is dynamic then a / will be prepended if the resolved environment variable does not
