@@ -624,7 +624,6 @@ paths:
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
-
         By default for LINUX and S3 type systems credentials provided are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
@@ -692,6 +691,92 @@ paths:
                 $ref: '#/components/schemas/RespBasic'
         '409':
           description: System already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespResourceUrl'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/createChild':
+    post:
+      tags:
+        - Systems
+      description: |
+        Create a child system based on an existing system. The existing system becomes the parent system.
+        The existing system must have *canSpawnChildren* set to true.
+        The request body must contain a new unique system Id for the child.
+        The request body may optionally contain *rootDir* and *effectiveUserId*. The *rootDir* may be dynamic.
+        A *rootDir* is considered dynamic if it begins with the macro function *HOST_EVAL()* or contains *${effectiveUserId}*.
+        It is considered a dynamic *rootDir* because the path is resolved when the child system is created.
+        The final *rootDir* for the child is not considered dynamic.
+
+        If the request body contains *effectiveUserId* and it is static (i.e. not *${apiUserId}*),
+        then credentials may optionally be provided in the *authnCredential* attribute of the request body.
+        The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
+
+        Some rules for child systems:
+
+          - Attribute *rootDir* may not be updated after creation.
+          - Attribute *rootDir* provided in request body may be dynamic.
+          - Attribute *rootDir* is evaluated at create time. Final value of *rootDir* will not be considered dynamic.
+          - Updates to parent immediately propagate to child. Except for *effectiveUserId*.
+          - The only attribute that may be updated directly is *effectiveUserId*.
+          - May not be undeleted if parent has been deleted or parent has *canSpawnChildren=false*
+
+        Some rules for parent systems:
+
+          - Attribute *rootDir* may not be updated.
+          - Attribute *effectiveUserId* must be dynamic, i.e. it must be set to *${apiUserId}*
+          - Attribute *rootDir* may be dynamic. May start with *HOST_EVAL($env_var)* or contain *${effectiveUserId}*.
+          - Updates to parent immediately propagate to child. Except for *effectiveUserId*.
+          - May only be deleted if parent has no children or all children have been deleted.
+          - Attribute *canSpawnChildren* may only be updated to *false* if parent has no children or all children have been deleted.
+          - Attribute *canSpawnChildren* may be updated to *true* at any time.
+      operationId: createChildSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        description: A JSON object specifying attributes for the child system.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReqPostCreateChildSystem'
+      responses:
+        '201':
+          description: Child system created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespResourceUrl'
+        '400':
+          description: Input error. Invalid JSON or credential validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: Parent system not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '409':
+          description: Child system already exists.
           content:
             application/json:
               schema:
@@ -1864,23 +1949,22 @@ components:
         proxyPort:
           type: integer
           format: int32
+        isDtn:
+          type: boolean
+          default: false
         dtnSystemId:
           $ref: '#/components/schemas/IdString'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
           type: string
-        isPublic:
-          type: boolean
-        isDynamicRootDir:
-          type: boolean
-        isDynamicEffectiveUser:
-          type: boolean
-        isDtn:
-          type: boolean
-          default: false
         canExec:
           type: boolean
+        canSpawnChildren:
+          type: boolean
+          default: false
+        parentSystemId:
+          $ref: '#/components/schemas/IdString'
         canRunBatch:
           type: boolean
           default: false
@@ -1925,6 +2009,12 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
+        isPublic:
+          type: boolean
+        isChild:
+          type: boolean
+        isDynamicEffectiveUser:
+          type: boolean
         importRefId:
           type: string
         uuid:
@@ -2173,17 +2263,20 @@ components:
         proxyPort:
           type: integer
           format: int32
+        isDtn:
+          type: boolean
+          default: false
         dtnSystemId:
           $ref: '#/components/schemas/IdString'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
           type: string
-        isDtn:
-          type: boolean
-          default: false
         canExec:
           type: boolean
+        canSpawnChildren:
+          type: boolean
+          default: false
         canRunBatch:
           type: boolean
           default: false
@@ -2228,6 +2321,19 @@ components:
           type: object
         importRefId:
           type: string
+    ReqPostCreateChildSystem:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/IdString'
+        effectiveUserId:
+          $ref: '#/components/schemas/UserNameApiDefaultString'
+        rootDir:
+          $ref: '#/components/schemas/DirString'
+        authnCredential:
+          $ref: '#/components/schemas/ReqPostPutCredential'
     ReqPutSystem:
       type: object
       properties:
@@ -2258,6 +2364,9 @@ components:
           type: string
         dtnMountSourcePath:
           type: string
+        canSpawnChildren:
+          type: boolean
+          default: false
         canRunBatch:
           type: boolean
           default: false
@@ -2329,6 +2438,9 @@ components:
           type: string
         dtnMountSourcePath:
           type: string
+        canSpawnChildren:
+          type: boolean
+          default: false
         canRunBatch:
           type: boolean
         mpiCmd:
