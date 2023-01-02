@@ -90,6 +90,9 @@ paths:
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+
+        When retrieving systems you may use query parameter *resolveEffectiveUser* to see the unresolved values
+        of *effectiveUserId* for each system.
       operationId: getSystems
       parameters:
         - name: search
@@ -137,7 +140,7 @@ paths:
             default: 'summaryAttributes'
         - name: resolveEffectiveUser
           in: query
-          description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
+          description: Indicates if a ${dynamic} effectiveUserId should be resolved.
           schema:
             type: boolean
             default: true
@@ -176,15 +179,16 @@ paths:
         Description is optional with a maximum length of 2048 characters.
 
         The attribute *effectiveUserId* determines the user that is used to access the underlying host.
-        The attribute can be set to a static string indicating a specific user (such as a service account) or
-        dynamically specified as *${apiUserId}*. For the case of *${apiUserId}*, the service resolves the variable by
-        extracting the identity from the request to the service (i.e. the JWT).
+        The attribute can be set to a static string indicating a specific host login user (such as a service account) or
+        dynamically specified as *${dynamic}*. For the dynamic case the service resolves the variable by extracting the
+        identity from the request to the service (i.e. the JWT), and, if configured to do so, applying a mapping to a
+        host *loginUser*. For more information on setting up a mapping to a host login user please see the
+        *createUserCredential* endpoint.
         
-        When retrieving a single system you may use query parameter *resolve* to see the unresolved value
-        of *effectiveUserId*. When retrieving a list of systems you may set the query parameter *resolveEffectiveUser*
-        to false to see the unresolved value of *effectiveUserId*. 
+        When retrieving a system you may use query parameter *resolveEffectiveUser* to see the unresolved value
+        of *effectiveUserId*.
 
-        If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
+        If the *effectiveUserId* is static (i.e. not *${dynamic}*) then credentials may optionally be provided in the
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
@@ -192,24 +196,16 @@ paths:
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
-        Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory. This
-        attribute may be a static string or may be dynamic. The *rootDir* is considered dynamic if it begins with the
-        macro function *HOST_EVAL()* or contains *${effectiveUserId}*. It is considered a dynamic *rootDir* because the
-        path is not resolved until the System is retrieved.
-        
-        Note that *rootDir* will always be an absolute path starting with /. If it is static then the provided value
-        must begin with /. If it is dynamic then a / will be prepended if the resolved environment variable does not
-        begin with a /. If *HOST_EVAL* is present then it must be the first element of the path and there must be only
-        one occurrence, e.g. *HOST_EVAL($WORK)/project_root*.
+        Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory.
 
-        When retrieving a single system you may use query parameter *resolve* to see the unresolved value of *rootDir*.
-        When retrieving a list of systems the attribute *rootDir* is never resolved.
+        Note that *rootDir* will always be an absolute path starting with /.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
         The attributes that are allowed but ignored are
 
           - tenant
+          - parentId
           - uuid
           - deleted
           - created
@@ -461,16 +457,12 @@ paths:
 
         Use query parameter authnMethod=<method> to override the default authentication method.
 
+        When retrieving a system you may use query parameter *resolveEffectiveUser* to see the unresolved value
+        of *effectiveUserId*.
+
         Certain services may use the query parameter *impersonationId* to be used in place of the requesting
         Tapis user. Tapis will use this user Id when performing authorization and resolving the *effectiveUserId*.
         
-        Query parameter *resolve* controls which dynamic attributes are resolved. Options are:
-
-          - *ALL* Resolve all dynamic attributes. (Default)
-          - *NONE* No resolution. Return values in the system definition.
-          - *ROOT_DIR* Only resolve attribute *rootDir*.
-          - *EFFECTIVE_USER* Only resolve attribute *effectiveUserId*.
-
         Certain services may use the query parameter *sharedAppCtx* to indicate that the request is in a shared
         application context. *sharedAppCtx* must be set to the grantor who shared the application.
         Tapis will include the share grantor as part of authorization checks.
@@ -510,11 +502,12 @@ paths:
           description: Restricted. Only certain services may impersonate a Tapis user.
           schema:
             type: string
-        - name: resolve
+        - name: resolveEffectiveUser
           in: query
-          description: Controls which dynamic attributes are resolved.
+          description: Indicates if a ${dynamic} effectiveUserId should be resolved.
           schema:
-            $ref: '#/components/schemas/ResolveEnum'
+            type: boolean
+            default: true
         - name: sharedAppCtx
           in: query
           description: Restricted. Only certain services may indicate that the request is in a shared context. Must be set to the grantor who shared the application.
@@ -633,6 +626,7 @@ paths:
         The attributes that are allowed but ignored for both PUT and POST are
 
           - tenant
+          - parentId
           - uuid
           - deleted
           - created
@@ -708,34 +702,33 @@ paths:
       description: |
         Create a child system based on an existing system. The existing system becomes the parent system.
         The existing system must have *canSpawnChildren* set to true.
-        The request body must contain a new unique system Id for the child.
-        The request body may optionally contain *rootDir* and *effectiveUserId*. The *rootDir* may be dynamic.
-        A *rootDir* is considered dynamic if it begins with the macro function *HOST_EVAL()* or contains *${effectiveUserId}*.
+        The request body must contain the *rootDir* and *effectiveUserId for the new child system.
+        The *rootDir* may be dynamic. A *rootDir* is considered dynamic if it begins with the macro function
+        *HOST_EVAL()*.
         It is considered a dynamic *rootDir* because the path is resolved when the child system is created.
-        The final *rootDir* for the child is not considered dynamic.
 
-        If the request body contains *effectiveUserId* and it is static (i.e. not *${apiUserId}*),
-        then credentials may optionally be provided in the *authnCredential* attribute of the request body.
+        The request body may optionally contain the new unique system *id*. If an *id* is not provided then the
+        service will attempt to generate one based on the parent system id and the requesting user. The generated
+        child system id will have the format <parent_id>-<username>. Note that the generated id may already exist
+        or may exceed the maximum id length resulting in the request being rejected.
+
+        The request body may also optionally contain *authnCredential*, the credentials for *effectiveUserId*.
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
         Some rules for child systems:
 
           - Attribute *rootDir* may not be updated after creation.
-          - Attribute *rootDir* provided in request body may be dynamic.
-          - Attribute *rootDir* is evaluated at create time. Final value of *rootDir* will not be considered dynamic.
-          - Updates to parent immediately propagate to child. Except for *effectiveUserId*.
+          - Attribute *rootDir* provided in request body may be dynamic in which case it is evaluated at create time.
+          - Updates to parent immediately propagate to child, except for *effectiveUserId*.
           - The only attribute that may be updated directly is *effectiveUserId*.
           - May not be undeleted if parent has been deleted or parent has *canSpawnChildren=false*
 
         Some rules for parent systems:
 
           - Attribute *rootDir* may not be updated.
-          - Attribute *effectiveUserId* must be dynamic, i.e. it must be set to *${apiUserId}*
-          - Attribute *rootDir* may be dynamic. May start with *HOST_EVAL($env_var)* or contain *${effectiveUserId}*.
-          - Updates to parent immediately propagate to child. Except for *effectiveUserId*.
+          - Updates to parent immediately propagate to child, except for *effectiveUserId*.
           - May only be deleted if parent has no children or all children have been deleted.
           - Attribute *canSpawnChildren* may only be updated to *false* if parent has no children or all children have been deleted.
-          - Attribute *canSpawnChildren* may be updated to *true* at any time.
       operationId: createChildSystem
       parameters:
         - name: systemId
@@ -1069,11 +1062,11 @@ paths:
 
         Retrieve credentials for given system, target *userName* and authentication method.
 
-        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is
-        interpreted as a Tapis user. Note that their may me a mapping of the Tapis user to a host *loginUser*.
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${dynamic}*) then *{userName}* is interpreted
+        as a Tapis user. Note that for this case *{userName}* is independent of any mapping to a host *loginUser*.
 
-        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
-        as the host *loginUser* that is used when accessing the host.
+        If the *effectiveUserId* for the system is static then *{userName}* is interpreted as the host *loginUser*
+        that is used when accessing the host.
 
         Desired authentication method may be specified using query parameter authnMethod=<method>. If desired
         authentication method not specified then credentials for the system's default authentication method are returned.
@@ -1134,22 +1127,20 @@ paths:
         - Credentials
       description: |
         Create or update credentials in the Security Kernel for given system and target *userName* using a request body.
-        If the system *rootDir* is dynamic and credentials are being validated, the resolved *rootDir* will be created
-        on system host if it does not already exist.
 
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
-        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${dynamic}*) then *{userName}* is interpreted
         as a Tapis user and the request body may contain the optional attribute *loginUser* which will be used to map the
         Tapis user to a username to be used when accessing the system. If the login user is not provided then there is
         no mapping and the Tapis user is always used when accessing the system.
 
-        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
-        as the login user to be used when accessing the host.
+        If the *effectiveUserId* for the system is static then *{userName}* is interpreted as the login user to be used
+        when accessing the host.
 
         Operation is allowed if requester is the system owner or a tenant administrator.
-        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
-        if *{userName}* is the Tapis user making the request.
+        If the *effectiveUserId* for the system is dynamic then the operation is allowed if *{userName}* is the Tapis
+        user making the request.
 
         By default credentials for LINUX and S3 type systems are verified. Use query parameter
         *skipCredentialCheck=true* to bypass initial credential validation.
@@ -1210,7 +1201,7 @@ paths:
         Remove credentials from the Security Kernel for given system and *target user*. Requester must be owner of the system.
 
         Operation is allowed if requester the system owner or a tenant administrator.
-        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${dynamic}*) then the operation is allowed
         if *{userName}* is the Tapis user making the request.
       operationId: removeUserCredential
       parameters:
@@ -1257,15 +1248,15 @@ paths:
         Check user credentials by connecting to the system host. Not supported for all system types. Currently supported
         for LINUX and S3 type systems.
 
-        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${dynamic}*) then *{userName}* is interpreted
         as a Tapis user and a search is made for credentials associated with *{userName}*.
 
-        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is ignored and
-        a search is made for credentials associated with *effectiveUserId*.
+        If the *effectiveUserId* for the system is static then *{userName}* is ignored and a search is made for
+        credentials associated with *effectiveUserId*.
 
         Operation is allowed if requester is the system owner or a tenant administrator.
-        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
-        if *{userName}* is the Tapis user making the request.
+        If the *effectiveUserId* for the system is dynamic then the operation is allowed if *{userName}* is the Tapis
+        user making the request.
 
         Desired authentication method may be specified using query parameter authnMethod=<method>. If not specified
         then credentials for the system's default authentication method are verified.
@@ -1963,7 +1954,7 @@ components:
         canSpawnChildren:
           type: boolean
           default: false
-        parentSystemId:
+        parentId:
           $ref: '#/components/schemas/IdString'
         canRunBatch:
           type: boolean
@@ -2324,7 +2315,8 @@ components:
     ReqPostCreateChildSystem:
       type: object
       required:
-        - id
+        - rootDir
+        - effectiveUserId
       properties:
         id:
           $ref: '#/components/schemas/IdString'
@@ -2333,7 +2325,7 @@ components:
         rootDir:
           $ref: '#/components/schemas/DirString'
         authnCredential:
-          $ref: '#/components/schemas/ReqPostPutCredential'
+          $ref: '#/components/schemas/ReqCreateChildCredential'
     ReqPutSystem:
       type: object
       properties:
@@ -2487,6 +2479,23 @@ components:
     ReqPostPutCredential:
       type: object
       properties:
+        password:
+          type: string
+        privateKey:
+          type: string
+        publicKey:
+          type: string
+        accessKey:
+          type: string
+        accessSecret:
+          type: string
+        certificate:
+          type: string
+    ReqCreateChildCredential:
+      type: object
+      properties:
+        loginUser:
+          $ref: '#/components/schemas/UserNameString'
         password:
           type: string
         privateKey:
@@ -2782,14 +2791,6 @@ components:
         - OWNED
         - SHARED_PUBLIC
         - ALL
-    ResolveEnum:
-      type: string
-      default: ALL
-      enum:
-        - ALL
-        - NONE
-        - ROOT_DIR
-        - EFFECTIVE_USER
     AuthnEnum:
       type: string
       enum:
