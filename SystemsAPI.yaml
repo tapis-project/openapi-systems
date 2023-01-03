@@ -135,12 +135,6 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
-        - name: resolveEffectiveUser
-          in: query
-          description: If effectiveUserId is ${apiUserId} then resolve it, else return value in system definition.
-          schema:
-            type: boolean
-            default: true
         - name: showDeleted
           in: query
           description: Indicates if Systems marked as deleted should be shown in the results. Default is false.
@@ -179,10 +173,6 @@ paths:
         The attribute can be set to a static string indicating a specific user (such as a service account) or
         dynamically specified as *${apiUserId}*. For the case of *${apiUserId}*, the service resolves the variable by
         extracting the identity from the request to the service (i.e. the JWT).
-        
-        When retrieving a single system you may use query parameter *resolve* to see the unresolved value
-        of *effectiveUserId*. When retrieving a list of systems you may set the query parameter *resolveEffectiveUser*
-        to false to see the unresolved value of *effectiveUserId*. 
 
         If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
@@ -192,18 +182,7 @@ paths:
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
-        Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory. This
-        attribute may be a static string or may be dynamic. The *rootDir* is considered dynamic if it begins with the
-        macro function *HOST_EVAL()* or contains *${effectiveUserId}*. It is considered a dynamic *rootDir* because the
-        path is not resolved until the System is retrieved.
-        
-        Note that *rootDir* will always be an absolute path starting with /. If it is static then the provided value
-        must begin with /. If it is dynamic then a / will be prepended if the resolved environment variable does not
-        begin with a /. If *HOST_EVAL* is present then it must be the first element of the path and there must be only
-        one occurrence, e.g. *HOST_EVAL($WORK)/project_root*.
-
-        When retrieving a single system you may use query parameter *resolve* to see the unresolved value of *rootDir*.
-        When retrieving a list of systems the attribute *rootDir* is never resolved.
+        Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
@@ -463,17 +442,9 @@ paths:
 
         Certain services may use the query parameter *impersonationId* to be used in place of the requesting
         Tapis user. Tapis will use this user Id when performing authorization and resolving the *effectiveUserId*.
-        
-        Query parameter *resolve* controls which dynamic attributes are resolved. Options are:
-
-          - *ALL* Resolve all dynamic attributes. (Default)
-          - *NONE* No resolution. Return values in the system definition.
-          - *ROOT_DIR* Only resolve attribute *rootDir*.
-          - *EFFECTIVE_USER* Only resolve attribute *effectiveUserId*.
 
         Certain services may use the query parameter *sharedAppCtx* to indicate that the request is in a shared
-        application context. *sharedAppCtx* must be set to the grantor who shared the application.
-        Tapis will include the share grantor as part of authorization checks.
+        application context. Tapis authorization will be bypassed.
       operationId: getSystem
       parameters:
         - name: systemId
@@ -510,16 +481,12 @@ paths:
           description: Restricted. Only certain services may impersonate a Tapis user.
           schema:
             type: string
-        - name: resolve
-          in: query
-          description: Controls which dynamic attributes are resolved.
-          schema:
-            $ref: '#/components/schemas/ResolveEnum'
         - name: sharedAppCtx
           in: query
-          description: Restricted. Only certain services may indicate that the request is in a shared context. Must be set to the grantor who shared the application.
+          description: Restricted. Only certain services may indicate that the request is in a shared context.
           schema:
-            $ref: '#/components/schemas/UserNameString'
+            type: boolean
+            default: false
       responses:
         '200':
           description: System found.
@@ -679,7 +646,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespResourceUrl'
         '400':
-          description: Input error. Invalid JSON or credential validation failed.
+          description: Input error. Invalid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not authorized.
           content:
             application/json:
               schema:
@@ -1049,8 +1022,7 @@ paths:
         - Credentials
       description: |
         Create or update credentials in the Security Kernel for given system and target *userName* using a request body.
-        If the system *rootDir* is dynamic and credentials are being validated, the resolved *rootDir* will be created
-        on system host if it does not already exist.
+        Credentials for multiple authentication methods may be provided.
 
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
@@ -1872,8 +1844,6 @@ components:
           type: string
         isPublic:
           type: boolean
-        isDynamicRootDir:
-          type: boolean
         isDynamicEffectiveUser:
           type: boolean
         isDtn:
@@ -2670,14 +2640,6 @@ components:
         - OWNED
         - SHARED_PUBLIC
         - ALL
-    ResolveEnum:
-      type: string
-      default: ALL
-      enum:
-        - ALL
-        - NONE
-        - ROOT_DIR
-        - EFFECTIVE_USER
     AuthnEnum:
       type: string
       enum:
