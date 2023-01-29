@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.1.3'
+  version: '1.2.8'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -31,9 +31,16 @@ tags:
   - name: Credentials
     description: Manage Tapis system user access credentials.
   - name: Permissions
-    description: Manage Tapis permissions for system resources. Grant, revoke and retrieve.
-  - name: Scheduler Profiles
-    description: Manage Tapis scheduler profile resources. Create, retrieve and delete.
+    description: |
+      The permissions model allows for fine grained access control of resources. The system owner
+      may grant READ and MODIFY permission to specific users. MODIFY implies READ.
+  
+      Please note that Tapis also supports a higher level approach to granting access known as *Sharing*.
+  - name: Sharing
+    description: |
+      In addition to fine grained permissions support, Tapis also supports a higher level approach to granting access.
+      This approach is known simply as *sharing*. The sharing API allows you to share a system with a set of users
+      as well as share publicly with all users in a tenant. Sharing grants users READ and EXECUTE access to the system.
 
 # ------------------------------------------------------------------------------
 # --- Paths -------------------------------------------------------------------
@@ -76,14 +83,25 @@ paths:
     get:
       tags:
         - Systems
-      description: Retrieve list of systems. Use search and select query parameters to limit results.
+      description: |
+        Retrieve list of systems. Use *listType*, *search* and *select* query parameters to limit results. Query
+        parameter *listType* allows for filtering results based on authorization. Options for *listType* are
+
+          - *OWNED* Include only items owned by requester (Default)
+          - *SHARED_PUBLIC* Include only items shared publicly
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
       operationId: getSystems
       parameters:
         - name: search
           in: query
-          description: Search conditions as a single query paramter. For example search=(id.like.MySys*)~(enabled.eq.true)
+          description: Search conditions as a single query parameter. For example search=(id.like.MySys*)~(enabled.eq.true)
           schema:
             type: string
+        - name: listType
+          in: query
+          description: Determines additional filtering of results based on ownership, permissions and sharing. Default is to only see items owned by requester.
+          schema:
+            $ref: '#/components/schemas/ListTypeEnum'
         - name: limit
           in: query
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is 100.
@@ -113,7 +131,7 @@ paths:
             default: false
         - name: select
           in: query
-          description: List of attributes to be included as part of each result item. For example select=id,owner,host
+          description: List of attributes to be included as part of each result item. Keywords *allAttributes* and *summaryAttributes* are supported. For example select=id,owner,host
           schema:
             type: string
             default: 'summaryAttributes'
@@ -136,12 +154,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
         '500':
           description: Server error.
           content:
@@ -157,12 +169,20 @@ paths:
         Name must begin with an alphabetic character and can be no more than 80 characters in length.
         Description is optional with a maximum length of 2048 characters.
 
+        The attribute *effectiveUserId* determines the user that is used to access the underlying host.
+        The attribute can be set to a static string indicating a specific user (such as a service account) or
+        dynamically specified as *${apiUserId}*. For the case of *${apiUserId}*, the service resolves the variable by
+        extracting the identity from the request to the service (i.e. the JWT).
+
         If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
         database, they are persisted in the Security Kernel.
 
-        By default any credentials provided for LINUX type systems are verified. Use query parameter
+        By default for LINUX and S3 type systems credentials provided are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
+
+        The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
+        Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
@@ -177,7 +197,7 @@ paths:
       parameters:
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial check for valid credentials. Default is false.
+          description: Bypass initial credential validation (for LINUX and S3). Default is false.
           schema:
             type: boolean
             default: false
@@ -196,13 +216,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespResourceUrl'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error. Invalid JSON or credential validation failed.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -223,7 +243,14 @@ paths:
     get:
       tags:
         - Systems
-      description: Retrieve details for systems. Use query parameters to specify search conditions. For example owner.eq=jdoe&port.gt=1024
+      description: |
+        Retrieve details for systems. Use query parameters to specify search conditions. For example owner.eq=jdoe&port.gt=1024
+        Use *listType* and *select* query parameters to limit results. Query parameter *listType* allows
+        for filtering results based on authorization. Options for *listType* are
+
+          - *OWNED* Include only items owned by requester (Default)
+          - *SHARED_PUBLIC* Include only items shared publicly
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
       operationId: searchSystemsQueryParameters
       parameters:
         - name: freeFormParameterName
@@ -236,6 +263,11 @@ paths:
             additionalProperties:
               type: string
           style: form
+        - name: listType
+          in: query
+          description: Determines additional filtering of results based on ownership, permissions and sharing. Default is to only see items owned by requester.
+          schema:
+            $ref: '#/components/schemas/ListTypeEnum'
         - name: limit
           in: query
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is 100.
@@ -265,7 +297,7 @@ paths:
             default: false
         - name: select
           in: query
-          description: List of attributes to be included as part of each result item. For example select=id,owner,host
+          description: List of attributes to be included as part of each result item. Keywords *allAttributes* and *summaryAttributes* are supported. For example select=id,owner,host
           schema:
             type: string
             default: 'summaryAttributes'
@@ -282,12 +314,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
         '500':
           description: Server error.
           content:
@@ -299,8 +325,19 @@ paths:
         - Systems
       description: |
         Retrieve details for systems. Use request body to specify SQL-like search conditions.
+        Use *listType* and *select* query parameters to limit results. Query parameter *listType* allows
+        for filtering results based on authorization. Options for *listType* are
+
+          - *OWNED* Include only items owned by requester (Default)
+          - *SHARED_PUBLIC* Include only items shared publicly
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
       operationId: searchSystemsRequestBody
       parameters:
+        - name: listType
+          in: query
+          description: Determines additional filtering of results based on ownership, permissions and sharing. Default is to only see items owned by requester.
+          schema:
+            $ref: '#/components/schemas/ListTypeEnum'
         - name: limit
           in: query
           description: Limit number of items returned. For example limit=10. Use -1 for unlimited. Default is 100.
@@ -330,7 +367,7 @@ paths:
             default: false
         - name: select
           in: query
-          description: List of attributes to be included as part of each result item. For example select=id,owner,host
+          description: List of attributes to be included as part of each result item. Keywords *allAttributes* and *summaryAttributes* are supported. For example select=id,owner,host
           schema:
             type: string
             default: 'summaryAttributes'
@@ -350,12 +387,6 @@ paths:
                 $ref: '#/components/schemas/RespSystems'
         '400':
           description: Input error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
           content:
             application/json:
               schema:
@@ -394,12 +425,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
         '500':
           description: Server error.
           content:
@@ -411,9 +436,15 @@ paths:
       tags:
         - Systems
       description: |
-        Retrieve information for a system given the system name. Use query parameter authnMethod=<method> to override
-        default authn method.
-        the response.
+        Retrieve information for a system given the system Id.
+
+        Use query parameter authnMethod=<method> to override the default authentication method.
+
+        Certain services may use the query parameter *impersonationId* to be used in place of the requesting
+        Tapis user. Tapis will use this user Id when performing authorization and resolving the *effectiveUserId*.
+
+        Certain services may use the query parameter *sharedAppCtx* to indicate that the request is in a shared
+        application context. Tapis authorization will be bypassed.
       operationId: getSystem
       parameters:
         - name: systemId
@@ -429,27 +460,33 @@ paths:
             default: ''
         - name: requireExecPerm
           in: query
-          description: check for EXECUTE permission as well as READ permission.
+          description: Check for EXECUTE permission as well as READ permission.
           schema:
             type: boolean
             default: false
         - name: select
           in: query
-          description: List of attributes to be included as part of the result item. For example select=id,owner,host
+          description: List of attributes to be included as part of the result item. Keywords *allAttributes* and *summaryAttributes* are supported. For example select=id,owner,host
           schema:
             type: string
             default: 'allAttributes'
         - name: returnCredentials
           in: query
-          description: Highly restricted. Only certain Tapis services are authorized to get credentials.
+          description: Restricted. Only certain Tapis services are authorized to get credentials.
           schema:
             type: boolean
             default: false
         - name: impersonationId
           in: query
-          description: Highly restricted. Only certain services may impersonate a Tapis user.
+          description: Restricted. Only certain services may impersonate a Tapis user.
           schema:
             type: string
+        - name: sharedAppCtx
+          in: query
+          description: Restricted. Only certain services may indicate that the request is in a shared context.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: System found.
@@ -463,8 +500,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -526,8 +563,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -555,7 +592,7 @@ paths:
         database, they are persisted in the Security Kernel.
 
 
-        By default any credentials provided for LINUX type systems are verified. Use query parameter
+        By default for LINUX and S3 type systems credentials provided are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
@@ -590,7 +627,7 @@ paths:
             $ref: '#/components/schemas/IdString'
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial check for valid credentials. Default is false.
+          description: Bypass initial credential validation (for LINUX and S3). Default is false.
           schema:
             type: boolean
             default: false
@@ -616,6 +653,12 @@ paths:
                 $ref: '#/components/schemas/RespBasic'
         '401':
           description: Not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -652,8 +695,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBoolean'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -690,8 +733,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -728,8 +771,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -766,8 +809,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -804,8 +847,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -847,8 +890,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespChangeCount'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -885,8 +928,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespSystemHistory'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -910,10 +953,18 @@ paths:
       tags:
         - Credentials
       description: |
-        Highly restricted. Only certain Tapis services authorized. Retrieve credentials for given system, *target user* and authentication method.
+        Restricted. Only certain Tapis services authorized.
 
-        Desired authentication method may be specified using query parameter authnMethod=<method>. If desired authentication method
-        not specified then credentials for the system's default authentication method are returned.
+        Retrieve credentials for given system, target *userName* and authentication method.
+
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is
+        interpreted as a Tapis user. Note that their may me a mapping of the Tapis user to a host *loginUser*.
+
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
+        as the host *loginUser* that is used when accessing the host.
+
+        Desired authentication method may be specified using query parameter authnMethod=<method>. If desired
+        authentication method not specified then credentials for the system's default authentication method are returned.
 
         The result includes the attribute *authnMethod* indicating the authentication method associated with
         the returned credentials.
@@ -948,8 +999,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -970,8 +1021,8 @@ paths:
       tags:
         - Credentials
       description: |
-        Create or update credentials in the Security Kernel for given system and *target user* using a request body.
-        Requester must be owner of the system. Credentials for multiple authentication methods may be provided.
+        Create or update credentials in the Security Kernel for given system and target *userName* using a request body.
+        Credentials for multiple authentication methods may be provided.
 
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
@@ -987,10 +1038,8 @@ paths:
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
         if *{userName}* is the Tapis user making the request.
 
-        Secrets for multiple authentication methods may be provided.
-
-        By default any credentials provided for LINUX type systems are verified. Use query parameter
-        *skipCredentialCheck=true* to bypass initial verification of credentials.
+        By default credentials for LINUX and S3 type systems are verified. Use query parameter
+        *skipCredentialCheck=true* to bypass initial credential validation.
       operationId: createUserCredential
       parameters:
         - name: systemId
@@ -1005,7 +1054,7 @@ paths:
             $ref: '#/components/schemas/UserNameString'
         - name: skipCredentialCheck
           in: query
-          description: Bypass initial check for valid credentials. Default is false.
+          description: Bypass initial credential validation (for LINUX and S3). Default is false.
           schema:
             type: boolean
             default: false
@@ -1024,13 +1073,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error. Invalid JSON or credential validation failed.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1070,13 +1119,82 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/credential/{systemId}/user/{userName}/check':
+    post:
+      tags:
+        - Credentials
+      description: |
+        Check user credentials by connecting to the system host. Not supported for all system types. Currently supported
+        for LINUX and S3 type systems.
+
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
+        as a Tapis user and a search is made for credentials associated with *{userName}*.
+
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is ignored and
+        a search is made for credentials associated with *effectiveUserId*.
+
+        Operation is allowed if requester is the system owner or a tenant administrator.
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
+        if *{userName}* is the Tapis user making the request.
+
+        Desired authentication method may be specified using query parameter authnMethod=<method>. If not specified
+        then credentials for the system's default authentication method are verified.
+      operationId: checkUserCredential
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+        - name: userName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserNameString'
+        - name: authnMethod
+          in: query
+          description: Desired authentication method to use when verifying, system default method used if not provided.
+          schema:
+            type: string
+            default: ''
+      responses:
+        '200':
+          description: Check successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Credential validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
           content:
             application/json:
               schema:
@@ -1219,8 +1337,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1242,7 +1360,7 @@ paths:
         - Permissions
       description: |
         Create permissions in the Security Kernel for a user. Requester must be owner of the system.
-        Permissions are READ, MODIFY, EXECUTE.
+        Permissions are READ, MODIFY, EXECUTE. MODIFY implies READ.
       operationId: grantUserPerms
       parameters:
         - name: systemId
@@ -1275,8 +1393,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1321,8 +1439,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1366,13 +1484,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '400':
-          description: Input error. Invalid JSON.
+          description: Input error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1384,7 +1502,216 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
 
-  # --- Paths for /schedulerProfile ------------------------------------------------
+  # --- Paths for /share and /unshare -------------------------------------------------------
+  '/v3/systems/share/{systemId}':
+    get:
+      tags:
+        - Sharing
+      summary: Retrieve all sharing information for a system
+      description: |
+        Retrieve all sharing information for a system. This includes all users with whom the system
+        has been shared and whether or not the system has been made publicly available.
+      operationId: getShareInfo
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespShareInfo'
+        '400':
+          description: Input error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+    post:
+      tags:
+        - Sharing
+      summary: Share a system with one or more users.
+      description: |
+        Create or update sharing information for a system. The system will be shared with the list of users
+        provided in the request body. Sharing allows READ and EXECUTE access. Requester must be owner of the system.
+      operationId: shareSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        description: A JSON object specifying updated sharing information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReqShareUpdate'
+      responses:
+        '200':
+          description: Sharing information updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Input error. Invalid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
+  '/v3/systems/share_public/{systemId}':
+    post:
+      tags:
+        - Sharing
+      summary: Share a system publicly with all users in the tenant.
+      description: |
+        Share a system with all users in the tenant. Sharing allows READ and EXECUTE access. Requester must be owner of the system.
+      operationId: shareSystemPublic
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: System shared publicly.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/unshare/{systemId}':
+    post:
+      tags:
+        - Sharing
+      summary: Unshare a system with one or more users.
+      description: |
+        Create or update sharing information for a system. The system will be unshared with the list of users
+        provided in the request body. Requester must be owner of the system.
+      operationId: unShareSystem
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        description: A JSON object specifying updated sharing information.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReqShareUpdate'
+      responses:
+        '200':
+          description: Sharing information updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Input error. Invalid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
+  '/v3/systems/unshare_public/{systemId}':
+    post:
+      tags:
+        - Sharing
+      summary: Remove public access for a system.
+      description: |
+        Remove public sharing for a system. Requester must be owner of the system.
+      operationId: unShareSystemPublic
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: System public access removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+    
+    # --- Paths for /schedulerProfile ------------------------------------------------
   '/v3/systems/schedulerProfile':
     get:
       tags:
@@ -1404,8 +1731,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1454,8 +1781,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1498,8 +1825,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1541,8 +1868,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-        '401':
-          description: Not authorized.
+        '403':
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -1556,6 +1883,7 @@ paths:
 
 # ------------------------------------------------------------------------------
 # --- Components ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 components:
   securitySchemes:
     TapisJWT:
@@ -1613,6 +1941,10 @@ components:
           type: string
         dtnMountSourcePath:
           type: string
+        isPublic:
+          type: boolean
+        isDynamicEffectiveUser:
+          type: boolean
         isDtn:
           type: boolean
           default: false
@@ -1803,6 +2135,19 @@ components:
           type: string
         certificate:
           type: string
+    # --- ShareInfo ------------------------------------------------------------------
+    ShareInfo:
+      type: object
+      required:
+        - public
+        - userList
+      properties:
+        public:
+          type: boolean
+        userList:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserNameString'
     # --- KeyValuePair -------------------------------------------------------
     KeyValuePair:
       type: object
@@ -1815,6 +2160,8 @@ components:
         value:
           type: string
           default: ""
+        description:
+          $ref: '#/components/schemas/DescriptionString'
 
     # --- String types with constraints ------------------------------------
     HostString:
@@ -1837,6 +2184,9 @@ components:
     DescriptionString:
       type: string
       maxLength: 2048
+    ArgDescriptionString:
+      type: string
+      maxLength: 8096
     DirString:
       type: string
       minLength: 1
@@ -1876,7 +2226,7 @@ components:
           type: boolean
           default: true
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameString'
+          $ref: '#/components/schemas/UserNameApiDefaultString'
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
@@ -1959,7 +2309,7 @@ components:
         host:
           $ref: '#/components/schemas/HostString'
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameString'
+          $ref: '#/components/schemas/UserNameApiDefaultString'
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
@@ -2168,7 +2518,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SchedulerHiddenOptionEnum'
-
+    ReqShareUpdate:
+      type: object
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          minItems: 1
+          items:
+            type: string
     # -------------------------------------------------------------------------
     # --- Response objects ----------------------------------------------------
     # -------------------------------------------------------------------------
@@ -2378,6 +2737,19 @@ components:
           type: string
         sesssionId:
           type: string
+    RespShareInfo:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        result:
+          $ref: '#/components/schemas/ShareInfo'
+        metadata:
+          type: object
     # -------------------------------------------------------------------------
     # --- Enums ---------------------------------------------------------------
     # -------------------------------------------------------------------------
@@ -2388,6 +2760,13 @@ components:
         - S3
         - IRODS
         - GLOBUS
+    ListTypeEnum:
+      type: string
+      default: OWNED
+      enum:
+        - OWNED
+        - SHARED_PUBLIC
+        - ALL
     AuthnEnum:
       type: string
       enum:
