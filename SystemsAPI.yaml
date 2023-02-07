@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.2.8'
+  version: '1.2.9'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -1953,6 +1953,9 @@ components:
         canRunBatch:
           type: boolean
           default: false
+        enableCmdPrefix:
+          type: boolean
+          default: false
         mpiCmd:
           type: string
           minLength: 1
@@ -2260,6 +2263,9 @@ components:
         canRunBatch:
           type: boolean
           default: false
+        enableCmdPrefix:
+          type: boolean
+          default: false
         mpiCmd:
           type: string
           minLength: 1
@@ -2334,6 +2340,9 @@ components:
         canRunBatch:
           type: boolean
           default: false
+        enableCmdPrefix:
+          type: boolean
+          default: false
         mpiCmd:
           type: string
           minLength: 1
@@ -2403,6 +2412,8 @@ components:
         dtnMountSourcePath:
           type: string
         canRunBatch:
+          type: boolean
+        enableCmdPrefix:
           type: boolean
         mpiCmd:
           type: string
