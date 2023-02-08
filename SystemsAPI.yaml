@@ -1219,6 +1219,12 @@ paths:
         The session Id is a Tapis Id that is used to track the oauth2 flow that is started when this call is made.
         Note that the authorization code as per Globus documentation is valid for 10 minutes.
       operationId: getGlobusAuthUrl
+      parameters:
+        - name: clientId
+          in: query
+          description: Optional Globus clientId to use. By default the clientId configured in the Tapis installation will be used.
+          schema:
+            type: string
       responses:
         '200':
           description: Success.
@@ -1283,6 +1289,11 @@ paths:
           in: path
           required: true
           description: Tapis session Id tracking the OAuth2 flow.
+          schema:
+            type: string
+        - name: clientId
+          in: query
+          description: Optional Globus clientId to use. By default the clientId configured in the Tapis installation will be used.
           schema:
             type: string
       responses:
@@ -2784,6 +2795,7 @@ components:
         - PASSWORD
         - PKI_KEYS
         - ACCESS_KEY
+        - TOKEN
         - CERT
     CategoryEnum:
       type: string
