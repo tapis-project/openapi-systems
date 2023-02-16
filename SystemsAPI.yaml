@@ -2531,7 +2531,6 @@ components:
       type: object
       required:
         - name
-        - moduleLoadCommand
       properties:
         name:
           $ref: '#/components/schemas/IdString'
@@ -2539,14 +2538,10 @@ components:
           $ref: '#/components/schemas/DescriptionString'
         owner:
           type: string
-        moduleLoadCommand:
-          type: string
-          minLength: 1
-        modulesToLoad:
+        moduleLoadSets:
           type: array
           items:
-            type: string
-            minLength: 1
+            $ref: '#/components/schemas/ModuleLoadSet'
         hiddenOptions:
           type: array
           items:
