@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.2.9'
+  version: '1.2.10'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -2052,7 +2052,6 @@ components:
       type: object
       required:
         - name
-        - moduleLoadCommand
       properties:
         tenant:
           type: string
@@ -2062,6 +2061,21 @@ components:
           $ref: '#/components/schemas/DescriptionString'
         owner:
           $ref: '#/components/schemas/UserNameApiDefaultString'
+        moduleLoadSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModuleLoadSet'
+        hiddenOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchedulerHiddenOptionEnum'
+
+    # --- ModuleLoadSet ------------------------------------------------------------------
+    ModuleLoadSet:
+      type: object
+      required:
+        - moduleLoadCommand
+      properties:
         moduleLoadCommand:
           type: string
           minLength: 1
@@ -2070,10 +2084,7 @@ components:
           items:
             type: string
             minLength: 1
-        hiddenOptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/SchedulerHiddenOptionEnum'
+
     # --- LogicalQueue ------------------------------------------------------------------
     LogicalQueue:
       type: object
