@@ -2061,17 +2061,17 @@ components:
           $ref: '#/components/schemas/DescriptionString'
         owner:
           $ref: '#/components/schemas/UserNameApiDefaultString'
-        moduleLoadSets:
+        moduleLoads:
           type: array
           items:
-            $ref: '#/components/schemas/ModuleLoadSet'
+            $ref: '#/components/schemas/ModuleLoadSpec'
         hiddenOptions:
           type: array
           items:
             $ref: '#/components/schemas/SchedulerHiddenOptionEnum'
 
-    # --- ModuleLoadSet ------------------------------------------------------------------
-    ModuleLoadSet:
+    # --- ModuleLoadSpec ------------------------------------------------------------------
+    ModuleLoadSpec:
       type: object
       required:
         - moduleLoadCommand
@@ -2538,10 +2538,10 @@ components:
           $ref: '#/components/schemas/DescriptionString'
         owner:
           type: string
-        moduleLoadSets:
+        moduleLoads:
           type: array
           items:
-            $ref: '#/components/schemas/ModuleLoadSet'
+            $ref: '#/components/schemas/ModuleLoadSpec'
         hiddenOptions:
           type: array
           items:
