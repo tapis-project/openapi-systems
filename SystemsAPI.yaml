@@ -239,6 +239,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
+
+  '/v3/systems/createChildSystem':
+    post:
+      tags:
+        - Systems
+      description: |
+        Create a child system.  The child system gets all of it's attributes from it's parent except for the following
+        fields:
+          - *id*
+          - *effectiveUserId*
+          - *rootDir*
+          - *owner*
+
+        The owner will be the user who is creating the system.  The caller must have read permission to the parent
+        system.
+      operationId: createChildSystem
+      parameters:
+        - name: parentId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        description: A JSON object specifying the attributes of the child system.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReqPostChildSystem'
+      responses:
+        '201':
+          description: System created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespResourceUrl'
+        '400':
+          description: Input error. Invalid JSON or credential validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '409':
+          description: System already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespResourceUrl'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
   '/v3/systems/search':
     get:
       tags:
@@ -932,6 +993,132 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespSystemHistory'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{childSystemId}/unlinkFromParent':
+    post:
+      tags:
+        - Systems
+      description: |
+        Make a child system a standalone system.  This will break the connection with it's parent, and from
+        this point on, the child system will not be connected to the parent.  Warning, this cannot be undone.
+      operationId: unlinkFromParent
+      parameters:
+        - name: childSystemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: System separated from parent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespChangeCount'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
+  '/v3/systems/{parentSystemId}/unlinkChild/{childSystemId}':
+    post:
+      tags:
+        - Systems
+      description: |
+        Make a child system a standalone system.  This will break the connection with it's parent, and from
+        this point on, the child system will not be connected to the parent.  This is similar to unlinkFromParent,
+        but permissions are required for the parent system rather than the child system.  Warning, this cannot be undone.
+      operationId: unlinkChild
+      parameters:
+        - name: parentSystemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+        - name: childSystemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: System separated from parent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespChangeCount'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+
+  '/v3/systems/{parentSystemId}/unlinkAllChildren':
+    post:
+      tags:
+        - Systems
+      description: |
+        Make all children of a parent system into standalone systems.  This will break the connection with it's parent, 
+        and from this point on, the child systems will not be connected to the parent.  This is like running unlinkChild
+        for each child system of the parent.  Warning, this cannot be undone.
+      operationId: unlinkAllChildren
+      parameters:
+        - name: parentSystemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: System separated from parent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespChangeCount'
         '403':
           description: Permission denied.
           content:
@@ -2322,6 +2509,18 @@ components:
           type: object
         importRefId:
           type: string
+    ReqPostChildSystem:
+      type: object
+      required:
+        - effectiveUserId
+        - rootDir
+      properties:
+        id:
+          $ref: '#/components/schemas/IdString'
+        effectiveUserId:
+          $ref: '#/components/schemas/UserNameApiDefaultString'
+        rootDir:
+          $ref: '#/components/schemas/DirString'
     ReqPutSystem:
       type: object
       properties:
@@ -2429,6 +2628,8 @@ components:
         canRunBatch:
           type: boolean
         enableCmdPrefix:
+          type: boolean
+        allowChildren:
           type: boolean
         mpiCmd:
           type: string
