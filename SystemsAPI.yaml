@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.3.0'
+  version: '1.3.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -483,10 +483,14 @@ paths:
             type: string
         - name: sharedAppCtx
           in: query
-          description: Restricted. Only certain services may indicate that the request is in a shared context.
+          description: Restricted. Only certain services may indicate that the request is in a shared context. Must be set to the grantor who shared the application.
           schema:
-            type: boolean
-            default: false
+            $ref: '#/components/schemas/UserNameString'
+        - name: resourceTenant
+          in: query
+          description: Restricted. May be used by Tapis services to set the tenant associated with the requested resource.
+          schema:
+            type: string
       responses:
         '200':
           description: System found.
