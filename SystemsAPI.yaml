@@ -1051,7 +1051,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
 
-  '/v3/systems/{parentSystemId}/unlinkChild/{childSystemId}':
+  '/v3/systems/{parentSystemId}/unlinkChildren':
     post:
       tags:
         - Systems
@@ -1059,59 +1059,30 @@ paths:
         Make a child system a standalone system.  This will break the connection with it's parent, and from
         this point on, the child system will not be connected to the parent.  This is similar to unlinkFromParent,
         but permissions are required for the parent system rather than the child system.  Warning, this cannot be undone.
-      operationId: unlinkChild
+      operationId: unlinkChildren
       parameters:
         - name: parentSystemId
           in: path
           required: true
           schema:
             $ref: '#/components/schemas/IdString'
-        - name: childSystemId
-          in: path
-          required: true
+        - name: all
+          in: query
+          description: Unlink all children from the parent. Default is false.
           schema:
-            $ref: '#/components/schemas/IdString'
-      responses:
-        '200':
-          description: System separated from parent.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespChangeCount'
-        '403':
-          description: Permission denied.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-        '404':
-          description: System not found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
-        '500':
-          description: Server error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RespBasic'
+            type: boolean
+            default: false
+      requestBody:
+        required: false
+        description: A JSON object specifying credentials.
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/IdString'
 
-  '/v3/systems/{parentSystemId}/unlinkAllChildren':
-    post:
-      tags:
-        - Systems
-      description: |
-        Make all children of a parent system into standalone systems.  This will break the connection with it's parent, 
-        and from this point on, the child systems will not be connected to the parent.  This is like running unlinkChild
-        for each child system of the parent.  Warning, this cannot be undone.
-      operationId: unlinkAllChildren
-      parameters:
-        - name: parentSystemId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/IdString'
       responses:
         '200':
           description: System separated from parent.
