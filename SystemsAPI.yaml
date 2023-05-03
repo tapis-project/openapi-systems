@@ -243,7 +243,7 @@ paths:
   '/v3/systems/createChildSystem':
     post:
       tags:
-        - Systems
+        - Child Systems
       description: |
         Create a child system.  The child system gets all of it's attributes from it's parent except for the following
         fields:
@@ -1014,7 +1014,7 @@ paths:
   '/v3/systems/{childSystemId}/unlinkFromParent':
     post:
       tags:
-        - Systems
+        - Child Systems
       description: |
         Make a child system a standalone system.  This will break the connection with it's parent, and from
         this point on, the child system will not be connected to the parent.  Warning, this cannot be undone.
@@ -1054,7 +1054,7 @@ paths:
   '/v3/systems/{parentSystemId}/unlinkChildren':
     post:
       tags:
-        - Systems
+        - Child Systems
       description: |
         Make a child system a standalone system.  This will break the connection with it's parent, and from
         this point on, the child system will not be connected to the parent.  This is similar to unlinkFromParent,
@@ -1078,11 +1078,7 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              minItems: 1
-              items:
-                $ref: '#/components/schemas/IdString'
-
+              $ref: '#/components/schemas/ReqUnlinkChildren'
       responses:
         '200':
           description: System separated from parent.
@@ -2721,6 +2717,15 @@ components:
           minItems: 1
           items:
             type: string
+    ReqUnlinkChildren:
+      type: object
+      properties:
+        childSystemIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/IdString'
+ 
     # -------------------------------------------------------------------------
     # --- Response objects ----------------------------------------------------
     # -------------------------------------------------------------------------
@@ -2943,6 +2948,7 @@ components:
           $ref: '#/components/schemas/ShareInfo'
         metadata:
           type: object
+
     # -------------------------------------------------------------------------
     # --- Enums ---------------------------------------------------------------
     # -------------------------------------------------------------------------
