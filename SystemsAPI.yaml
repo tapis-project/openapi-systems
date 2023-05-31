@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.3.3'
+  version: '1.3.4'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -2334,6 +2334,10 @@ components:
           default: ""
         description:
           $ref: '#/components/schemas/DescriptionString'
+        inputMode:
+          $ref: '#/components/schemas/KeyValueInputModeEnum'
+        notes:
+          type: object
 
     # --- String types with constraints ------------------------------------
     HostString:
@@ -3050,3 +3054,11 @@ components:
         - SET_CRED
         - REMOVE_CRED
         - GET_CRED
+    KeyValueInputModeEnum:
+      type: string
+      enum:
+        - REQUIRED
+        - FIXED
+        - INCLUDE_ON_DEMAND
+        - INCLUDE_BY_DEFAULT
+      default: INCLUDE_BY_DEFAULT
