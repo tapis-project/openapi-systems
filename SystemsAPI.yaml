@@ -2760,6 +2760,10 @@ components:
           type: string
         version:
           type: string
+        commit:
+          type: string
+        build:
+          type: string
         result:
           type: object
         metadata:
@@ -2772,6 +2776,10 @@ components:
         message:
           type: string
         version:
+          type: string
+        commit:
+          type: string
+        build:
           type: string
         result:
           $ref: '#/components/schemas/ResultBoolean'
@@ -2790,6 +2798,10 @@ components:
         message:
           type: string
         version:
+          type: string
+        commit:
+          type: string
+        build:
           type: string
         result:
           $ref: '#/components/schemas/ResultNameArray'
@@ -2811,6 +2823,10 @@ components:
           type: string
         version:
           type: string
+        commit:
+          type: string
+        build:
+          type: string
         result:
           $ref: '#/components/schemas/ResultChangeCount'
         metadata:
@@ -2830,6 +2846,10 @@ components:
           type: string
         version:
           type: string
+        commit:
+          type: string
+        build:
+          type: string
         result:
           $ref: '#/components/schemas/ResultResourceUrl'
         metadata:
@@ -2848,6 +2868,10 @@ components:
           type: string
         version:
           type: string
+        commit:
+          type: string
+        build:
+          type: string
         result:
           $ref: '#/components/schemas/TapisSystem'
         metadata:
@@ -2860,6 +2884,10 @@ components:
         message:
           type: string
         version:
+          type: string
+        commit:
+          type: string
+        build:
           type: string
         result:
           type: array
@@ -2889,6 +2917,10 @@ components:
           type: string
         version:
           type: string
+        commit:
+          type: string
+        build:
+          type: string
         result:
           type: array
           minItems: 1
@@ -2905,6 +2937,10 @@ components:
           type: string
         version:
           type: string
+        commit:
+          type: string
+        build:
+          type: string
         result:
           $ref: '#/components/schemas/Credential'
         metadata:
@@ -2918,6 +2954,10 @@ components:
           type: string
         version:
           type: string
+        commit:
+          type: string
+        build:
+          type: string
         result:
           $ref: '#/components/schemas/SchedulerProfile'
         metadata:
@@ -2930,6 +2970,10 @@ components:
         message:
           type: string
         version:
+          type: string
+        commit:
+          type: string
+        build:
           type: string
         result:
           type: array
@@ -2945,6 +2989,10 @@ components:
         message:
           type: string
         version:
+          type: string
+        commit:
+          type: string
+        build:
           type: string
         result:
           $ref: '#/components/schemas/ResultGlobusAuthUrl'
@@ -2965,6 +3013,10 @@ components:
         message:
           type: string
         version:
+          type: string
+        commit:
+          type: string
+        build:
           type: string
         result:
           $ref: '#/components/schemas/ShareInfo'
