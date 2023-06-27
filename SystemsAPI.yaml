@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.3.4'
+  version: '1.3.5'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -1254,7 +1254,7 @@ paths:
       description: |
         Remove credentials from the Security Kernel for given system and *target user*. Requester must be owner of the system.
 
-        Operation is allowed if requester the system owner or a tenant administrator.
+        Operation is allowed if requester is the system owner or a tenant administrator.
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
         if *{userName}* is the Tapis user making the request.
       operationId: removeUserCredential
@@ -1305,14 +1305,16 @@ paths:
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
         as a Tapis user and a search is made for credentials associated with *{userName}*.
 
-        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is ignored and
-        a search is made for credentials associated with *effectiveUserId*.
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
+        as the login user to be used when accessing the host. Note that this would typically be the current
+        *effectiveUserId* defined for the system, but that is not a requirement. This allows for registering and
+        checking credentials for a login user prior to updating the system definition.
 
         Operation is allowed if requester is the system owner or a tenant administrator.
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
         if *{userName}* is the Tapis user making the request.
 
-        Desired authentication method may be specified using query parameter authnMethod=<method>. If not specified
+        Desired authentication method may be specified using query parameter authnMethod=<method>. If not specified,
         then credentials for the system's default authentication method are verified.
       operationId: checkUserCredential
       parameters:
