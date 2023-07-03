@@ -166,13 +166,17 @@ paths:
       description: |
         Create a system using a request body. System name must be unique within a tenant and can be composed of
         alphanumeric characters and the following special characters [-._~].
-        Name must begin with an alphabetic character and can be no more than 80 characters in length.
+        Name must begin with an alphanumeric character and can be no more than 80 characters in length.
         Description is optional with a maximum length of 2048 characters.
 
-        The attribute *effectiveUserId* determines the user that is used to access the underlying host.
+        The attribute *host* represents a host name, IP address, Globus Endpoint Id or Globus Collection Id.
+
+        The attribute *effectiveUserId* determines the host login user, the user used to access the underlying host.
         The attribute can be set to a static string indicating a specific user (such as a service account) or
         dynamically specified as *${apiUserId}*. For the case of *${apiUserId}*, the service resolves the variable by
-        extracting the identity from the request to the service (i.e. the JWT).
+        extracting the identity from the request to the service (i.e. the JWT) and applying a mapping to a host login
+        user if such a mapping has been provided. If no mapping is provided, then the extracted identity is taken to be
+        the host login user.
 
         If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
         *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
@@ -1116,7 +1120,7 @@ paths:
         Retrieve credentials for given system, target *userName* and authentication method.
 
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is
-        interpreted as a Tapis user. Note that their may me a mapping of the Tapis user to a host *loginUser*.
+        interpreted as a Tapis user. Note that there may me a mapping of the Tapis user to a host *loginUser*.
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
         as the host *loginUser* that is used when accessing the host.
@@ -1373,7 +1377,7 @@ paths:
       description: |
         Retrieve a Globus URL + Session Id that can be used to generate an oauth2 authorization code.
         In Globus the code is referred to as a *Native App Authorization Code*.
-        The host property of the system is used as the Endpoint Id.
+        The host property of the system is used as the Globus Endpoint Id or Globus Collection Id.
         Once a user has obtained an authorization code the corresponding Systems endpoint for generating
         Globus tokens should be called to exchange the code + sessionId for a pair of access and refresh tokens.
         The session Id is a Tapis Id that is used to track the oauth2 flow that is started when this call is made.
@@ -2392,27 +2396,37 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/IdString'
+          description: Short descriptive name for the system that is unique within the tenant.
         description:
           $ref: '#/components/schemas/DescriptionString'
+          description: Optional more verbose description for the system.
         systemType:
           $ref: '#/components/schemas/SystemTypeEnum'
+          description: Type of system
         owner:
           type: string
+          description: A specific user set at system creation.
         host:
           $ref: '#/components/schemas/HostString'
+          description: FQDN, IP address, Globus endpoint ID or Globus collection ID.
         enabled:
           type: boolean
           default: true
+          description: Indicates if system is currently considered active and available for use.
         effectiveUserId:
           $ref: '#/components/schemas/UserNameApiDefaultString'
+          description: Username to use when accessing the system. A specific user (such as a service account) or the dynamic user ``${apiUserId}``.
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
+          description: How access authentication is handled by default.
         authnCredential:
           $ref: '#/components/schemas/ReqPostPutCredential'
         bucketName:
           type: string
+          description: Name of the bucket for an S3 type system.
         rootDir:
           $ref: '#/components/schemas/DirString'
+          description: Effective root directory to be used when listing files or moving files to and from the system.
         port:
           type: integer
           format: int32
@@ -2426,21 +2440,28 @@ components:
           format: int32
         dtnSystemId:
           $ref: '#/components/schemas/IdString'
+          description: An alternate system to use as a Data Transfer Node (DTN) during job execution.
         dtnMountPoint:
           type: string
+          description: Mount point (aka target) used when running the mount command on this system. Used during job execution.
         dtnMountSourcePath:
           type: string
+          description: The path exported by *dtnSystemId* that matches the *dtnMountPoint* on this system. This will be relative to *rootDir* on *dtnSystemId*. Used during job execution.
         isDtn:
           type: boolean
           default: false
+          description: Indicates if system will be used as a data transfer node (DTN).
         canExec:
           type: boolean
+          description: Indicates if system can be used to execute jobs.
         canRunBatch:
           type: boolean
           default: false
+          description: Indicates if system supports running jobs using a batch scheduler.
         enableCmdPrefix:
           type: boolean
           default: false
+          description: Indicates if system allows a job submission request to specify a *cmdPrefix*.
         mpiCmd:
           type: string
           minLength: 1
@@ -2478,8 +2499,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TagString'
+          description: List of tags as simple strings.
         notes:
           type: object
+          description: Metadata in the form of a Json object. Not used by Tapis.
         importRefId:
           type: string
     ReqPostChildSystem:
