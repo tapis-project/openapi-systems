@@ -256,7 +256,7 @@ paths:
           - *rootDir*
           - *owner*
 
-        The owner will be the user who is creating the system.  The caller must have read permission to the parent
+        The owner will be the user who is creating the system. The caller must have read permission to the parent.
         system.
       operationId: createChildSystem
       parameters:
@@ -2066,7 +2066,7 @@ components:
         tenant:
           type: string
         id:
-          $ref: '#/components/schemas/IdString'
+          $ref: '#/components/schemas/SysId'
         description:
           $ref: '#/components/schemas/DescriptionString'
         systemType:
@@ -2074,20 +2074,19 @@ components:
         owner:
           $ref: '#/components/schemas/UserNameApiDefaultString'
         host:
-          $ref: '#/components/schemas/HostString'
+          $ref: '#/components/schemas/SysHost'
         enabled:
-          type: boolean
-          default: true
+          $ref: '#/components/schemas/Enabled'
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameApiDefaultString'
+          $ref: '#/components/schemas/EffectiveUserId'
         defaultAuthnMethod:
-          $ref: '#/components/schemas/AuthnEnum'
+          $ref: '#/components/schemas/DefaultAuthnMethod'
         authnCredential:
           $ref: '#/components/schemas/Credential'
         bucketName:
-          type: string
+          $ref: '#/components/schemas/BucketName'
         rootDir:
-          $ref: '#/components/schemas/DirString'
+          $ref: '#/components/schemas/RootDir'
         port:
           type: integer
           format: int32
@@ -2100,7 +2099,7 @@ components:
           type: integer
           format: int32
         dtnSystemId:
-          $ref: '#/components/schemas/IdString'
+          $ref: '#/components/schemas/DtnSysId'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
@@ -2114,9 +2113,10 @@ components:
           default: false
         canExec:
           type: boolean
+          description: Indicates if system can be used to execute jobs.
         canRunBatch:
           type: boolean
-          default: false
+          description: Indicates if system supports running jobs using a batch scheduler.
         enableCmdPrefix:
           type: boolean
           default: false
@@ -2346,10 +2346,25 @@ components:
           type: object
 
     # --- String types with constraints ------------------------------------
+    SysHost:
+      type: string
+      minLength: 1
+      maxLength: 256
+      description: FQDN, IP address, Globus endpoint ID or Globus collection ID.
     HostString:
       type: string
       minLength: 1
       maxLength: 256
+    SysId:
+      type: string
+      minLength: 1
+      maxLength: 80
+      description: Short descriptive name for the system that is unique within the tenant.
+    DtnSysId:
+      type: string
+      minLength: 1
+      maxLength: 80
+      description: An alternate system to use as a Data Transfer Node (DTN) during job execution.
     IdString:
       type: string
       minLength: 1
@@ -2358,6 +2373,16 @@ components:
       type: string
       minLength: 1
       maxLength: 60
+    EffectiveUserId:
+      type: string
+      minLength: 1
+      maxLength: 60
+      default: "${apiUserId}"
+      description: Username to use when accessing the system. A specific user (such as a service account) or the dynamic user ``${apiUserId}``.
+    Enabled:
+      type: boolean
+      default: true
+      description: Indicates if system is currently considered active and available for use.
     UserNameApiDefaultString:
       type: string
       minLength: 1
@@ -2366,9 +2391,18 @@ components:
     DescriptionString:
       type: string
       maxLength: 2048
+      description: Optional more verbose description.
+    BucketName:
+      type: string
+      description: Name of the bucket for an S3 type system.
     ArgDescriptionString:
       type: string
       maxLength: 8096
+    RootDir:
+      type: string
+      minLength: 1
+      maxLength: 4096
+      description: Effective root directory to be used when listing files or moving files to and from the system.
     DirString:
       type: string
       minLength: 1
@@ -2395,38 +2429,29 @@ components:
         - canExec
       properties:
         id:
-          $ref: '#/components/schemas/IdString'
-          description: Short descriptive name for the system that is unique within the tenant.
+          $ref: '#/components/schemas/SysId'
         description:
           $ref: '#/components/schemas/DescriptionString'
-          description: Optional more verbose description for the system.
         systemType:
           $ref: '#/components/schemas/SystemTypeEnum'
-          description: Type of system
         owner:
           type: string
           description: A specific user set at system creation.
         host:
-          $ref: '#/components/schemas/HostString'
-          description: FQDN, IP address, Globus endpoint ID or Globus collection ID.
+          $ref: '#/components/schemas/SysHost'
         enabled:
-          type: boolean
-          default: true
-          description: Indicates if system is currently considered active and available for use.
+          $ref: '#/components/schemas/Enabled'
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameApiDefaultString'
-          description: Username to use when accessing the system. A specific user (such as a service account) or the dynamic user ``${apiUserId}``.
+          $ref: '#/components/schemas/EffectiveUserId'
         defaultAuthnMethod:
-          $ref: '#/components/schemas/AuthnEnum'
-          description: How access authentication is handled by default.
+          $ref: '#/components/schemas/DefaultAuthnMethod'
         authnCredential:
           $ref: '#/components/schemas/ReqPostPutCredential'
         bucketName:
           type: string
           description: Name of the bucket for an S3 type system.
         rootDir:
-          $ref: '#/components/schemas/DirString'
-          description: Effective root directory to be used when listing files or moving files to and from the system.
+          $ref: '#/components/schemas/RootDir'
         port:
           type: integer
           format: int32
@@ -2439,8 +2464,7 @@ components:
           type: integer
           format: int32
         dtnSystemId:
-          $ref: '#/components/schemas/IdString'
-          description: An alternate system to use as a Data Transfer Node (DTN) during job execution.
+          $ref: '#/components/schemas/DtnSysId'
         dtnMountPoint:
           type: string
           description: Mount point (aka target) used when running the mount command on this system. Used during job execution.
@@ -2512,22 +2536,22 @@ components:
         - rootDir
       properties:
         id:
-          $ref: '#/components/schemas/IdString'
+          $ref: '#/components/schemas/SysId'
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameApiDefaultString'
+          $ref: '#/components/schemas/EffectiveUserId'
         rootDir:
-          $ref: '#/components/schemas/DirString'
+          $ref: '#/components/schemas/RootDir'
     ReqPutSystem:
       type: object
       properties:
         description:
           $ref: '#/components/schemas/DescriptionString'
         host:
-          $ref: '#/components/schemas/HostString'
+          $ref: '#/components/schemas/SysHost'
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameApiDefaultString'
+          $ref: '#/components/schemas/EffectiveUserId'
         defaultAuthnMethod:
-          $ref: '#/components/schemas/AuthnEnum'
+          $ref: '#/components/schemas/DefaultAuthnMethod'
         authnCredential:
           $ref: '#/components/schemas/ReqPostPutCredential'
         port:
@@ -2542,14 +2566,14 @@ components:
           type: integer
           format: int32
         dtnSystemId:
-          $ref: '#/components/schemas/IdString'
+          $ref: '#/components/schemas/DtnSysId'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
           type: string
         canRunBatch:
           type: boolean
-          default: false
+          description: Indicates if system supports running jobs using a batch scheduler.
         enableCmdPrefix:
           type: boolean
           default: false
@@ -2600,11 +2624,11 @@ components:
         description:
           $ref: '#/components/schemas/DescriptionString'
         host:
-          $ref: '#/components/schemas/HostString'
+          $ref: '#/components/schemas/SysHost'
         effectiveUserId:
-          $ref: '#/components/schemas/UserNameString'
+          $ref: '#/components/schemas/EffectiveUserId'
         defaultAuthnMethod:
-          $ref: '#/components/schemas/AuthnEnum'
+          $ref: '#/components/schemas/DefaultAuthnMethod'
         port:
           type: integer
           format: int32
@@ -2616,13 +2640,14 @@ components:
           type: integer
           format: int32
         dtnSystemId:
-          $ref: '#/components/schemas/IdString'
+          $ref: '#/components/schemas/DtnSysId'
         dtnMountPoint:
           type: string
         dtnMountSourcePath:
           type: string
         canRunBatch:
           type: boolean
+          description: Indicates if system supports running jobs using a batch scheduler.
         enableCmdPrefix:
           type: boolean
         allowChildren:
@@ -3057,6 +3082,7 @@ components:
     # -------------------------------------------------------------------------
     SystemTypeEnum:
       type: string
+      description: Type of system
       enum:
         - LINUX
         - S3
@@ -3069,6 +3095,15 @@ components:
         - OWNED
         - SHARED_PUBLIC
         - ALL
+    DefaultAuthnMethod:
+      type: string
+      description: How access authentication is handled by default.
+      enum:
+        - PASSWORD
+        - PKI_KEYS
+        - ACCESS_KEY
+        - TOKEN
+        - CERT
     AuthnEnum:
       type: string
       enum:
