@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.3.5'
+  version: '1.4.0'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -1378,10 +1378,12 @@ paths:
         Retrieve a Globus URL + Session Id that can be used to generate an oauth2 authorization code.
         In Globus the code is referred to as a *Native App Authorization Code*.
         The host property of the system is used as the Globus Endpoint Id or Globus Collection Id.
-        Once a user has obtained an authorization code the corresponding Systems endpoint for generating
+        Once a user has obtained an authorization code, the corresponding Systems endpoint for generating
         Globus tokens should be called to exchange the code + sessionId for a pair of access and refresh tokens.
         The session Id is a Tapis Id that is used to track the oauth2 flow that is started when this call is made.
-        Note that the authorization code as per Globus documentation is valid for 10 minutes.
+        The authorization code, as per Globus documentation, is valid for 10 minutes.
+        Please note that the Tapis installation for your site must be configured by the site administrator to
+        support systems of type GLOBUS.
       operationId: getGlobusAuthUrl
       responses:
         '200':
@@ -1424,7 +1426,9 @@ paths:
         The Systems service will use the Tapis Security Kernel to store the tokens for the given system and user.
         The session Id is a Tapis Id that is used to track the oauth2 flow that is started when a call to the
         getGlobusAuthUrl endpoint is made.
-        Note that the authorization code as per Globus documentation is valid for 10 minutes.
+        The authorization code, as per Globus documentation, is valid for 10 minutes.
+        Please note that the Tapis installation for your site must be configured by the site administrator to
+        support systems of type GLOBUS.
       operationId: generateGlobusTokens
       parameters:
         - name: systemId
