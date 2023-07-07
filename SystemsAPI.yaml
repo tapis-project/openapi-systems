@@ -2084,7 +2084,7 @@ components:
         effectiveUserId:
           $ref: '#/components/schemas/EffectiveUserId'
         defaultAuthnMethod:
-          $ref: '#/components/schemas/DefaultAuthnMethod'
+          $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
           $ref: '#/components/schemas/Credential'
         bucketName:
@@ -2448,7 +2448,7 @@ components:
         effectiveUserId:
           $ref: '#/components/schemas/EffectiveUserId'
         defaultAuthnMethod:
-          $ref: '#/components/schemas/DefaultAuthnMethod'
+          $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
           $ref: '#/components/schemas/ReqPostPutCredential'
         bucketName:
@@ -2555,7 +2555,7 @@ components:
         effectiveUserId:
           $ref: '#/components/schemas/EffectiveUserId'
         defaultAuthnMethod:
-          $ref: '#/components/schemas/DefaultAuthnMethod'
+          $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
           $ref: '#/components/schemas/ReqPostPutCredential'
         port:
@@ -2632,7 +2632,7 @@ components:
         effectiveUserId:
           $ref: '#/components/schemas/EffectiveUserId'
         defaultAuthnMethod:
-          $ref: '#/components/schemas/DefaultAuthnMethod'
+          $ref: '#/components/schemas/AuthnEnum'
         port:
           type: integer
           format: int32
@@ -3099,15 +3099,6 @@ components:
         - OWNED
         - SHARED_PUBLIC
         - ALL
-    DefaultAuthnMethod:
-      type: string
-      description: How access authentication is handled by default.
-      enum:
-        - PASSWORD
-        - PKI_KEYS
-        - ACCESS_KEY
-        - TOKEN
-        - CERT
     AuthnEnum:
       type: string
       enum:
