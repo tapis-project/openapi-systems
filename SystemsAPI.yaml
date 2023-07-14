@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.4.0'
+  version: '1.4.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -2155,6 +2155,10 @@ components:
           $ref: '#/components/schemas/QueueNameString'
         batchSchedulerProfile:
           $ref: '#/components/schemas/IdString'
+        sharedWithUsers:
+          type: array
+          items:
+            type: string
         jobCapabilities:
           type: array
           items:
