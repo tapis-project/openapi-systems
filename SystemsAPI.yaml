@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.4.1'
+  version: '1.4.2'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -41,6 +41,8 @@ tags:
       In addition to fine grained permissions support, Tapis also supports a higher level approach to granting access.
       This approach is known simply as *sharing*. The sharing API allows you to share a system with a set of users
       as well as share publicly with all users in a tenant. Sharing grants users READ and EXECUTE access to the system.
+      When the system has a dynamic *effectiveUserId*, sharing also allows for MODIFY access to all paths for calls
+      made through the Files service.
 
 # ------------------------------------------------------------------------------
 # --- Paths -------------------------------------------------------------------
@@ -509,7 +511,7 @@ paths:
         Tapis user. Tapis will use this user Id when performing authorization and resolving the *effectiveUserId*.
 
         Certain services may use the query parameter *sharedAppCtx* to indicate that the request is in a shared
-        application context. Tapis authorization will be bypassed.
+        application context.
       operationId: getSystem
       parameters:
         - name: systemId
@@ -1723,7 +1725,9 @@ paths:
       summary: Share a system with one or more users.
       description: |
         Create or update sharing information for a system. The system will be shared with the list of users
-        provided in the request body. Sharing allows READ and EXECUTE access. Requester must be owner of the system.
+        provided in the request body. Sharing allows READ and EXECUTE access. When the system has a dynamic
+        *effectiveUserId*, sharing also allows for MODIFY access to all paths for calls made through the
+        Files service. Requester must be owner of the system.
       operationId: shareSystem
       parameters:
         - name: systemId
@@ -1770,7 +1774,10 @@ paths:
         - Sharing
       summary: Share a system publicly with all users in the tenant.
       description: |
-        Share a system with all users in the tenant. Sharing allows READ and EXECUTE access. Requester must be owner of the system.
+        Share a system with all users in the tenant. Sharing allows READ and EXECUTE access.
+        When the system has a dynamic *effectiveUserId*, sharing also allows for MODIFY access
+        to all paths for calls made through the Files service.
+        Requester must be owner of the system.
       operationId: shareSystemPublic
       parameters:
         - name: systemId
