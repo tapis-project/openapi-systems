@@ -34,8 +34,10 @@ tags:
     description: |
       The permissions model allows for fine grained access control of resources. The system owner
       may grant READ and MODIFY permission to specific users. MODIFY implies READ.
+      Note that Tapis permissions are independent of native permissions enforced by the underlying
+      system host.
   
-      Please note that Tapis also supports a higher level approach to granting access known as *Sharing*.
+      Tapis also supports a higher level approach to granting access known as *Sharing*.
   - name: Sharing
     description: |
       In addition to fine grained permissions support, Tapis also supports a higher level approach to granting access.
@@ -43,6 +45,8 @@ tags:
       as well as share publicly with all users in a tenant. Sharing grants users READ and EXECUTE access to the system.
       When the system has a dynamic *effectiveUserId*, sharing also allows for MODIFY access to all paths for calls
       made through the Files service.
+      Note that Tapis permissions and sharing are independent of native permissions enforced by the underlying
+      system host.
 
 # ------------------------------------------------------------------------------
 # --- Paths -------------------------------------------------------------------
