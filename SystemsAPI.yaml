@@ -1037,8 +1037,7 @@ paths:
             $ref: '#/components/schemas/IdString'
         - name: envVar
           in: query
-          required: true
-          description: 
+          description: Name of environment variable to be evaluated.
           schema:
             type: string
       responses:
