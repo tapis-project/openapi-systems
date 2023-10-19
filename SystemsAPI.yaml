@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.4.2'
+  version: '1.5.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -255,7 +255,7 @@ paths:
       tags:
         - Child Systems
       description: |
-        Create a child system.  The child system gets all of it's attributes from it's parent except for the following
+        Create a child system. The child system gets all of it's attributes from it's parent except for the following
         fields:
           - *id*
           - *effectiveUserId*
@@ -1003,6 +1003,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespSystemHistory'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/evalHostEnvVar':
+    get:
+      tags:
+        - Systems
+      description: |
+        For a system of type LINUX, evaluate an environment variable and return the resulting value.
+        Name of environment variable to evaluate must be passed in as a query parameter.
+      operationId: evalHostEnvVar
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+        - name: envVar
+          in: query
+          required: true
+          description: 
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Host environment variable evaluation successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespString'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
         '403':
           description: Permission denied.
           content:
@@ -2839,6 +2890,23 @@ components:
           type: string
         result:
           type: object
+        metadata:
+          type: object
+    RespString:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        commit:
+          type: string
+        build:
+          type: string
+        result:
+          type: string
         metadata:
           type: object
     RespBoolean:
