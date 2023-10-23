@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.5.0'
+  version: '1.5.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -2419,7 +2419,6 @@ components:
       maxLength: 8096
     RootDir:
       type: string
-      minLength: 1
       maxLength: 4096
       description: Effective root directory to be used when listing files or moving files to and from the system.
     DirString:
