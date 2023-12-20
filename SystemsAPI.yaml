@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.5.1'
+  version: '1.5.11'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -3145,6 +3145,7 @@ components:
       enum:
         - DOCKER
         - SINGULARITY
+        - ZIP
     SchedulerTypeEnum:
       type: string
       enum:
