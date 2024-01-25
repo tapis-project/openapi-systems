@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.6.0'
+  version: '1.6.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -607,7 +607,6 @@ paths:
           - enabled
           - bucketName
           - rootDir
-          - isDtn
           - canExec
 
         Note that the attributes owner and enabled may be modified using other endpoints.
@@ -689,7 +688,6 @@ paths:
           - enabled
           - bucketName
           - rootDir
-          - isDtn
           - canExec
 
         Note that the attributes owner and enabled may be modified using other endpoints.
@@ -2116,17 +2114,10 @@ components:
           format: int32
         dtnSystemId:
           $ref: '#/components/schemas/DtnSysId'
-        dtnMountPoint:
-          type: string
-        dtnMountSourcePath:
-          type: string
         isPublic:
           type: boolean
         isDynamicEffectiveUser:
           type: boolean
-        isDtn:
-          type: boolean
-          default: false
         canExec:
           type: boolean
           description: Indicates if system can be used to execute jobs.
@@ -2484,16 +2475,6 @@ components:
           format: int32
         dtnSystemId:
           $ref: '#/components/schemas/DtnSysId'
-        dtnMountPoint:
-          type: string
-          description: Mount point (aka target) used when running the mount command on this system. Used during job execution.
-        dtnMountSourcePath:
-          type: string
-          description: The path exported by *dtnSystemId* that matches the *dtnMountPoint* on this system. This will be relative to *rootDir* on *dtnSystemId*. Used during job execution.
-        isDtn:
-          type: boolean
-          default: false
-          description: Indicates if system will be used as a data transfer node (DTN).
         canExec:
           type: boolean
           description: Indicates if system can be used to execute jobs.
@@ -2586,10 +2567,6 @@ components:
           format: int32
         dtnSystemId:
           $ref: '#/components/schemas/DtnSysId'
-        dtnMountPoint:
-          type: string
-        dtnMountSourcePath:
-          type: string
         canRunBatch:
           type: boolean
           description: Indicates if system supports running jobs using a batch scheduler.
@@ -2660,10 +2637,6 @@ components:
           format: int32
         dtnSystemId:
           $ref: '#/components/schemas/DtnSysId'
-        dtnMountPoint:
-          type: string
-        dtnMountSourcePath:
-          type: string
         canRunBatch:
           type: boolean
           description: Indicates if system supports running jobs using a batch scheduler.
