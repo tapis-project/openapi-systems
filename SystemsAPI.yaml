@@ -1386,14 +1386,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
-  '/v3/systems/credential/globus/authUrl':
+  '/v3/systems/credential/{systemId}/globus/authUrl':
     get:
       tags:
         - Credentials
       summary: Retrieve a Globus URL that can be used to generate an authorization code for an OAuth2 flow.
       description: |
-        Retrieve a Globus URL + Session Id that can be used to generate an oauth2 authorization code.
-        In Globus the code is referred to as a *Native App Authorization Code*.
+        Retrieve a Globus URL + Session Id that can be used to generate an oauth2 authorization code associated with
+        the given system.
+        In Globus, the code is referred to as a *Native App Authorization Code*.
         The host property of the system is used as the Globus Endpoint Id or Globus Collection Id.
         Once a user has obtained an authorization code, the corresponding Systems endpoint for generating
         Globus tokens should be called to exchange the code + sessionId for a pair of access and refresh tokens.
@@ -1402,6 +1403,12 @@ paths:
         Please note that the Tapis installation for your site must be configured by the site administrator to
         support systems of type GLOBUS.
       operationId: getGlobusAuthUrl
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
       responses:
         '200':
           description: Success.
