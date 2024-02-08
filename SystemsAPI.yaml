@@ -3070,6 +3070,8 @@ components:
           type: string
         sesssionId:
           type: string
+        systemId:
+          type: string
     RespShareInfo:
       type: object
       properties:
