@@ -2146,6 +2146,10 @@ components:
         enableCmdPrefix:
           type: boolean
           default: false
+        allowChildren:
+          type: boolean
+          default: false
+          description: Indicates if system allows for the creation of child systems.
         mpiCmd:
           type: string
           minLength: 1
@@ -2505,6 +2509,10 @@ components:
           type: boolean
           default: false
           description: Indicates if system allows a job submission request to specify a *cmdPrefix*.
+        allowChildren:
+          type: boolean
+          default: false
+          description: Indicates if system allows for the creation of child systems.
         mpiCmd:
           type: string
           minLength: 1
@@ -2592,6 +2600,10 @@ components:
         enableCmdPrefix:
           type: boolean
           default: false
+        allowChildren:
+          type: boolean
+          default: false
+          description: Indicates if system allows for the creation of child systems.
         mpiCmd:
           type: string
           minLength: 1
@@ -2663,6 +2675,7 @@ components:
           type: boolean
         allowChildren:
           type: boolean
+          description: Indicates if system allows for the creation of child systems.
         mpiCmd:
           type: string
           minLength: 1
