@@ -520,7 +520,7 @@ paths:
       description: |
         Retrieve information for a system given the system Id.
 
-        Use query parameter authnMethod=<method> to override the default authentication method.
+        Use query parameter *authnMethod* to override the default authentication method.
 
         Certain Tapis services or a tenant administrator may use the query parameter *impersonationId* to be used in
         place of the requesting Tapis user. Tapis will use this user Id when performing authorization and resolving
@@ -1141,7 +1141,7 @@ paths:
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
         as the host *loginUser* that is used when accessing the host.
 
-        Desired authentication method may be specified using query parameter authnMethod=<method>. If desired
+        Desired authentication method may be specified using query parameter *authnMethod*. If desired
         authentication method not specified then credentials for the system's default authentication method are returned.
 
         The result includes the attribute *authnMethod* indicating the authentication method associated with
@@ -1335,7 +1335,7 @@ paths:
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
         if *{userName}* is the Tapis user making the request.
 
-        Desired authentication method may be specified using query parameter authnMethod=<method>. If not specified,
+        Desired authentication method may be specified using query parameter *authnMethod*. If not specified,
         then credentials for the system's default authentication method are verified.
       operationId: checkUserCredential
       parameters:
