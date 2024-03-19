@@ -92,16 +92,16 @@ paths:
       description: |
         Retrieve list of systems.
 
-        Certain Tapis services or a tenant administrator may use the query parameter *impersonationId* to be used in
-        place of the requesting Tapis user. Tapis will use this user Id when performing authorization and resolving
-        the *effectiveUserId*.
-
         Use *listType*, *search* and *select* query parameters to limit results. Query
         parameter *listType* allows for filtering results based on authorization. Options for *listType* are
 
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+
+        Certain Tapis services or a tenant administrator may use the query parameter *impersonationId* to be used in
+        place of the requesting Tapis user. Tapis will use this user Id when performing authorization and resolving
+        the *effectiveUserId*.
       operationId: getSystems
       parameters:
         - name: search
