@@ -205,8 +205,7 @@ paths:
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
         Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory.
         Required for systems of type LINUX or IRODS. Supports the following variables which are resolved at create
-        time: *${apiUserId}*, *${tenant}* and *${owner}*
-        May not be updated. Contact support to request a change.
+        time: *${apiUserId}*, *${tenant}* and *${owner}*. May not be updated. Contact support to request a change.
 
         There is also a special macro available for *rootDir* that may be used under certain conditions when a system
         is first created. The macro name is SYS_ROOT_HOST_EVAL.
@@ -223,7 +222,7 @@ paths:
 
           - SYS_ROOT_HOST_EVAL($SCRATCH)
           - SYS_ROOT_HOST_EVAL($HOME)
-          - SYS_ROOT_HOST_EVAL($PROJECT_HOME)/projects/${owner}
+          - SYS_ROOT_HOST_EVAL($PROJECT_HOME)/projects/${tenant}/${owner}
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
