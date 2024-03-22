@@ -208,21 +208,21 @@ paths:
         time: *${apiUserId}*, *${tenant}* and *${owner}*. May not be updated. Contact support to request a change.
 
         There is also a special macro available for *rootDir* that may be used under certain conditions when a system
-        is first created. The macro name is SYS_ROOT_HOST_EVAL.
-        The syntax for the macro is SYS_ROOT_HOST_EVAL($var), where *$var* is the environment variable to be evaluated
+        is first created. The macro name is HOST_EVAL.
+        The syntax for the macro is HOST_EVAL($var), where *$var* is the environment variable to be evaluated
         on the system host when the create request is made.
         The following conditions must be met in order to use the macro
 
           - System must be of type LINUX
           - Credentials must be provided when system is created.
-          - Macro SYS_ROOT_HOST_EVAL() must only appear once and be the first element of the path.
-          - The *effectiveUserId* for the system must be static. Note that use of variable *${owner}* is allowed.
+          - Macro HOST_EVAL() must only appear once and be the first element of the path.
+          - The *effectiveUserId* for the system must be static. Note that *effectiveUserId* may be set to *${owner}*.
 
         The macro must only appear once and be the first element of the path. Here are some examples
 
-          - SYS_ROOT_HOST_EVAL($SCRATCH)
-          - SYS_ROOT_HOST_EVAL($HOME)
-          - SYS_ROOT_HOST_EVAL($PROJECT_HOME)/projects/${tenant}/${owner}
+          - HOST_EVAL($SCRATCH)
+          - HOST_EVAL($HOME)
+          - HOST_EVAL($PROJECT_HOME)/projects/${tenant}/${owner}
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
