@@ -209,20 +209,23 @@ paths:
 
         There is also a special macro available for *rootDir* that may be used under certain conditions when a system
         is first created. The macro name is HOST_EVAL.
-        The syntax for the macro is HOST_EVAL($var), where *$var* is the environment variable to be evaluated
-        on the system host when the create request is made.
+        The syntax for the macro is HOST_EVAL($var), where *var* is the environment variable to be evaluated
+        on the system host when the create request is made. If after resolution the final path does not have the
+        required leading slash (/) to make it an absolute path, then one will be prepended.
+        Also, the $ character preceding the environment variable name is optional.
         The following conditions must be met in order to use the macro
 
           - System must be of type LINUX
           - Credentials must be provided when system is created.
-          - Macro HOST_EVAL() must only appear once and be the first element of the path.
+          - Macro HOST_EVAL() must only appear once and must be the first element of the path. Including a leading slash is optional.
           - The *effectiveUserId* for the system must be static. Note that *effectiveUserId* may be set to *${owner}*.
 
         The macro must only appear once and be the first element of the path. Here are some examples
 
           - HOST_EVAL($SCRATCH)
           - HOST_EVAL($HOME)
-          - HOST_EVAL($PROJECT_HOME)/projects/${tenant}/${owner}
+          - /HOST_EVAL(MY_ROOT_DIR)/scratch
+          - /HOST_EVAL($PROJECT_HOME)/projects/${tenant}/${owner}
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
