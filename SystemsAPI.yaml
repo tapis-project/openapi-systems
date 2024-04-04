@@ -203,7 +203,30 @@ paths:
         skipCredentialCheck=true to bypass initial verification of credentials.
 
         The attribute *rootDir* serves as an effective root directory when operating on files through the Tapis
-        Files service. When using Files to list, copy, move, mkdir, etc. all paths are relative to this directory.
+        Files service. All paths are relative to this directory when using Files to list, copy, move, mkdir, etc.
+        Required for systems of type LINUX or IRODS. Supports the following variables which are resolved at create
+        time: *${apiUserId}*, *${tenant}* and *${owner}*. May not be updated. Contact support to request a change.
+
+        There is also a special macro available for *rootDir* that may be used under certain conditions when a system
+        is first created. The macro name is HOST_EVAL.
+        The syntax for the macro is HOST_EVAL($var), where *var* is the environment variable to be evaluated
+        on the system host when the create request is made.
+        Note that the $ character preceding the environment variable name is optional.
+        If after resolution the final path does not have the required leading slash (/) to make it an absolute path,
+        then one will be prepended.
+        The following conditions must be met in order to use the macro
+
+          - System must be of type LINUX
+          - Credentials must be provided when system is created.
+          - Macro HOST_EVAL() must only appear once and must be the first element of the path. Including a leading slash is optional.
+          - The *effectiveUserId* for the system must be static. Note that *effectiveUserId* may be set to *${owner}*.
+
+        Here are some examples
+
+          - HOST_EVAL($SCRATCH)
+          - HOST_EVAL($HOME)
+          - /HOST_EVAL(MY_ROOT_DIR)/scratch
+          - /HOST_EVAL($PROJECT_HOME)/projects/${tenant}/${owner}
 
         Note that certain attributes in the request body (such as tenant) are allowed but ignored so that the JSON
         result returned by a GET may be modified and used when making a POST request to create a system.
