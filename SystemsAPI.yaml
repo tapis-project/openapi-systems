@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.6.1'
+  version: '1.6.2'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -95,9 +95,18 @@ paths:
         Use *listType*, *search* and *select* query parameters to limit results. Query
         parameter *listType* allows for filtering results based on authorization. Options for *listType* are
 
-          - *OWNED* Include only items owned by requester (Default)
-          - *SHARED_PUBLIC* Include only items shared publicly
+          - *OWNED* Include only items owned by requester (Default).
+          - *SHARED_PUBLIC* Include only items shared publicly.
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+
+        Use *filterByCredentials* query parameter to limit results based on the presence or absence of registered
+        credentials. Filtering is based on registered credentials for the current *defaultAuthnMethod* of the system.
+        Credentials for other authentication method types are ignored. For a dynamic *effectiveUserId* filtering is
+        based on the Tapis user making the request. Options for *filterByCredentials* are
+
+          - *ANY* Include all items regardless of credentials status (Default).
+          - *WITH_CREDENTIALS* Include only items that have registered credentials.
+          - *NO_CREDENTIALS* Include only items that do not have registered credentials.
 
         Certain Tapis services or a tenant administrator may use the query parameter *impersonationId* to be used in
         place of the requesting Tapis user. Tapis will use this user Id when performing authorization and resolving
@@ -111,7 +120,7 @@ paths:
             type: string
         - name: listType
           in: query
-          description: Determines additional filtering of results based on ownership, permissions and sharing. Default is to only see items owned by requester.
+          description: Determines additional filtering of results based on ownership, permissions and sharing. Default is to only show systems owned by requester.
           schema:
             $ref: '#/components/schemas/ListTypeEnum'
         - name: limit
@@ -158,6 +167,11 @@ paths:
           description: Restricted. Only certain Tapis services or a tenant administrator may impersonate a Tapis user.
           schema:
             type: string
+        - name: filterByCredentials
+          in: query
+          description: Determines additional filtering based on credentials. Default is to show systems with and without credentials.
+          schema:
+            $ref: '#/components/schemas/FilterByCredTypeEnum'
       responses:
         '200':
           description: Success.
@@ -3207,6 +3221,12 @@ components:
         - SET_CRED
         - REMOVE_CRED
         - GET_CRED
+    FilterByCredTypeEnum:
+      type: string
+      enum:
+        - ANY
+        - WITH_CREDENTIALS
+        - NO_CREDENTIALS
     KeyValueInputModeEnum:
       type: string
       enum:
