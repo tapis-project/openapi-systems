@@ -92,12 +92,13 @@ paths:
       description: |
         Retrieve list of systems.
 
-        Use *listType*, *search* and *select* query parameters to limit results. Query
-        parameter *listType* allows for filtering results based on authorization. Options for *listType* are
+        Use *listType*, *search* and *select* query parameters to limit results. Query parameter *listType* allows for
+        filtering results based on authorization. Please note that using *ALL* may have a significant negative impact
+        on performance. Options for *listType* are
 
           - *OWNED* Include only items owned by requester (Default).
           - *SHARED_PUBLIC* Include only items shared publicly.
-          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
 
         Use *filterByCredentials* query parameter to limit results based on the presence or absence of registered
         credentials. Filtering is based on registered credentials for the current *defaultAuthnMethod* of the system.
@@ -363,13 +364,15 @@ paths:
       tags:
         - Systems
       description: |
-        Retrieve details for systems. Use query parameters to specify search conditions. For example owner.eq=jdoe&port.gt=1024
-        Use *listType* and *select* query parameters to limit results. Query parameter *listType* allows
-        for filtering results based on authorization. Options for *listType* are
+        Retrieve details for systems. Use query parameters to specify search conditions.
+        For example owner.eq=jdoe&port.gt=1024
+        Use *listType* and *select* query parameters to limit results. Query parameter *listType* allows for filtering
+        results based on authorization. Please note that using *ALL* may have a significant negative impact
+        on performance. Options for *listType* are
 
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
-          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
       operationId: searchSystemsQueryParameters
       parameters:
         - name: freeFormParameterName
@@ -445,11 +448,12 @@ paths:
       description: |
         Retrieve details for systems. Use request body to specify SQL-like search conditions.
         Use *listType* and *select* query parameters to limit results. Query parameter *listType* allows
-        for filtering results based on authorization. Options for *listType* are
+        for filtering results based on authorization. Please note that using *ALL* may have a significant
+        negative impact on performance. Options for *listType* are
 
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
-          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
       operationId: searchSystemsRequestBody
       parameters:
         - name: listType
