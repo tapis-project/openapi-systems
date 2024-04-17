@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.6.1'
+  version: '1.6.2'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -21,8 +21,6 @@ servers:
   - url: 'https://dev.develop.tapis.io/'
     description: Development environment
     variables: {}
-security:
-  - TapisJWT: []
 tags:
   - name: General
     description: General service health and readiness
@@ -103,6 +101,8 @@ paths:
         place of the requesting Tapis user. Tapis will use this user Id when performing authorization and resolving
         the *effectiveUserId*.
       operationId: getSystems
+      security:
+        - TapisJWT: []
       parameters:
         - name: search
           in: query
@@ -238,6 +238,8 @@ paths:
           - created
           - updated
       operationId: createSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: skipCredentialCheck
           in: query
@@ -299,6 +301,8 @@ paths:
         The owner will be the user who is creating the system. The caller must have read permission to the parent.
         system.
       operationId: createChildSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: parentId
           in: path
@@ -357,6 +361,8 @@ paths:
           - *SHARED_PUBLIC* Include only items shared publicly
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
       operationId: searchSystemsQueryParameters
+      security:
+        - TapisJWT: []
       parameters:
         - name: freeFormParameterName
           in: query
@@ -437,6 +443,8 @@ paths:
           - *SHARED_PUBLIC* Include only items shared publicly
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
       operationId: searchSystemsRequestBody
+      security:
+        - TapisJWT: []
       parameters:
         - name: listType
           in: query
@@ -510,6 +518,8 @@ paths:
         *WARNING Capability constraint matching is not yet supported.*
         Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
       operationId: matchConstraints
+      security:
+        - TapisJWT: []
       requestBody:
         required: true
         description: A JSON object specifying SQL-like constraint conditions as an array of strings. Strings are concatenated to form full query.
@@ -552,6 +562,8 @@ paths:
         Certain Tapis services may use the query parameter *sharedAppCtx* to indicate that the request is in a shared
         application context.
       operationId: getSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -646,6 +658,8 @@ paths:
 
         Note that the attributes owner and enabled may be modified using other endpoints.
       operationId: patchSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -727,6 +741,8 @@ paths:
 
         Note that the attributes owner and enabled may be modified using other endpoints.
       operationId: putSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -790,6 +806,8 @@ paths:
       description: |
         Check if a system is currently enabled, i.e. available for use.
       operationId: isEnabled
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -828,6 +846,8 @@ paths:
       description: |
         Mark a system available for use.
       operationId: enableSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -866,6 +886,8 @@ paths:
       description: |
         Mark a system unavailable for use.
       operationId: disableSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -904,6 +926,8 @@ paths:
       description: |
         Mark a system as deleted. System will not appear in queries unless explicitly requested.
       operationId: deleteSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -942,6 +966,8 @@ paths:
       description: |
         Mark a system as not deleted. System will appear in queries.
       operationId: undeleteSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -980,6 +1006,8 @@ paths:
       description: |
         Change owner of a system.
       operationId: changeSystemOwner
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1023,6 +1051,8 @@ paths:
       description: |
         Retrieve history of changes for a given systemId.
       operationId: getHistory
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1062,6 +1092,8 @@ paths:
         Make a child system a standalone system.  This will break the connection with it's parent, and from
         this point on, the child system will not be connected to the parent.  Warning, this cannot be undone.
       operationId: unlinkFromParent
+      security:
+        - TapisJWT: []
       parameters:
         - name: childSystemId
           in: path
@@ -1103,6 +1135,8 @@ paths:
         this point on, the child system will not be connected to the parent.  This is similar to unlinkFromParent,
         but permissions are required for the parent system rather than the child system.  Warning, this cannot be undone.
       operationId: unlinkChildren
+      security:
+        - TapisJWT: []
       parameters:
         - name: parentSystemId
           in: path
@@ -1170,6 +1204,8 @@ paths:
         The result includes the attribute *authnMethod* indicating the authentication method associated with
         the returned credentials.
       operationId: getUserCredential
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1243,6 +1279,8 @@ paths:
         By default credentials for LINUX and S3 type systems are verified. Use query parameter
         *skipCredentialCheck=true* to bypass initial credential validation.
       operationId: createUserCredential
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1302,6 +1340,8 @@ paths:
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
         if *{userName}* is the Tapis user making the request.
       operationId: removeUserCredential
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1361,6 +1401,8 @@ paths:
         Desired authentication method may be specified using query parameter *authnMethod*. If not specified,
         then credentials for the system's default authentication method are verified.
       operationId: checkUserCredential
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1426,6 +1468,8 @@ paths:
         Please note that the Tapis installation for your site must be configured by the site administrator to
         support systems of type GLOBUS.
       operationId: getGlobusAuthUrl
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1477,6 +1521,8 @@ paths:
         Please note that the Tapis installation for your site must be configured by the site administrator to
         support systems of type GLOBUS.
       operationId: generateGlobusTokens
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1528,6 +1574,8 @@ paths:
       description: |
         Retrieve all system related permissions for a given system and user.
       operationId: getUserPerms
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1577,6 +1625,8 @@ paths:
         Create permissions in the Security Kernel for a user. Requester must be owner of the system.
         Permissions are READ, MODIFY, EXECUTE. MODIFY implies READ.
       operationId: grantUserPerms
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1629,6 +1679,8 @@ paths:
         Remove permissions from the Security Kernel for a user. Requester must be owner of the system.
         Permissions are READ, MODIFY, EXECUTE.
       operationId: revokeUserPerms
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1675,6 +1727,8 @@ paths:
         Remove system user permission from the Security Kernel. Requester must be owner of the system.
         Permissions are READ, MODIFY, EXECUTE.
       operationId: revokeUserPerm
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1727,6 +1781,8 @@ paths:
         Retrieve all sharing information for a system. This includes all users with whom the system
         has been shared and whether or not the system has been made publicly available.
       operationId: getShareInfo
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1774,6 +1830,8 @@ paths:
         *effectiveUserId*, sharing also allows for MODIFY access to all paths for calls made through the
         Files service. Requester must be owner of the system.
       operationId: shareSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1824,6 +1882,8 @@ paths:
         to all paths for calls made through the Files service.
         Requester must be owner of the system.
       operationId: shareSystemPublic
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1858,6 +1918,8 @@ paths:
         Create or update sharing information for a system. The system will be unshared with the list of users
         provided in the request body. Requester must be owner of the system.
       operationId: unShareSystem
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1905,6 +1967,8 @@ paths:
       description: |
         Remove public sharing for a system. Requester must be owner of the system.
       operationId: unShareSystemPublic
+      security:
+        - TapisJWT: []
       parameters:
         - name: systemId
           in: path
@@ -1938,6 +2002,8 @@ paths:
         - Scheduler Profiles
       description: Retrieve list of scheduler profiles.
       operationId: getSchedulerProfiles
+      security:
+        - TapisJWT: []
       responses:
         '200':
           description: Success.
@@ -1981,6 +2047,8 @@ paths:
           - created
           - updated
       operationId: createSchedulerProfile
+      security:
+        - TapisJWT: []
       requestBody:
         required: true
         description: A JSON object specifying information for the profile to be created.
@@ -2026,6 +2094,8 @@ paths:
       description: |
         Retrieve information for a scheduler profile given the profile name.
       operationId: getSchedulerProfile
+      security:
+        - TapisJWT: []
       parameters:
         - name: name
           in: path
@@ -2069,6 +2139,8 @@ paths:
       description: |
         Remove a scheduler profile given the profile name. Requester must be owner of the profile.
       operationId: deleteSchedulerProfile
+      security:
+        - TapisJWT: []
       parameters:
         - name: name
           in: path
