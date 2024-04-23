@@ -45,6 +45,25 @@ tags:
       made through the Files service.
       Note that Tapis permissions and sharing are independent of native permissions enforced by the underlying
       system host.
+  - name: Child Systems
+    description: |
+      A system that has *allowChildren* set to *true* allows for the creation of child systems based on it.
+      This ability provides a way to easily clone and manage systems based on existing systems.
+      Child systems allow a user to set only a few fields, and use all other values from an existing parent system.
+      This can reduce the difficulty in managing systems.
+      It allows for all child systems to be updated when the parent is updated.
+  - name: Scheduler Profiles
+    description: |
+      The Systems service supports managing Tapis scheduler profiles. An HPC center often has certain conventions
+      and restrictions around the use of batch schedulers. A scheduler profile resource can be defined to provide the
+      Tapis Jobs service with additional site specific information to be used when executing applications using a
+      scheduler. A scheduler profile contains information on options that should be hidden from the scheduler,
+      the module load command to use and which modules should be loaded by default when running a job. Anyone in a
+      tenant may create a scheduler profile for use by all users in the tenant. The owner of a profile or a
+      tenant administrator may modify or delete a profile. A profile may referenced in a system definition using the
+      attribute *batchSchedulerProfile*. The profile to be used may also be set in the job submit request using the
+      special scheduler option *--tapis-profile*. The value in the job submit request takes precedence over any value
+      defined for the execution system.
 
 # ------------------------------------------------------------------------------
 # --- Paths -------------------------------------------------------------------
@@ -291,15 +310,14 @@ paths:
       tags:
         - Child Systems
       description: |
-        Create a child system.  The child system gets all of it's attributes from it's parent except for the following
-        fields:
+        Create a child system based on a parent system. The child system inherits most attributes from the parent.
+        The following fields are filled in when the child system is created:
           - *id*
           - *effectiveUserId*
           - *rootDir*
           - *owner*
 
-        The owner will be the user who is creating the system. The caller must have read permission to the parent.
-        system.
+        The owner will be the user who is creating the system. The caller must have read permission on the parent system.
       operationId: createChildSystem
       security:
         - TapisJWT: []
@@ -1089,8 +1107,8 @@ paths:
       tags:
         - Child Systems
       description: |
-        Make a child system a standalone system.  This will break the connection with it's parent, and from
-        this point on, the child system will not be connected to the parent.  Warning, this cannot be undone.
+        Make a child system a standalone system. This will break the connection with it's parent. From
+        this point on, the child system will not be connected to the parent. **WARNING** This cannot be undone.
       operationId: unlinkFromParent
       security:
         - TapisJWT: []
