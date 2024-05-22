@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.6.2'
+  version: '1.6.3'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -2326,8 +2326,6 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
-        importRefId:
-          type: string
         uuid:
           type: string
           format: uuid
@@ -2685,8 +2683,6 @@ components:
         notes:
           type: object
           description: Metadata in the form of a Json object. Not used by Tapis.
-        importRefId:
-          type: string
     ReqPostChildSystem:
       type: object
       required:
@@ -2774,8 +2770,6 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
-        importRefId:
-          type: string
     ReqPatchSystem:
       type: object
       properties:
@@ -2846,8 +2840,6 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
-        importRefId:
-          type: string
     ReqPostPutCredential:
       type: object
       properties:
