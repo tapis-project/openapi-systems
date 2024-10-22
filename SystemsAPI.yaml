@@ -1292,6 +1292,7 @@ paths:
           - Tapis installation for your site must be configured to support the Trust Manager System (TMS).
           - The host for the system must have the sshd configuration set up to use TMS.
           - The *effectiveUserId* must be dynamic.
+          - Mapping of user using *loginUser* is not supported.
 
         By default credentials for LINUX and S3 type systems are verified. Use query parameter
         *skipCredentialCheck=true* to bypass initial credential validation.
@@ -2466,6 +2467,8 @@ components:
         tmsPrivateKey:
           type: string
         tmsPublicKey:
+          type: string
+        tmsFingerprint:
           type: string
         certificate:
           type: string
