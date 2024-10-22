@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.7.0'
+  version: '1.7.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -234,7 +234,6 @@ paths:
         If after resolution the final path does not have the required leading slash (/) to make it an absolute path,
         then one will be prepended.
         The following conditions must be met in order to use the macro
-
           - System must be of type LINUX
           - Credentials must be provided when system is created.
           - Macro HOST_EVAL() must only appear once and must be the first element of the path. Including a leading slash is optional.
@@ -732,7 +731,6 @@ paths:
         result returned by a GET may be modified and used when making a PUT request to update a system.
 
         The attributes that are allowed but ignored for both PUT and POST are
-
           - tenant
           - uuid
           - deleted
@@ -740,7 +738,6 @@ paths:
           - updated
 
         In addition for a PUT operation the following non-updatable attributes are allowed but ignored
-
           - id
           - systemType
           - owner
@@ -1289,6 +1286,13 @@ paths:
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
         if *{userName}* is the Tapis user making the request.
 
+        Use query parameter *createTmsKeys=true* to have the service call a Trust Manager System (TMS) server to create and
+        store an ssh keypair. Default is *false*.
+        Please note that the following restrictions apply:
+          - Tapis installation for your site must be configured to support the Trust Manager System (TMS).
+          - The host for the system must have the sshd configuration set up to use TMS.
+          - The *effectiveUserId* must be dynamic.
+
         By default credentials for LINUX and S3 type systems are verified. Use query parameter
         *skipCredentialCheck=true* to bypass initial credential validation.
       operationId: createUserCredential
@@ -1305,6 +1309,12 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/UserNameString'
+        - name: createTmsKeys
+          in: query
+          description: Use TMS to generate and store an ssh keypair. Default is false.
+          schema:
+            type: boolean
+            default: false
         - name: skipCredentialCheck
           in: query
           description: Bypass initial credential validation. Default is false.
@@ -2453,6 +2463,10 @@ components:
           type: string
         refreshToken:
           type: string
+        tmsPrivateKey:
+          type: string
+        tmsPublicKey:
+          type: string
         certificate:
           type: string
     # --- ShareInfo ------------------------------------------------------------------
@@ -3231,6 +3245,7 @@ components:
         - PKI_KEYS
         - ACCESS_KEY
         - TOKEN
+        - TMS_KEYS
         - CERT
     CategoryEnum:
       type: string
