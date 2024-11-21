@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.7.1'
+  version: '1.8.0'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -1411,7 +1411,9 @@ paths:
         for LINUX and S3 type systems.
 
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
-        as a Tapis user and a search is made for credentials associated with *{userName}*.
+        as a Tapis user and a search is made for credentials associated with *{userName}*. Note that the Tapis user
+        *{userName}* may have a mapping to a host *loginUser* in which case the *loginUser* will be used when
+        verifying the credentials.
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
         as the login user to be used when accessing the host. Note that this would typically be the current
