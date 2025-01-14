@@ -8,7 +8,11 @@ SystemsAPI.yaml.
 There are four branches: local, dev, staging and prod.
 
 All changes should first be made in the branch *local*. Work
-in progress can be pushed to local without impacting live-docs.
+in progress can be pushed to local without impacting live-docs
+or the build of systems-client in tapis-project/tapis-client-java.
+
+The systems client code in tapis-client-java depends on the dev
+branch of this repo, tapis-project/openapi-systems/dev/SystemsAPI.yaml
 
 Updates can then be moved from *local* to *dev* when the code
 in *tapis-client-java* and *tapis-systems* is updated to match
