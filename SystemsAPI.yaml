@@ -1484,7 +1484,7 @@ paths:
       summary: Retrieve a Globus URL that can be used to generate an authorization code for an OAuth2 flow.
       description: |
         Retrieve a Globus URL + Session Id that can be used to generate an oauth2 authorization code associated with
-        the given system.
+        the given system. System must be of type GLOBUS.
         In Globus, the code is referred to as a *Native App Authorization Code*.
         The host property of the system is used as the Globus Endpoint Id or Globus Collection Id.
         Once a user has obtained an authorization code, the corresponding Systems endpoint for generating
@@ -1510,7 +1510,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespGlobusAuthUrl'
         '400':
-          description: Input error.
+          description: Input error or system not of type GLOBUS.
           content:
             application/json:
               schema:
@@ -1540,6 +1540,7 @@ paths:
       summary: Use a Globus authorization code + Tapis session Id to generate tokens
       description: |
         Use a Globus *Native App Authorization Code* and a Tapis session Id to generate a pair of access and refresh tokens.
+        System must be of type GLOBUS.
         The Systems service will use the Tapis Security Kernel to store the tokens for the given system and user.
         The session Id is a Tapis Id that is used to track the oauth2 flow that is started when a call to the
         getGlobusAuthUrl endpoint is made.
@@ -1575,6 +1576,12 @@ paths:
       responses:
         '200':
           description: Tokens generated and credentials updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Input error or system not of type GLOBUS.
           content:
             application/json:
               schema:
