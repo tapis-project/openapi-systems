@@ -43,6 +43,8 @@ tags:
       as well as share publicly with all users in a tenant. Sharing grants users READ and EXECUTE access to the system.
       When the system has a dynamic *effectiveUserId*, sharing also allows for MODIFY access to all paths for calls
       made through the Files service.
+      If system type is ``IRODS`` and the attribute *useProxy* is set to ``true`` then the system is also treated as
+      having a dynamic *effectiveUserId* and users will be granted MODIFY access.
       Note that Tapis permissions and sharing are independent of native permissions enforced by the underlying
       system host.
   - name: Child Systems
