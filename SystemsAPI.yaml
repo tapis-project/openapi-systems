@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.8.1'
+  version: '1.8.2'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -43,6 +43,8 @@ tags:
       as well as share publicly with all users in a tenant. Sharing grants users READ and EXECUTE access to the system.
       When the system has a dynamic *effectiveUserId*, sharing also allows for MODIFY access to all paths for calls
       made through the Files service.
+      If system type is ``IRODS`` and the attribute *useProxy* is set to ``true`` then the system is also treated as
+      having a dynamic *effectiveUserId* and users will be granted MODIFY access.
       Note that Tapis permissions and sharing are independent of native permissions enforced by the underlying
       system host.
   - name: Child Systems
@@ -1484,7 +1486,7 @@ paths:
       summary: Retrieve a Globus URL that can be used to generate an authorization code for an OAuth2 flow.
       description: |
         Retrieve a Globus URL + Session Id that can be used to generate an oauth2 authorization code associated with
-        the given system.
+        the given system. System must be of type GLOBUS.
         In Globus, the code is referred to as a *Native App Authorization Code*.
         The host property of the system is used as the Globus Endpoint Id or Globus Collection Id.
         Once a user has obtained an authorization code, the corresponding Systems endpoint for generating
@@ -1510,7 +1512,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespGlobusAuthUrl'
         '400':
-          description: Input error.
+          description: Input error or system not of type GLOBUS.
           content:
             application/json:
               schema:
@@ -1540,6 +1542,7 @@ paths:
       summary: Use a Globus authorization code + Tapis session Id to generate tokens
       description: |
         Use a Globus *Native App Authorization Code* and a Tapis session Id to generate a pair of access and refresh tokens.
+        System must be of type GLOBUS.
         The Systems service will use the Tapis Security Kernel to store the tokens for the given system and user.
         The session Id is a Tapis Id that is used to track the oauth2 flow that is started when a call to the
         getGlobusAuthUrl endpoint is made.
@@ -1575,6 +1578,12 @@ paths:
       responses:
         '200':
           description: Tokens generated and credentials updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '400':
+          description: Input error or system not of type GLOBUS.
           content:
             application/json:
               schema:
