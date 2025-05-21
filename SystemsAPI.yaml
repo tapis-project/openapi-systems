@@ -1540,6 +1540,13 @@ paths:
         Use a Globus *Native App Authorization Code* and a Tapis session Id to generate a pair of access and refresh tokens.
         System must be of type GLOBUS.
         The Systems service will use the Tapis Security Kernel to store the tokens for the given system and user.
+
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* must be set
+        to the Tapis user. Note that what we call the *Tapis user* comes from the username claim in the Tapis JWT.
+
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* must be set to
+        the static *effectiveUserId*.
+
         The session Id is a Tapis Id that is used to track the oauth2 flow that is started when a call to the
         getGlobusAuthUrl endpoint is made.
         The authorization code, as per Globus documentation, is valid for 10 minutes.
