@@ -761,6 +761,12 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/IdString'
+        - name: skipCredentialCheck
+          in: query
+          description: Bypass initial credential validation (for LINUX and S3). Default is false.
+          schema:
+            type: boolean
+            default: false
       requestBody:
         required: true
         description: A JSON object specifying changes to be applied.
