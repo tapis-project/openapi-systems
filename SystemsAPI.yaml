@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.8.3'
+  version: '1.9.2'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -111,12 +111,18 @@ paths:
       description: |
         Retrieve list of systems.
 
-        Use *listType*, *search* and *select* query parameters to limit results. Query
-        parameter *listType* allows for filtering results based on authorization. Options for *listType* are
+        Use *listType*, *search* and *select* query parameters to limit results. Query parameter *listType* allows for
+        filtering results based on authorization. Please note that using *ALL* may have a significant negative impact
+        on performance. Options for *listType* are
 
-          - *OWNED* Include only items owned by requester (Default)
-          - *SHARED_PUBLIC* Include only items shared publicly
-          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+          - *OWNED* Include only items owned by requester (Default).
+          - *SHARED_PUBLIC* Include only items shared publicly.
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
+
+        Use *hasCredentials* boolean query parameter to limit results based on the presence or absence of registered credentials
+        for a system. Filtering is based on registered credentials for the current *defaultAuthnMethod* of a system.
+        Credentials for other authentication method types are ignored. For a dynamic *effectiveUserId* filtering is
+        based on the Tapis user making the request. If the query parameter is absent then no filtering is done.
 
         Certain Tapis services or a tenant administrator may use the query parameter *impersonationId* to be used in
         place of the requesting Tapis user. Tapis will use this user Id when performing authorization and resolving
@@ -132,7 +138,7 @@ paths:
             type: string
         - name: listType
           in: query
-          description: Determines additional filtering of results based on ownership, permissions and sharing. Default is to only see items owned by requester.
+          description: Determines additional filtering of results based on ownership, permissions and sharing. Default is to only show systems owned by requester.
           schema:
             $ref: '#/components/schemas/ListTypeEnum'
         - name: limit
@@ -179,6 +185,11 @@ paths:
           description: Restricted. Only certain Tapis services or a tenant administrator may impersonate a Tapis user.
           schema:
             type: string
+        - name: hasCredentials
+          in: query
+          description: Determines additional filtering based on credentials. If absent not filtering is done.
+          schema:
+            type: boolean
       responses:
         '200':
           description: Success.
@@ -372,13 +383,15 @@ paths:
       tags:
         - Systems
       description: |
-        Retrieve details for systems. Use query parameters to specify search conditions. For example owner.eq=jdoe&port.gt=1024
-        Use *listType* and *select* query parameters to limit results. Query parameter *listType* allows
-        for filtering results based on authorization. Options for *listType* are
+        Retrieve details for systems. Use query parameters to specify search conditions.
+        For example owner.eq=jdoe&port.gt=1024
+        Use *listType* and *select* query parameters to limit results. Query parameter *listType* allows for filtering
+        results based on authorization. Please note that using *ALL* may have a significant negative impact
+        on performance. Options for *listType* are
 
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
-          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
       operationId: searchSystemsQueryParameters
       security:
         - TapisJWT: []
@@ -456,11 +469,12 @@ paths:
       description: |
         Retrieve details for systems. Use request body to specify SQL-like search conditions.
         Use *listType* and *select* query parameters to limit results. Query parameter *listType* allows
-        for filtering results based on authorization. Options for *listType* are
+        for filtering results based on authorization. Please note that using *ALL* may have a significant
+        negative impact on performance. Options for *listType* are
 
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
-          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission.
+          - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
       operationId: searchSystemsRequestBody
       security:
         - TapisJWT: []
@@ -2272,10 +2286,6 @@ components:
           format: int32
         dtnSystemId:
           $ref: '#/components/schemas/DtnSysId'
-        isPublic:
-          type: boolean
-        isDynamicEffectiveUser:
-          type: boolean
         canExec:
           type: boolean
           description: Indicates if system can be used to execute jobs.
@@ -2322,10 +2332,6 @@ components:
           $ref: '#/components/schemas/QueueNameString'
         batchSchedulerProfile:
           $ref: '#/components/schemas/IdString'
-        sharedWithUsers:
-          type: array
-          items:
-            type: string
         jobCapabilities:
           type: array
           items:
@@ -2345,6 +2351,18 @@ components:
           type: string
         updated:
           type: string
+    # ---- dynamic TapisSystem properties. Computed when a system is fetched.
+        hasCredentials:
+          type: boolean
+          default: false
+        isPublic:
+          type: boolean
+        isDynamicEffectiveUser:
+          type: boolean
+        sharedWithUsers:
+          type: array
+          items:
+            type: string
     # --- SystemHistory ------------------------------------------------------------------
     SystemHistory:
       type: object
