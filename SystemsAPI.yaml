@@ -187,7 +187,7 @@ paths:
             type: string
         - name: hasCredentials
           in: query
-          description: Determines additional filtering based on credentials. If absent not filtering is done.
+          description: Determines additional filtering based on credentials. If absent no filtering is done.
           schema:
             type: boolean
       responses:
@@ -392,6 +392,11 @@ paths:
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
+        
+        Use *hasCredentials* boolean query parameter to limit results based on the presence or absence of registered credentials
+        for a system. Filtering is based on registered credentials for the current *defaultAuthnMethod* of a system.
+        Credentials for other authentication method types are ignored. For a dynamic *effectiveUserId* filtering is
+        based on the Tapis user making the request. If the query parameter is absent then no filtering is done.
       operationId: searchSystemsQueryParameters
       security:
         - TapisJWT: []
@@ -444,6 +449,11 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
+        - name: hasCredentials
+          in: query
+          description: Determines additional filtering based on credentials. If absent no filtering is done.
+          schema:
+            type: boolean
       responses:
         '200':
           description: Success.
@@ -475,6 +485,12 @@ paths:
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
+
+        Use *hasCredentials* boolean query parameter to limit results based on the presence or absence of registered credentials
+        for a system. Filtering is based on registered credentials for the current *defaultAuthnMethod* of a system.
+        Credentials for other authentication method types are ignored. For a dynamic *effectiveUserId* filtering is
+        based on the Tapis user making the request. If the query parameter is absent then no filtering is done.
+
       operationId: searchSystemsRequestBody
       security:
         - TapisJWT: []
@@ -517,6 +533,11 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
+        - name: hasCredentials
+          in: query
+          description: Determines additional filtering based on credentials. If absent no filtering is done.
+          schema:
+            type: boolean
       requestBody:
         required: true
         description: A JSON object specifying SQL-like search conditions as an array of strings. Strings are concatenated to form full search query.
