@@ -1288,7 +1288,8 @@ paths:
         comes from the username claim in the Tapis JWT.
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
-        as the login user to be used when accessing the host.
+        as the login user to be used when accessing the host. In this case, TAPIS will reject a credential creation request 
+        with a *loginUser* field in the request body, because the static effective user is always the login user.
 
         Operation is allowed if requester is the system owner or a tenant administrator.
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
