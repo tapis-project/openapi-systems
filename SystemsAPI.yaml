@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.9.2'
+  version: '1.9.3'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -228,8 +228,9 @@ paths:
         the host login user.
 
         If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
-        *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
-        database, they are persisted in the Security Kernel.
+        *authnCredential* attribute of the request body. Please note that if there is a *loginUser* field in the
+        credential request body, TAPIS will reject the request because the static effective user is always the login user.
+        The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
         By default for LINUX and S3 type systems credentials provided are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
@@ -1319,7 +1320,8 @@ paths:
         comes from the username claim in the Tapis JWT.
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
-        as the login user to be used when accessing the host.
+        as the login user to be used when accessing the host. Please note that if there is a *loginUser* field in the
+        request body, TAPIS will reject the request because the static effective user is always the login user.
 
         Operation is allowed if requester is the system owner or a tenant administrator.
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
