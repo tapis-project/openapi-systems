@@ -1053,6 +1053,8 @@ paths:
         - Systems
       description: |
         Change owner of a system.
+        
+        Please note that existing permission grants and shares will remain.
       operationId: changeSystemOwner
       security:
         - TapisJWT: []
@@ -2535,6 +2537,30 @@ components:
           type: string
         certificate:
           type: string
+    # --- SkShareRecord ----------------------------------------------------------------
+    SkShareRecord:
+      type: object
+      properties:
+        tenant:
+          type: string
+        grantor:
+          type: string
+        grantee:
+          type: string
+        resourceType:
+          type: string
+        resourceId1:
+          type: string
+        resourceId2:
+          type: string
+        privilege:
+          type: string
+        created:
+          type: string
+        createdBy:
+          type: string
+        createdByTenant:
+          type: string
     # --- ShareInfo ------------------------------------------------------------------
     ShareInfo:
       type: object
@@ -2548,6 +2574,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserNameString'
+        shareRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkShareRecord'
     # --- KeyValuePair -------------------------------------------------------
     KeyValuePair:
       type: object
