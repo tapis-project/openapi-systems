@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '1.9.2'
+  version: '25Q4.0'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -119,6 +119,11 @@ paths:
           - *SHARED_PUBLIC* Include only items shared publicly.
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
 
+        Use *hasCredentials* boolean query parameter to limit results based on the presence or absence of registered credentials
+        for a system. Filtering is based on registered credentials for the current *defaultAuthnMethod* of a system.
+        Credentials for other authentication method types are ignored. For a dynamic *effectiveUserId* filtering is
+        based on the Tapis user making the request. If the query parameter is absent then no filtering is done.
+
         Certain Tapis services or a tenant administrator may use the query parameter *impersonationId* to be used in
         place of the requesting Tapis user. Tapis will use this user Id when performing authorization and resolving
         the *effectiveUserId*.
@@ -180,6 +185,11 @@ paths:
           description: Restricted. Only certain Tapis services or a tenant administrator may impersonate a Tapis user.
           schema:
             type: string
+        - name: hasCredentials
+          in: query
+          description: Determines additional filtering based on credentials. If absent no filtering is done.
+          schema:
+            type: boolean
       responses:
         '200':
           description: Success.
@@ -218,8 +228,9 @@ paths:
         the host login user.
 
         If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
-        *authnCredential* attribute of the request body. The Systems service does not store the secrets in its
-        database, they are persisted in the Security Kernel.
+        *authnCredential* attribute of the request body. Please note that if there is a *loginUser* field in the
+        credential request body, TAPIS will reject the request because the static effective user is always the login user.
+        The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
         By default for LINUX and S3 type systems credentials provided are verified. Use query parameter
         skipCredentialCheck=true to bypass initial verification of credentials.
@@ -382,6 +393,11 @@ paths:
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
+        
+        Use *hasCredentials* boolean query parameter to limit results based on the presence or absence of registered credentials
+        for a system. Filtering is based on registered credentials for the current *defaultAuthnMethod* of a system.
+        Credentials for other authentication method types are ignored. For a dynamic *effectiveUserId* filtering is
+        based on the Tapis user making the request. If the query parameter is absent then no filtering is done.
       operationId: searchSystemsQueryParameters
       security:
         - TapisJWT: []
@@ -434,6 +450,11 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
+        - name: hasCredentials
+          in: query
+          description: Determines additional filtering based on credentials. If absent no filtering is done.
+          schema:
+            type: boolean
       responses:
         '200':
           description: Success.
@@ -465,6 +486,12 @@ paths:
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
           - *ALL* Include all items requester is authorized to view. Includes check for READ or MODIFY permission. May impact performance.
+
+        Use *hasCredentials* boolean query parameter to limit results based on the presence or absence of registered credentials
+        for a system. Filtering is based on registered credentials for the current *defaultAuthnMethod* of a system.
+        Credentials for other authentication method types are ignored. For a dynamic *effectiveUserId* filtering is
+        based on the Tapis user making the request. If the query parameter is absent then no filtering is done.
+
       operationId: searchSystemsRequestBody
       security:
         - TapisJWT: []
@@ -507,6 +534,11 @@ paths:
           schema:
             type: string
             default: 'summaryAttributes'
+        - name: hasCredentials
+          in: query
+          description: Determines additional filtering based on credentials. If absent no filtering is done.
+          schema:
+            type: boolean
       requestBody:
         required: true
         description: A JSON object specifying SQL-like search conditions as an array of strings. Strings are concatenated to form full search query.
@@ -1021,6 +1053,8 @@ paths:
         - Systems
       description: |
         Change owner of a system.
+        
+        Please note that existing permission grants and shares will remain.
       operationId: changeSystemOwner
       security:
         - TapisJWT: []
@@ -1288,7 +1322,8 @@ paths:
         comes from the username claim in the Tapis JWT.
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
-        as the login user to be used when accessing the host.
+        as the login user to be used when accessing the host. Please note that if there is a *loginUser* field in the
+        request body, TAPIS will reject the request because the static effective user is always the login user.
 
         Operation is allowed if requester is the system owner or a tenant administrator.
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
@@ -2342,6 +2377,9 @@ components:
         updated:
           type: string
     # ---- dynamic TapisSystem properties. Computed when a system is fetched.
+        hasCredentials:
+          type: boolean
+          default: false
         isPublic:
           type: boolean
         isDynamicEffectiveUser:
@@ -2499,6 +2537,30 @@ components:
           type: string
         certificate:
           type: string
+    # --- SkShareRecord ----------------------------------------------------------------
+    SkShareRecord:
+      type: object
+      properties:
+        tenant:
+          type: string
+        grantor:
+          type: string
+        grantee:
+          type: string
+        resourceType:
+          type: string
+        resourceId1:
+          type: string
+        resourceId2:
+          type: string
+        privilege:
+          type: string
+        created:
+          type: string
+        createdBy:
+          type: string
+        createdByTenant:
+          type: string
     # --- ShareInfo ------------------------------------------------------------------
     ShareInfo:
       type: object
@@ -2512,6 +2574,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserNameString'
+        shareRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkShareRecord'
     # --- KeyValuePair -------------------------------------------------------
     KeyValuePair:
       type: object
