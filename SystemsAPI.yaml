@@ -824,7 +824,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '401':
-          description: Not authorized.
+          description: Not Authenticated
           content:
             application/json:
               schema:
@@ -1116,6 +1116,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespSystemHistory'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/hostEval/{envVarName}':
+    get:
+      tags:
+        - Systems
+      description: |
+        Resolve environment variable
+      operationId: hostEval
+      security:
+        - TapisJWT: []
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+        - name: envVarName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/EnvVarNameString'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespName'
+        '400':
+          description: Bad request. Possibly an invalid character in envVarName.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
         '403':
           description: Permission denied.
           content:
@@ -1559,7 +1616,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '401':
-          description: Not authorized.
+          description: Not Authenticated
           content:
             application/json:
               schema:
@@ -1637,7 +1694,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '401':
-          description: Not authorized.
+          description: Not Authenticated
           content:
             application/json:
               schema:
@@ -2630,6 +2687,9 @@ components:
       type: string
       minLength: 1
       maxLength: 60
+    EnvVarNameString:
+      type: string
+      minLength: 1
     EffectiveUserId:
       type: string
       minLength: 1
@@ -3081,6 +3141,28 @@ components:
       properties:
         aBool:
           type: boolean
+    RespName:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        commit:
+          type: string
+        build:
+          type: string
+        metadata:
+          type: object
+        result:
+          $ref: '#/components/schemas/ResultName'
+    ResultName:
+      type: object
+      properties:
+        name:
+          type: string
     RespNameArray:
       type: object
       properties:
@@ -3181,7 +3263,7 @@ components:
         build:
           type: string
         result:
-          type: array
+          type: arr
           items:
             $ref: '#/components/schemas/TapisSystem'
         metadata:
