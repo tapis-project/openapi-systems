@@ -1140,6 +1140,7 @@ paths:
         - Systems
       description: |
         Resolve environment variable by connecting to host associated with system.
+        Note that this is done for the current *effectiveUserId*.
         Appropriate valid credentials must have already been registered.
         The provided *{envVarName}* must start with an alphabetic character or underscore followed by 0 or more
         alphanumeric characters or underscores.
