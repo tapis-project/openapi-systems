@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '25Q4.0'
+  version: '25Q4.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -1139,7 +1139,10 @@ paths:
       tags:
         - Systems
       description: |
-        Resolve environment variable
+        Resolve environment variable by connecting to host associated with system.
+        Appropriate valid credentials must have already been registered.
+        The provided *{envVarName}* must start with an alphabetic character or underscore followed by 0 or more
+        alphanumeric characters or underscores.
       operationId: hostEval
       security:
         - TapisJWT: []
@@ -3263,7 +3266,7 @@ components:
         build:
           type: string
         result:
-          type: arr
+          type: array
           items:
             $ref: '#/components/schemas/TapisSystem'
         metadata:
