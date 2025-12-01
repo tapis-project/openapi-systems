@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '25Q4.0'
+  version: '25Q4.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -824,7 +824,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '401':
-          description: Not authorized.
+          description: Not Authenticated
           content:
             application/json:
               schema:
@@ -1116,6 +1116,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespSystemHistory'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/{systemId}/hostEval/{envVarName}':
+    get:
+      tags:
+        - Systems
+      description: |
+        Resolve environment variable by connecting to host associated with system.
+        Note that this is done for the current *effectiveUserId*.
+        Appropriate valid credentials must have already been registered.
+        The provided *{envVarName}* must start with an alphabetic character or underscore followed by 0 or more
+        alphanumeric characters or underscores.
+      operationId: hostEval
+      security:
+        - TapisJWT: []
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+        - name: envVarName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/EnvVarNameString'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespName'
+        '400':
+          description: Bad request. Possibly an invalid character in envVarName.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
         '403':
           description: Permission denied.
           content:
@@ -1559,7 +1620,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '401':
-          description: Not authorized.
+          description: Not Authenticated
           content:
             application/json:
               schema:
@@ -1637,7 +1698,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RespBasic'
         '401':
-          description: Not authorized.
+          description: Not Authenticated
           content:
             application/json:
               schema:
@@ -2630,6 +2691,9 @@ components:
       type: string
       minLength: 1
       maxLength: 60
+    EnvVarNameString:
+      type: string
+      minLength: 1
     EffectiveUserId:
       type: string
       minLength: 1
@@ -3081,6 +3145,28 @@ components:
       properties:
         aBool:
           type: boolean
+    RespName:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        commit:
+          type: string
+        build:
+          type: string
+        metadata:
+          type: object
+        result:
+          $ref: '#/components/schemas/ResultName'
+    ResultName:
+      type: object
+      properties:
+        name:
+          type: string
     RespNameArray:
       type: object
       properties:
