@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '25Q4.1'
+  version: '25Q4.2'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -570,7 +570,8 @@ paths:
       tags:
         - Systems
       description: |
-        *WARNING Capability constraint matching is not yet supported.*
+        **WARNING** *Capability constraint matching is not yet supported.*
+        
         Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
       operationId: matchConstraints
       security:
@@ -1055,6 +1056,10 @@ paths:
         Change owner of a system.
         
         Please note that existing permission grants and shares will remain.
+        
+        **WARNING** Note also that no credentials are deleted during this process. So, for example, after the change
+        a system with a static *effectiveUserId* will retain the credentials and host access of the static
+        *effectiveUser*.
       operationId: changeSystemOwner
       security:
         - TapisJWT: []
@@ -1142,6 +1147,7 @@ paths:
         Resolve environment variable by connecting to host associated with system.
         Note that this is done for the current *effectiveUserId*.
         Appropriate valid credentials must have already been registered.
+        The system must be of type LINUX.
         The provided *{envVarName}* must start with an alphabetic character or underscore followed by 0 or more
         alphanumeric characters or underscores.
       operationId: hostEval
@@ -1244,7 +1250,8 @@ paths:
       description: |
         Make a child system a standalone system.  This will break the connection with it's parent, and from
         this point on, the child system will not be connected to the parent.  This is similar to unlinkFromParent,
-        but permissions are required for the parent system rather than the child system.  Warning, this cannot be undone.
+        but permissions are required for the parent system rather than the child system.
+        **WARNING** This cannot be undone.
       operationId: unlinkChildren
       security:
         - TapisJWT: []
