@@ -570,7 +570,8 @@ paths:
       tags:
         - Systems
       description: |
-        *WARNING Capability constraint matching is not yet supported.*
+        **WARNING** *Capability constraint matching is not yet supported.*
+        
         Retrieve details for systems. Use request body to specify constraint conditions as an SQL-like WHERE clause.
       operationId: matchConstraints
       security:
@@ -1055,6 +1056,10 @@ paths:
         Change owner of a system.
         
         Please note that existing permission grants and shares will remain.
+        
+        **WARNING** Note also that no credentials are deleted during this process. So, for example, after the change
+        a system with a static *effectiveUserId* will retain the credentials and host access of the static
+        *effectiveUser*.
       operationId: changeSystemOwner
       security:
         - TapisJWT: []
@@ -1245,7 +1250,8 @@ paths:
       description: |
         Make a child system a standalone system.  This will break the connection with it's parent, and from
         this point on, the child system will not be connected to the parent.  This is similar to unlinkFromParent,
-        but permissions are required for the parent system rather than the child system.  Warning, this cannot be undone.
+        but permissions are required for the parent system rather than the child system.
+        **WARNING** This cannot be undone.
       operationId: unlinkChildren
       security:
         - TapisJWT: []
