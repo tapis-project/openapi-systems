@@ -2563,6 +2563,10 @@ components:
           type: integer
         maxMinutes:
           type: integer
+        schedulerOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppArgSpec'
     # --- Capability ------------------------------------------------------------------
     Capability:
       type: object
@@ -2581,6 +2585,23 @@ components:
           type: integer
         value:
           type: string
+    # --- AppArgSpec --------------------------------------------------------------
+    AppArgSpec:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          $ref: '#/components/schemas/InputNameString'
+        description:
+          $ref: '#/components/schemas/ArgDescriptionString'
+        inputMode:
+          $ref: '#/components/schemas/ArgInputModeEnum'
+        arg:
+          type: string
+          minLength: 1
+        notes:
+          type: object
     # --- Credential ------------------------------------------------------------------
     Credential:
       type: object
@@ -2729,9 +2750,6 @@ components:
     BucketName:
       type: string
       description: Name of the bucket for an S3 type system.
-    ArgDescriptionString:
-      type: string
-      maxLength: 8096
     RootDir:
       type: string
       maxLength: 4096
@@ -2748,6 +2766,13 @@ components:
       type: string
       minLength: 1
       maxLength: 128
+    ArgDescriptionString:
+      type: string
+      maxLength: 8096
+    InputNameString:
+      type: string
+      minLength: 1
+      maxLength: 80
 
     # -------------------------------------------------------------------------
     # --- Request objects -----------------------------------------------------
@@ -3499,6 +3524,14 @@ components:
         - REMOVE_CRED
         - GET_CRED
     KeyValueInputModeEnum:
+      type: string
+      enum:
+        - REQUIRED
+        - FIXED
+        - INCLUDE_ON_DEMAND
+        - INCLUDE_BY_DEFAULT
+      default: INCLUDE_BY_DEFAULT
+    ArgInputModeEnum:
       type: string
       enum:
         - REQUIRED
