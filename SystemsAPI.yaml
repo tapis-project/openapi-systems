@@ -2596,7 +2596,7 @@ components:
         description:
           $ref: '#/components/schemas/ArgDescriptionString'
         inputMode:
-          $ref: '#/components/schemas/ArgInputModeEnum'
+          $ref: '#/components/schemas/SysArgInputModeEnum'
         arg:
           type: string
           minLength: 1
@@ -3531,7 +3531,7 @@ components:
         - INCLUDE_ON_DEMAND
         - INCLUDE_BY_DEFAULT
       default: INCLUDE_BY_DEFAULT
-    ArgInputModeEnum:
+    SysArgInputModeEnum:
       type: string
       enum:
         - REQUIRED
