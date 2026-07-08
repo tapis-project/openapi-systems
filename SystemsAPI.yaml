@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tapis Systems API
   description: The Tapis Systems API provides for management of Tapis Systems including permissions, credentials and Scheduler Profiles.
-  version: '26Q2.0'
+  version: '26Q2.1'
   termsOfService: "https://tapis-project.org"
   contact:
     name: "Systems API - CICSupport"
@@ -1594,6 +1594,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RespBasic'
+  '/v3/systems/credential/{systemId}':
+    get:
+      tags:
+        - Credentials
+      description: |
+        Retrieve credential metadata information for given system. This will return credential metadata records
+        for all users who have registered credentials for the system.
+        TODO/TBD Note that although it is unlikely, it is possible a user will have two records associated with their
+        username. One for a static *effectiveUserId* and one for a dynamic *effectiveUserId*.
+
+      operationId: getSystemCredentialMetadata
+      security:
+        - TapisJWT: []
+      parameters:
+        - name: systemId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespCredentialInfoList'
+        '400':
+          description: Input error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '403':
+          description: Permission denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '404':
+          description: System not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespBasic'
   '/v3/systems/credential/{systemId}/globus/authUrl':
     get:
       tags:
@@ -2632,6 +2682,44 @@ components:
           type: string
         certificate:
           type: string
+
+    # --- CredentialInfo ------------------------------------------------------------------
+    CredentialInfo:
+      type: object
+      properties:
+        tapisUser:
+          $ref: '#/components/schemas/UserNameString'
+        loginUser:
+          $ref: '#/components/schemas/UserNameString'
+        hostUserUser:
+          $ref: '#/components/schemas/UserNameString'
+        isStatic:
+          type: boolean
+        hasCredentials:
+          type: boolean
+        hasPassword:
+          type: boolean
+        hasPkiKeys:
+          type: boolean
+        hasAccessKey:
+          type: boolean
+        hasToken:
+          type: boolean
+        hasTmsKeys:
+          type: boolean
+        syncStatusEnum:
+          $ref: '#/components/schemas/CredentialInfoSyncStatusEnum'
+        syncFailCount:
+          type: integer
+        syncFailMessage:
+          type: string
+        syncFailed:
+          type: string
+        created:
+          type: string
+        updated:
+          type: string
+          
     # --- SkShareRecord ----------------------------------------------------------------
     SkShareRecord:
       type: object
@@ -3360,6 +3448,25 @@ components:
           $ref: '#/components/schemas/Credential'
         metadata:
           type: object
+    RespCredentialInfoList:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        version:
+          type: string
+        commit:
+          type: string
+        build:
+          type: string
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialInfo'
+        metadata:
+          type: object
     RespSchedulerProfile:
       type: object
       properties:
@@ -3539,3 +3646,10 @@ components:
         - INCLUDE_ON_DEMAND
         - INCLUDE_BY_DEFAULT
       default: INCLUDE_BY_DEFAULT
+    CredentialInfoSyncStatusEnum:
+      type: string
+      enum:
+        - PENDING
+        - IN_PROGRESS
+        - FAILED
+        - COMPLETED
