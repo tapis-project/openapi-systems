@@ -1602,36 +1602,6 @@ paths:
         a user will have two records associated with their username. One for a static *effectiveUserId* and one for a
         dynamic *effectiveUserId*.
 
-
-
-
-        isStatic:
-          type: boolean
-        hasCredentials:
-          type: boolean
-        hasPassword:
-          type: boolean
-        hasPkiKeys:
-          type: boolean
-        hasAccessKey:
-          type: boolean
-        hasToken:
-          type: boolean
-        hasTmsKeys:
-          type: boolean
-        syncStatusEnum:
-          $ref: '#/components/schemas/CredentialInfoSyncStatusEnum'
-        syncFailCount:
-          type: integer
-        syncFailMessage:
-          type: string
-        syncFailed:
-          type: string
-        created:
-          type: string
-        updated:
-          type: string
-
         A credential metadata record has the following attributes:
           - *tapisUser* Tapis user associated with the credential. Should always be system owner for static *effectiveUserId* case.
           - *loginUser* Optional mapping to a host login user for dynamic *effectiveUserId* case.
