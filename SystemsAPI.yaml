@@ -114,7 +114,6 @@ paths:
         Use *listType*, *search* and *select* query parameters to limit results. Query parameter *listType* allows for
         filtering results based on authorization. Please note that using *ALL* may have a significant negative impact
         on performance. Options for *listType* are
-
           - *OWNED* Include only items owned by requester (Default)
           - *SHARED_PUBLIC* Include only items shared publicly
           - *SHARED_DIRECT* Include only items shared directly with requester. Exclude publicly shared items.
@@ -257,7 +256,6 @@ paths:
           - The *effectiveUserId* for the system must be static. Note that *effectiveUserId* may be set to *${owner}*.
 
         Here are some examples
-
           - HOST_EVAL($SCRATCH)
           - HOST_EVAL($HOME)
           - /HOST_EVAL(MY_ROOT_DIR)/scratch
@@ -1604,6 +1602,54 @@ paths:
         a user will have two records associated with their username. One for a static *effectiveUserId* and one for a
         dynamic *effectiveUserId*.
 
+
+
+
+        isStatic:
+          type: boolean
+        hasCredentials:
+          type: boolean
+        hasPassword:
+          type: boolean
+        hasPkiKeys:
+          type: boolean
+        hasAccessKey:
+          type: boolean
+        hasToken:
+          type: boolean
+        hasTmsKeys:
+          type: boolean
+        syncStatusEnum:
+          $ref: '#/components/schemas/CredentialInfoSyncStatusEnum'
+        syncFailCount:
+          type: integer
+        syncFailMessage:
+          type: string
+        syncFailed:
+          type: string
+        created:
+          type: string
+        updated:
+          type: string
+
+        A credential metadata record has the following attributes:
+          - *tapisUser* Tapis user associated with the credential. Should always be system owner for static *effectiveUserId* case.
+          - *loginUser* Optional mapping to a host login user for dynamic *effectiveUserId* case.
+          - *hostUser* Username used when connecting to host.
+          - *isStatic* Indicates if record is for the static or dynamic *effectiveUserId* case.
+          - *hasCredentials* Indicates if system has credentials registered for the current *defaultAuthnMethod*.
+          - *hasPassword* Indicates if credentials for PASSWORD have been registered.
+          - *hasPkiKeys* Indicates if credentials for PKI_KEYS have been registered.
+          - *hasAccessKey* Indicates if credentials for ACCESS_KEY have been registered.
+          - *hasToken* Indicates if credentials for TOKEN have been registered.
+          - *hasTmsKeys* Indicates if credentials for TMS_KEYS have been registered.
+          - *syncStatus* Indicates current status of synchronization between security kernel (SK) and Systems service: PENDING, IN_PROGRESS, FAILED, COMPLETED
+          - *syncFailCount* Number of sync attempts that have failed since that last successful sync.
+          - *syncFailMessage*  Message indicating why last sync attempt failed.
+          - *syncFailed* UTC time for time of last sync failure.
+          - *created* UTC time for when record was created.
+          - *updated* UTC time for when record was last updated.
+
       operationId: getCredentialMetadata
       security:
         - TapisJWT: []
@@ -2691,7 +2737,7 @@ components:
           $ref: '#/components/schemas/UserNameString'
         loginUser:
           $ref: '#/components/schemas/UserNameString'
-        hostUserUser:
+        hostUser:
           $ref: '#/components/schemas/UserNameString'
         isStatic:
           type: boolean
