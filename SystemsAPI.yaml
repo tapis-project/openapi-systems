@@ -1603,22 +1603,22 @@ paths:
         dynamic *effectiveUserId*.
 
         A credential metadata record has the following attributes:
-          - *tapisUser* Tapis user associated with the credential. Should always be system owner for static *effectiveUserId* case.
-          - *loginUser* Optional mapping to a host login user for dynamic *effectiveUserId* case.
-          - *hostUser* Username used when connecting to host.
-          - *isStatic* Indicates if record is for the static or dynamic *effectiveUserId* case.
-          - *hasCredentials* Indicates if system has credentials registered for the current *defaultAuthnMethod*.
-          - *hasPassword* Indicates if credentials for PASSWORD have been registered.
-          - *hasPkiKeys* Indicates if credentials for PKI_KEYS have been registered.
-          - *hasAccessKey* Indicates if credentials for ACCESS_KEY have been registered.
-          - *hasToken* Indicates if credentials for TOKEN have been registered.
-          - *hasTmsKeys* Indicates if credentials for TMS_KEYS have been registered.
-          - *syncStatus* Indicates current status of synchronization between security kernel (SK) and Systems service: PENDING, IN_PROGRESS, FAILED, COMPLETED
-          - *syncFailCount* Number of sync attempts that have failed since that last successful sync.
-          - *syncFailMessage*  Message indicating why last sync attempt failed.
-          - *syncFailed* UTC time for time of last sync failure.
-          - *created* UTC time for when record was created.
-          - *updated* UTC time for when record was last updated.
+          - **tapisUser** Tapis user associated with the credential. Should always be system owner for static *effectiveUserId* case.
+          - **loginUser** Optional mapping to a host login user for dynamic *effectiveUserId* case.
+          - **hostUser** Username used when connecting to host.
+          - **isStatic** Indicates if record is for the static or dynamic *effectiveUserId* case.
+          - **hasCredentials** Indicates if system has credentials registered for the current *defaultAuthnMethod*.
+          - **hasPassword** Indicates if credentials for PASSWORD have been registered.
+          - **hasPkiKeys** Indicates if credentials for PKI_KEYS have been registered.
+          - **hasAccessKey** Indicates if credentials for ACCESS_KEY have been registered.
+          - **hasToken** Indicates if credentials for TOKEN have been registered.
+          - **hasTmsKeys** Indicates if credentials for TMS_KEYS have been registered.
+          - **syncStatus** Indicates current status of synchronization between security kernel (SK) and Systems service: PENDING, IN_PROGRESS, FAILED, COMPLETED
+          - **syncFailCount** Number of sync attempts that have failed since that last successful sync.
+          - **syncFailMessage**  Message indicating why last sync attempt failed.
+          - **syncFailed** UTC time for time of last sync failure.
+          - **created** UTC time for when record was created.
+          - **updated** UTC time for when record was last updated.
 
       operationId: getCredentialMetadata
       security:
