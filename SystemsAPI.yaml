@@ -716,7 +716,7 @@ paths:
           - rootDir
           - canExec
 
-        Note that the attributes owner and enabled may be modified using other endpoints.
+        Note that the attributes *owner* and *enabled* may be modified using other endpoints.
       operationId: patchSystem
       security:
         - TapisJWT: []
