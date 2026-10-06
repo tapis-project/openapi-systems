@@ -1317,14 +1317,15 @@ paths:
         Retrieve credentials for given system, target *userName* and authentication method.
 
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is
-        interpreted as a Tapis user. Note that there may me a mapping of the Tapis user to a host *loginUser* and
-        what we call the *Tapis user* comes from the username claim in the Tapis JWT.
+        interpreted as a Tapis user. Note that there may me a mapping of the Tapis user to a host *loginUser* or
+        *tmsLoginUser* and what we call the *Tapis user* comes from the username claim in the Tapis JWT.
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
-        as the host *loginUser* that is used when accessing the host.
+        as the host login user. Note that for a system using TMS_KEYS then a static *effectiveUserId* is not supported
+        and so the credential attributes *loginUser* and *tmsLoginUser* are not relevant.
 
-        Desired authentication method may be specified using query parameter *authnMethod*. If desired
-        authentication method not specified then credentials for the system's default authentication method are returned.
+        Desired authentication method may be specified using query parameter *authnMethod*. If desired authentication
+        method is not specified, then credentials for the system's default authentication method are returned.
 
         The result includes the attribute *authnMethod* indicating the authentication method associated with
         the returned credentials.
@@ -1389,15 +1390,24 @@ paths:
 
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
-        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is interpreted
-        as a Tapis user and the request body may contain the optional attribute *loginUser* which will be used to map the
-        Tapis user to a username to be used when accessing the system. If the login user is not provided then there is
-        no mapping and the Tapis user is always used when accessing the system. Note that what we call the *Tapis user*
-        comes from the username claim in the Tapis JWT.
+        If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) and query parameter
+        *createTmsKeys* is false then *{userName}* is interpreted as a Tapis user. The request body may contain the
+        optional attribute *loginUser* which will be used to map the Tapis user to a username to be used when accessing
+        the system. If the login user is not provided then there is no mapping and the Tapis user is always used as the
+        host login user when accessing the system. Note that what we call the *Tapis user* comes from the username claim
+        in the Tapis JWT.
+
+        If the *effectiveUserId* for the system is dynamic and query parameter *createTmsKeys* is true then *{userName}*
+        is interpreted as a Tapis user. The request body must not contain the attribute *loginUser*. The request body
+        must contain the attributes *tmsResourceProvider* and *tmsResourceProviderAccount*. The *effectiveUserId*
+        will be determined as a result of a *createCredential* request to the TMS credential server. The value for the
+        host login user returned by TMS will be stored in the credential attribute *tmsLoginUser*.
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
         as the login user to be used when accessing the host. Please note that if there is a *loginUser* field in the
         request body, TAPIS will reject the request because the static effective user is always the login user.
+        Note that for a system using TMS_KEYS then a static *effectiveUserId* is not supported and so the credential
+        attributes *tmsLoginUser*, *tmsResourceProvider* and *tmsResourceProviderAccount* are not relevant.
 
         Operation is allowed if requester is the system owner or a tenant administrator.
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then the operation is allowed
@@ -1406,10 +1416,11 @@ paths:
         Use query parameter *createTmsKeys=true* to have the service call a Trust Manager System (TMS) server to create and
         store an ssh keypair. Default is *false*.
         Please note that the following restrictions apply:
-          - Tapis installation for your site must be configured to support the Trust Manager System (TMS).
+          - Tapis installation for your site and tenant must be configured to support the Trust Manager System (TMS).
           - The host for the system must have the sshd configuration set up to use TMS.
           - The *effectiveUserId* must be dynamic.
           - Mapping of user using *loginUser* is not supported.
+          - Request attributes *tmsResourceProvider* and *tmsResourceProviderAccount* are required.
 
         By default credentials for LINUX and S3 type systems are verified. Use query parameter
         *skipCredentialCheck=true* to bypass initial credential validation.
@@ -2610,6 +2621,8 @@ components:
           $ref: '#/components/schemas/AuthnEnum'
         loginUser:
           $ref: '#/components/schemas/UserNameString'
+        tmsLoginUser:
+          $ref: '#/components/schemas/UserNameString'
         password:
           type: string
         privateKey:
@@ -2629,6 +2642,10 @@ components:
         tmsPublicKey:
           type: string
         tmsFingerprint:
+          type: string
+        tmsResourceProvider:
+          type: string
+        tmsResourceProviderAccount:
           type: string
         certificate:
           type: string
@@ -3056,6 +3073,8 @@ components:
       properties:
         loginUser:
           $ref: '#/components/schemas/UserNameString'
+        tmsLoginUser:
+          $ref: '#/components/schemas/UserNameString'
         password:
           type: string
         privateKey:
@@ -3071,6 +3090,10 @@ components:
         refreshToken:
           type: string
         certificate:
+          type: string
+        tmsResourceProvider:
+          type: string
+        tmsResourceProviderAccount:
           type: string
     ReqPerms:
       type: object
