@@ -1324,9 +1324,9 @@ paths:
         interpreted as a Tapis user. Note that there may me a mapping of the Tapis user to a host *loginUser* or
         *tmsLoginUser* and what we call the *Tapis user* comes from the username claim in the Tapis JWT.
 
-        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
-        as the host login user. Note that for a system using TMS_KEYS then a static *effectiveUserId* is not supported
-        and so the credential attributes *loginUser* and *tmsLoginUser* are not relevant.
+        If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*), then *{userName}* is interpreted as
+        the host login user. Note that for a system using TMS_KEYS, a static *effectiveUserId* is not supported and
+        so the credential attributes *loginUser* and the TMS related attributes such as *tmsLoginUser* are not relevant.
 
         Desired authentication method may be specified using query parameter *authnMethod*. If desired authentication
         method is not specified, then credentials for the system's default authentication method are returned.
@@ -1455,7 +1455,7 @@ paths:
             $ref: '#/components/schemas/UserNameString'
         - name: createTmsKeys
           in: query
-          description: Use TMS to generate and store an ssh keypair. Default is false.
+          description: Use TMS service to generate an ssh keypair. Default is false.
           schema:
             type: boolean
             default: false
