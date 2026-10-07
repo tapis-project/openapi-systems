@@ -25,7 +25,9 @@ tags:
   - name: General
     description: General service health and readiness
   - name: Systems
-    description: Manage Tapis system resources. Create, retrieve, update, etc.
+    description: |
+      Manage Tapis system resources. Create, retrieve, update, register credentials, etc.
+      Note that in the descriptions what we call the *Tapis user* comes from the username claim in the Tapis JWT.
   - name: Credentials
     description: Manage Tapis system user access credentials.
   - name: Permissions
@@ -1316,7 +1318,7 @@ paths:
 
         Retrieve credentials for given system, target *userName* and authentication method.
 
-        There are certain conditions that determine how ${userName}* is interpreted.
+        There are certain conditions that determine how *${userName}* is interpreted.
         
         If the *effectiveUserId* for the system is dynamic (i.e. equal to *${apiUserId}*) then *{userName}* is
         interpreted as a Tapis user. Note that there may me a mapping of the Tapis user to a host *loginUser* or
@@ -1406,7 +1408,7 @@ paths:
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
         The TMS service only stores the public key and not the private key.
 
-        There are certain conditions that determine how ${userName}* is interpreted. The conditions are based on
+        There are certain conditions that determine how *${userName}* is interpreted. The conditions are based on
         the *effectiveUserId* for the system and the query parameter *createTmsKeys*. The special case of
         *createTmsKeys=true* is described in the final paragraph of this section.
         
@@ -1414,7 +1416,7 @@ paths:
         *createTmsKeys=false* then *{userName}* is interpreted as a Tapis user. The request body may contain the
         optional attribute *loginUser* which will be used to map the Tapis user to a username to be used when accessing
         the system. If the login user is not provided then there is no mapping and the Tapis user is always used as the
-        host login user when accessing the system. Note that what we call the *Tapis user* comes from the username claim
+        host login user when accessing the host. Note that what we call the *Tapis user* comes from the username claim
         in the Tapis JWT.
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*) then *{userName}* is interpreted
@@ -2763,7 +2765,7 @@ components:
       minLength: 1
       maxLength: 60
       default: "${apiUserId}"
-      description: Username to use when accessing the system. A specific user (such as a service account) or the dynamic user ``${apiUserId}``.
+      description: Username to use when accessing the host. A specific user (such as a service account) or the dynamic user ``${apiUserId}``.
     Enabled:
       type: boolean
       default: true
