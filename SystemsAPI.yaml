@@ -236,7 +236,7 @@ paths:
 
         If the *effectiveUserId* is static (i.e. not *${apiUserId}*) then credentials may optionally be provided in the
         *authnCredential* attribute of the request body. Please note that if there is a *loginUser* field in the
-        credential request body, TAPIS will reject the request because the static effective user is always the login user.
+        credential request body, the request will be rejected because the static effective user is always the login user.
         The Systems service does not store the secrets in its database, they are persisted in the Security Kernel.
 
         By default for LINUX and S3 type systems credentials provided are verified. Use query parameter
@@ -1422,7 +1422,7 @@ paths:
 
         If the *effectiveUserId* for the system is static (i.e. not *${apiUserId}*), then *{userName}* is interpreted
         as the login user to be used when accessing the host. Use of *createTmsKeys=true* is not allowed. If there is a
-        *loginUser* field in the request body, Tapis will reject the request because the static effective user is always
+        *loginUser* field in the request body, The request will be rejected the request because the static effective user is always
         the login user. For a system using TMS_KEYS, use of a static *effectiveUserId* is not supported and so the
         credential attributes *tmsLoginUser*, *tmsResourceProvider* and *tmsResourceProviderAccount* are not relevant.
 
@@ -2834,7 +2834,7 @@ components:
         defaultAuthnMethod:
           $ref: '#/components/schemas/AuthnEnum'
         authnCredential:
-          $ref: '#/components/schemas/ReqPostPutCredential'
+          $ref: '#/components/schemas/ReqSysCreateCredential'
         bucketName:
           type: string
           description: Name of the bucket for an S3 type system.
@@ -3062,30 +3062,9 @@ components:
             $ref: '#/components/schemas/TagString'
         notes:
           type: object
-    ReqPostPutCredential:
-      type: object
-      properties:
-        password:
-          type: string
-        privateKey:
-          type: string
-        publicKey:
-          type: string
-        accessKey:
-          type: string
-        accessSecret:
-          type: string
-        accessToken:
-          type: string
-        refreshToken:
-          type: string
-        certificate:
-          type: string
     ReqUpdateCredential:
       type: object
       properties:
-        loginUser:
-          $ref: '#/components/schemas/UserNameString'
         password:
           type: string
         privateKey:
@@ -3102,9 +3081,30 @@ components:
           type: string
         certificate:
           type: string
+        loginUser:
+          $ref: '#/components/schemas/UserNameString'
         tmsResourceProvider:
           type: string
         tmsResourceProviderAccount:
+          type: string
+    ReqSysCreateCredential:
+      type: object
+      properties:
+        password:
+          type: string
+        privateKey:
+          type: string
+        publicKey:
+          type: string
+        accessKey:
+          type: string
+        accessSecret:
+          type: string
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        certificate:
           type: string
     ReqPerms:
       type: object
